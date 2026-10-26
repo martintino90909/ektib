@@ -1,0 +1,1079 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Ektib</title>
+<meta name="description" content="Learn to read and write Egyptian Arabic with your Apple Pencil.">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="apple-touch-icon" href="/icon-180.png">
+<link rel="icon" href="/icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Ektib">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#edf2fa" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0c1323" media="(prefers-color-scheme: dark)">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+Bhaijaan+2:wght@400;500;600;700;800&family=Noto+Naskh+Arabic:wght@400;500;600&display=swap">
+<style>
+:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0}
+img{max-width:100%}
+/* Layout: one winding path of lesson stops under Cairo street-sign unit plaques; each lesson is a full-screen card whose centrepiece is a writing slate for the Pencil. */
+:root{
+  --bg:#edf2fa; --surface:#ffffff; --surface-2:#f5f8fd; --ink:#14213d; --muted:#586987; --line:#d2dbea;
+  --enamel:#1d4aa0; --enamel-deep:#123672; --on-enamel:#ffffff;
+  --mango:#f0a20f; --mango-deep:#bf7d00; --on-mango:#2b1d00;
+  --good:#1f9a4b; --good-deep:#157238; --good-tint:#e1f5e7;
+  --bad:#d63a41; --bad-deep:#a3242a; --bad-tint:#fde7e7;
+  --guide:#c5d3ec; --slate:#fbfcff; --stroke:#14213d; --baseline:#e2a33a;
+  --locked:#dde4ef; --locked-deep:#c2ccdb; --locked-ink:#8d9bb3;
+  --ui:"Baloo Bhaijaan 2","Geeza Pro",ui-rounded,system-ui,sans-serif;
+  --naskh:"Noto Naskh Arabic","Geeza Pro","Times New Roman",serif;
+  --r:18px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0c1323; --surface:#151f35; --surface-2:#1a2640; --ink:#e8eef9; --muted:#97a7c4; --line:#2a3a5a;
+  --enamel:#3d71da; --enamel-deep:#2851a8; --on-enamel:#ffffff;
+  --mango:#f4b131; --mango-deep:#c1840f; --on-mango:#2b1d00;
+  --good:#3cc26a; --good-deep:#25904b; --good-tint:#12301f;
+  --bad:#ff5e64; --bad-deep:#c23b41; --bad-tint:#3a191d;
+  --guide:#2f4572; --slate:#10192b; --stroke:#f1f5ff; --baseline:#a57820;
+  --locked:#222f4a; --locked-deep:#18223a; --locked-ink:#5f6f8f;
+  color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --bg:#0c1323; --surface:#151f35; --surface-2:#1a2640; --ink:#e8eef9; --muted:#97a7c4; --line:#2a3a5a;
+  --enamel:#3d71da; --enamel-deep:#2851a8; --on-enamel:#ffffff;
+  --mango:#f4b131; --mango-deep:#c1840f; --on-mango:#2b1d00;
+  --good:#3cc26a; --good-deep:#25904b; --good-tint:#12301f;
+  --bad:#ff5e64; --bad-deep:#c23b41; --bad-tint:#3a191d;
+  --guide:#2f4572; --slate:#10192b; --stroke:#f1f5ff; --baseline:#a57820;
+  --locked:#222f4a; --locked-deep:#18223a; --locked-ink:#5f6f8f;
+  color-scheme:dark;
+}
+html,body{height:100%}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font-family:var(--ui);font-size:17px;line-height:1.45;-webkit-text-size-adjust:100%}
+button{font:inherit;color:inherit;touch-action:manipulation;cursor:pointer}
+button:focus-visible{outline:3px solid var(--mango);outline-offset:3px}
+.naskh{font-family:var(--naskh);font-weight:500}
+.ar{direction:rtl;unicode-bidi:isolate}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+
+/* ---------- Home ---------- */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:color-mix(in srgb,var(--bg) 92%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.top-in{max-width:640px;margin:0 auto;padding-block:10px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;align-items:center;gap:14px}
+.brand{display:flex;align-items:baseline;gap:8px;margin-right:auto}
+.brand b{font-family:var(--naskh);font-size:30px;line-height:1;color:var(--enamel);font-weight:600}
+.brand span{font-weight:800;font-size:20px;letter-spacing:.01em}
+.stat{display:flex;align-items:center;gap:5px;font-weight:700;font-variant-numeric:tabular-nums;font-size:17px}
+.stat svg{width:22px;height:22px}
+.stat.flame{color:var(--mango-deep)}
+.stat.flame.off{color:var(--locked-ink)}
+.stat.xp{color:var(--enamel)}
+.icon-btn{width:44px;height:44px;border-radius:12px;border:0;background:transparent;display:grid;place-items:center;color:var(--muted)}
+.icon-btn:hover{background:var(--surface-2)}
+.icon-btn svg{width:24px;height:24px}
+
+.home{max-width:640px;margin:0 auto;padding-block:18px 120px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:22px}
+.goal{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;display:grid;grid-template-columns:1fr auto;gap:6px 16px;align-items:center}
+.goal h2{margin:0;font-size:17px;font-weight:700}
+.goal p{margin:0;color:var(--muted);font-size:15px;grid-column:1}
+.goal .meter{grid-column:1/-1;height:12px;border-radius:99px;background:var(--surface-2);border:1px solid var(--line);overflow:hidden}
+.goal .meter span{display:block;height:100%;width:0;background:var(--mango);border-radius:99px;transition:width .5s}
+.goal .num{font-weight:800;font-variant-numeric:tabular-nums;color:var(--mango-deep)}
+.btn-practice{grid-row:1/3;grid-column:2}
+
+.unit{display:flex;flex-direction:column;gap:6px}
+.plaque{background:var(--enamel);color:var(--on-enamel);border-radius:10px;padding:6px;box-shadow:0 4px 0 var(--enamel-deep)}
+.plaque-in{border:2px solid color-mix(in srgb,var(--on-enamel) 85%,transparent);border-radius:6px;padding:10px 16px 12px;display:grid;grid-template-columns:1fr auto;gap:2px 14px;align-items:center}
+.plaque .eyebrow{font-size:13px;letter-spacing:.08em;text-transform:uppercase;opacity:.85;font-weight:600}
+.plaque h3{margin:0;font-size:20px;font-weight:700;line-height:1.2;text-wrap:balance}
+.plaque p{margin:0;font-size:14.5px;opacity:.9;grid-column:1}
+.plaque .ar-title{grid-row:1/4;grid-column:2;font-family:var(--naskh);font-size:30px;line-height:1.3;font-weight:600;direction:rtl;text-align:center;max-width:12ch}
+.path{display:flex;flex-direction:column;align-items:center;gap:18px;padding:44px 0 10px}
+.stop{position:relative;display:flex;flex-direction:column;align-items:center;gap:6px;transition:transform .2s}
+.node{width:78px;height:72px;border-radius:50%;border:0;display:grid;place-items:center;background:var(--locked);color:var(--locked-ink);box-shadow:0 7px 0 var(--locked-deep);font-family:var(--naskh);font-size:22px;line-height:1;font-weight:600;transition:transform .08s,box-shadow .08s}
+.node:active{transform:translateY(5px);box-shadow:0 2px 0 var(--locked-deep)}
+.node svg{width:32px;height:32px}
+.stop.done .node{background:var(--enamel);color:var(--on-enamel);box-shadow:0 7px 0 var(--enamel-deep)}
+.stop.done .node:active{box-shadow:0 2px 0 var(--enamel-deep)}
+.stop.current .node{background:var(--mango);color:var(--on-mango);box-shadow:0 7px 0 var(--mango-deep);width:88px;height:82px}
+.stop.current .node:active{box-shadow:0 2px 0 var(--mango-deep)}
+.stop.open .node{background:var(--surface);color:var(--enamel);box-shadow:0 7px 0 var(--line);border:2px solid var(--line)}
+.stop-label{font-size:13.5px;color:var(--muted);font-weight:600;max-width:150px;text-align:center;line-height:1.25}
+.stop.current .stop-label{color:var(--ink)}
+.bubble{position:absolute;bottom:calc(100% + 6px);background:var(--surface);border:2px solid var(--line);color:var(--mango-deep);font-weight:800;letter-spacing:.06em;text-transform:uppercase;font-size:13px;padding:3px 12px;border-radius:10px;white-space:nowrap;animation:bob 1.8s ease-in-out infinite}
+.bubble::after{content:"";position:absolute;left:50%;top:100%;width:10px;height:10px;background:var(--surface);border:2px solid var(--line);border-top:0;border-left:0;transform:translate(-50%,-55%) rotate(45deg)}
+.check{position:absolute;right:-4px;top:-4px;width:24px;height:24px;border-radius:50%;background:var(--good);color:#fff;display:grid;place-items:center;border:3px solid var(--bg)}
+.check svg{width:12px;height:12px}
+@keyframes bob{50%{transform:translateY(-4px)}}
+
+/* ---------- Buttons ---------- */
+.btn{border:0;border-radius:14px;padding:12px 22px;min-height:52px;font-weight:800;font-size:17px;letter-spacing:.04em;text-transform:uppercase;background:var(--enamel);color:var(--on-enamel);box-shadow:0 5px 0 var(--enamel-deep);transition:transform .08s,box-shadow .08s}
+.btn:active{transform:translateY(4px);box-shadow:0 1px 0 var(--enamel-deep)}
+.btn:disabled{background:var(--locked);color:var(--locked-ink);box-shadow:0 5px 0 var(--locked-deep);cursor:default;transform:none}
+.btn.good{background:var(--good);box-shadow:0 5px 0 var(--good-deep);color:#fff}
+.btn.bad{background:var(--bad);box-shadow:0 5px 0 var(--bad-deep);color:#fff}
+.btn.mango{background:var(--mango);box-shadow:0 5px 0 var(--mango-deep);color:var(--on-mango)}
+.btn.small{min-height:44px;padding:8px 16px;font-size:15px}
+.ghost{border:2px solid var(--line);background:var(--surface);border-radius:14px;padding:8px 14px;min-height:44px;font-weight:700;color:var(--muted);box-shadow:0 3px 0 var(--line)}
+.ghost:active{transform:translateY(2px);box-shadow:0 1px 0 var(--line)}
+.link{border:0;background:none;padding:6px 0;font-weight:700;text-decoration:underline;text-underline-offset:3px;color:inherit;opacity:.9}
+
+/* ---------- Lesson ---------- */
+.lesson{position:fixed;inset:0;z-index:20;background:var(--bg);display:grid;grid-template-rows:auto 1fr auto;padding-top:env(safe-area-inset-top,0px);-webkit-user-select:none;user-select:none}
+.lhead{max-width:860px;width:100%;margin:0 auto;padding-block:12px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;align-items:center;gap:12px;box-sizing:border-box}
+.bar{flex:1;height:16px;border-radius:99px;background:var(--locked);overflow:hidden}
+.bar span{display:block;height:100%;width:0;background:var(--good);border-radius:99px;transition:width .35s;box-shadow:inset 0 -4px 0 color-mix(in srgb,#000 12%,transparent)}
+.lbody{min-height:0;overflow:auto;display:flex}
+.ex{max-width:860px;width:100%;margin:0 auto;padding-block:6px 16px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:14px;box-sizing:border-box;min-height:100%}
+.kicker{margin:0;font-size:13px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:var(--mango-deep)}
+.prompt{margin:0;font-size:clamp(22px,3.2vw,30px);font-weight:700;line-height:1.2;text-wrap:balance}
+.prompt .naskh{font-size:1.25em}
+.sub{margin:-6px 0 0;color:var(--muted);font-size:16px}
+
+.slate-zone{flex:1;min-height:280px;display:flex;flex-direction:column;gap:10px}
+.slate-wrap{flex:1;min-height:0;position:relative;display:grid;place-items:center}
+.slate{display:block;position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);background:var(--slate);border:2px solid var(--line);border-radius:22px;touch-action:none;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;box-shadow:0 4px 0 var(--line)}
+.slate-tools{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.slate-tools .ghost{display:flex;align-items:center;gap:6px}
+.slate-tools svg{width:18px;height:18px}
+.pen-note{font-size:13.5px;color:var(--muted);text-align:center;margin:0}
+
+.intro{display:grid;grid-template-columns:auto 1fr;gap:18px 24px;align-items:center}
+.tile{width:min(34vw,200px);aspect-ratio:1;max-width:100%;border-radius:24px;background:var(--surface);border:2px solid var(--line);box-shadow:0 5px 0 var(--line);display:grid;place-items:center;font-family:var(--naskh);font-size:clamp(84px,14vw,128px);line-height:1;color:var(--enamel);padding-bottom:12px;box-sizing:border-box}
+.facts{display:grid;gap:6px;min-width:0}
+.facts .name{font-size:28px;font-weight:800;line-height:1.1}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:2px solid var(--line);border-radius:10px;padding:2px 10px;font-weight:700;font-size:15px;background:var(--surface)}
+.chip i{font-style:normal;color:var(--muted);font-weight:600;margin-right:6px}
+.note{margin:0;font-size:17px;max-width:60ch;color:var(--ink)}
+.forms{grid-column:1/-1;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;direction:rtl}
+.form{background:var(--surface);border:2px solid var(--line);border-radius:14px;padding:6px 4px 8px;display:grid;justify-items:center;gap:0;direction:ltr}
+.form b{font-family:var(--naskh);font-size:clamp(34px,6vw,48px);line-height:1.5;color:var(--ink);font-weight:500}
+.form span{font-size:12.5px;color:var(--muted);font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+.form.na b{color:var(--locked-ink)}
+.rtl-note{grid-column:1/-1;margin:-4px 0 0;font-size:13.5px;color:var(--muted)}
+
+.word-hero{display:grid;justify-items:center;gap:4px;padding:10px 0}
+.word-hero .w{font-family:var(--naskh);font-size:clamp(64px,11vw,104px);line-height:1.5;color:var(--enamel);direction:rtl}
+.word-hero .tr{font-size:26px;font-weight:800}
+.word-hero .en{font-size:18px;color:var(--muted)}
+.breakdown{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;direction:rtl}
+.bd{background:var(--surface);border:2px solid var(--line);border-radius:12px;padding:2px 12px 6px;display:grid;justify-items:center;min-width:52px}
+.bd b{font-family:var(--naskh);font-size:32px;line-height:1.5;font-weight:500}
+.bd span{font-size:13px;color:var(--muted);font-weight:700;direction:ltr}
+.bd.gap{background:none;border:0;min-width:14px}
+
+.stage{display:grid;place-items:center;padding:6px 0 4px}
+.stage .big{font-family:var(--naskh);font-size:clamp(90px,15vw,150px);line-height:1.45;color:var(--enamel);direction:rtl}
+.stage .big.word{font-size:clamp(60px,10vw,96px)}
+.stage .lat{font-size:clamp(46px,8vw,72px);font-weight:800;color:var(--enamel);line-height:1.2}
+.stage .tag{font-size:13px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.opts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.opt{border:2px solid var(--line);background:var(--surface);border-radius:16px;min-height:68px;padding:8px 14px;box-shadow:0 4px 0 var(--line);font-weight:700;font-size:20px;display:flex;align-items:center;justify-content:center;gap:10px;text-align:center;transition:transform .08s}
+.opt:active{transform:translateY(3px);box-shadow:0 1px 0 var(--line)}
+.opt .k{font-size:12px;color:var(--muted);border:1.5px solid var(--line);border-radius:6px;padding:0 6px;font-weight:700}
+.opt .naskh{font-size:40px;line-height:1.3}
+.opt.sel{border-color:var(--enamel);background:color-mix(in srgb,var(--enamel) 10%,var(--surface));box-shadow:0 4px 0 var(--enamel);color:var(--enamel)}
+.opt.right{border-color:var(--good);background:var(--good-tint);box-shadow:0 4px 0 var(--good);color:var(--good-deep)}
+.opt.wrong{border-color:var(--bad);background:var(--bad-tint);box-shadow:0 4px 0 var(--bad);color:var(--bad-deep)}
+.opt:disabled{cursor:default}
+
+.match{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.match .col{display:grid;gap:12px;align-content:start}
+.match .opt{min-height:64px}
+.match .opt.done{opacity:.35;box-shadow:none;transform:none}
+.shake{animation:shake .32s}
+@keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+
+.lfoot{border-top:2px solid var(--line);background:var(--bg);padding-bottom:env(safe-area-inset-bottom,0px);transition:background .2s}
+.lfoot.ok{background:var(--good-tint);border-color:transparent}
+.lfoot.no{background:var(--bad-tint);border-color:transparent}
+.lfoot-in{max-width:860px;margin:0 auto;padding-block:14px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;align-items:center;gap:14px;flex-wrap:wrap;box-sizing:border-box}
+.fb{flex:1;min-width:220px;display:grid;gap:2px}
+.fb h4{margin:0;font-size:22px;font-weight:800;display:flex;align-items:center;gap:8px}
+.fb h4 svg{width:26px;height:26px}
+.fb p{margin:0;font-size:16px}
+.lfoot.ok .fb{color:var(--good-deep)}
+.lfoot.no .fb{color:var(--bad-deep)}
+.fb .naskh{font-size:1.4em}
+.fb .link{justify-self:start}
+.lfoot .btn{min-width:170px;margin-left:auto}
+
+.done-screen{display:grid;justify-items:center;text-align:center;gap:16px;padding-top:4vh}
+.done-screen .seal{width:132px;height:132px;border-radius:50%;background:var(--mango);color:var(--on-mango);display:grid;place-items:center;font-family:var(--naskh);font-size:46px;box-shadow:0 7px 0 var(--mango-deep);line-height:1}
+.done-screen h2{margin:0;font-size:32px;font-weight:800}
+.tiles{display:grid;grid-template-columns:repeat(3,minmax(0,140px));gap:12px}
+.tiles div{border:2px solid var(--line);border-radius:16px;background:var(--surface);padding:10px 8px;display:grid}
+.tiles b{font-size:28px;font-weight:800;font-variant-numeric:tabular-nums}
+.tiles span{font-size:12.5px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
+
+/* ---------- Sheet ---------- */
+.scrim{position:fixed;inset:0;z-index:40;background:color-mix(in srgb,#060b16 45%,transparent);display:grid;align-items:end;justify-items:center}
+.sheet{width:min(560px,100%);box-sizing:border-box;background:var(--surface);border-radius:22px 22px 0 0;padding-block:20px calc(20px + env(safe-area-inset-bottom,0px));padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px));display:grid;gap:14px;border:2px solid var(--line);border-bottom:0}
+.sheet h3{margin:0;font-size:22px;font-weight:800}
+.sheet p{margin:0;color:var(--muted)}
+.sheet .row{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end}
+.toggle{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:10px 0;border-top:1px solid var(--line)}
+.toggle span{display:grid}
+.toggle small{color:var(--muted);font-size:14px}
+.toggle input{width:52px;height:30px;accent-color:var(--enamel)}
+
+@media (max-width:620px){
+  .intro{grid-template-columns:1fr;justify-items:center;text-align:center}
+  .chips{justify-content:center}
+  .forms{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .plaque .ar-title{font-size:24px}
+  .opt .naskh{font-size:34px}
+  .lfoot .btn{width:100%;margin-left:0}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="top-in">
+    <div class="brand"><b class="ar">اكتب</b><span>Ektib</span></div>
+    <div class="stat flame" id="streakStat" title="Day streak">
+      <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.6 2.2c.4 3.1-1.3 4.8-2.8 6.4C8.4 10 7 11.5 7 14a5 5 0 0 0 10 0c0-1.2-.4-2.4-1.1-3.4-.3 1-1 1.8-2 2.1.6-3.6-.2-7.3-1.3-10.5ZM12 22a8 8 0 0 1-8-8c0-3.6 2-5.7 3.6-7.4C9.1 5 10.2 3.9 10 1.6a1 1 0 0 1 1.5-.9C15.6 3 20 7.6 20 14a8 8 0 0 1-8 8Z"/></svg>
+      <span id="streakNum">0</span>
+    </div>
+    <div class="stat xp" title="Total XP">
+      <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13.5 1.8 4 13.4a1 1 0 0 0 .8 1.6H11l-1.2 7.2a.7.7 0 0 0 1.2.6l9.5-11.6a1 1 0 0 0-.8-1.6H13l1.7-7.2a.7.7 0 0 0-1.2-.6Z"/></svg>
+      <span id="xpNum">0</span>
+    </div>
+    <button class="icon-btn" id="settingsBtn" aria-label="Settings">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>
+    </button>
+  </div>
+</header>
+
+<main class="home" id="home">
+  <section class="goal" aria-label="Daily goal">
+    <h2>Today’s goal</h2>
+    <button class="btn mango small btn-practice" id="practiceBtn" hidden>Practice</button>
+    <p><span class="num" id="todayNum">0</span> / 30 XP</p>
+    <div class="meter"><span id="todayBar"></span></div>
+  </section>
+  <div id="units"></div>
+</main>
+
+<div class="lesson" id="lesson" hidden>
+  <div class="lhead">
+    <button class="icon-btn" id="quitBtn" aria-label="Quit lesson">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+    </button>
+    <div class="bar" aria-hidden="true"><span id="barFill"></span></div>
+  </div>
+  <div class="lbody" id="lbody"></div>
+  <footer class="lfoot" id="lfoot">
+    <div class="lfoot-in">
+      <div class="fb" id="fb"></div>
+      <button class="btn" id="mainBtn" disabled>Check</button>
+    </div>
+  </footer>
+</div>
+
+<div class="scrim" id="scrim" hidden><div class="sheet" id="sheet" role="dialog" aria-modal="true"></div></div>
+
+<script>
+"use strict";
+/* ================= Content ================= */
+const LETTERS = [
+ {c:'ا',n:'alif',s:'aa',f:'a',note:'A long “aa”, or a seat for a vowel at the start of a word. It never joins the letter after it.',join:false},
+ {c:'ب',n:'baa',s:'b',f:'b',note:'Like English b. A shallow tooth with one dot below.',dots:{n:1,p:'b'}},
+ {c:'ت',n:'taa',s:'t',f:'t',note:'Like English t. Same tooth as ب, with two dots above.',dots:{n:2,p:'a'}},
+ {c:'ث',n:'thaa',s:'th',f:'th',note:'“th” as in think in formal Arabic. In Egyptian speech it usually becomes t or s.',dots:{n:3,p:'a'}},
+ {c:'ن',n:'nuun',s:'n',f:'n',note:'Like English n. A deeper bowl than ب, with one dot above.',dots:{n:1,p:'a'}},
+ {c:'ي',n:'yaa',s:'y / ee',f:'y',note:'A consonant y, or a long “ee” or “ei”. Two dots below.',dots:{n:2,p:'b'}},
+ {c:'ج',n:'giim',s:'g',f:'g',note:'In Egypt this is a hard g, as in “go”. Most other Arabs say j, so Egyptians are known for it.',dots:{n:1,p:'any'}},
+ {c:'ح',n:'ḥaa',s:'ḥ',f:'7',note:'A breathy h from deep in the throat, like fogging up a mirror. Franco-Arabic writes it 7.'},
+ {c:'خ',n:'khaa',s:'kh',f:'5',note:'A rough kh, like the end of Scottish “loch”. Franco-Arabic writes it 5 or kh.',dots:{n:1,p:'a'}},
+ {c:'د',n:'daal',s:'d',f:'d',note:'Like English d. It never joins the letter after it.',join:false},
+ {c:'ذ',n:'zaal',s:'dh / z',f:'z',note:'“th” as in this in formal Arabic. Egyptians usually say d or z instead.',join:false,dots:{n:1,p:'a'}},
+ {c:'ر',n:'raa',s:'r',f:'r',note:'A tapped r. It dips below the line and never joins the letter after it.',join:false},
+ {c:'ز',n:'zein',s:'z',f:'z',note:'Like English z. It is ر with a dot on top.',join:false,dots:{n:1,p:'a'}},
+ {c:'و',n:'waaw',s:'w / oo',f:'w',note:'A consonant w, or a long “oo” or “o”. It never joins the letter after it.',join:false},
+ {c:'س',n:'siin',s:'s',f:'s',note:'Like English s. Three small teeth and a bowl.'},
+ {c:'ش',n:'shiin',s:'sh',f:'sh',note:'Like English sh. The same shape as س with three dots on top.',dots:{n:3,p:'a'}},
+ {c:'ص',n:'ṣaad',s:'ṣ',f:'s',note:'A heavy s: pull your tongue back and it darkens the vowels around it.'},
+ {c:'ض',n:'ḍaad',s:'ḍ',f:'d',note:'A heavy d. Arabic is called “the language of ḍaad” because this sound is so rare.',dots:{n:1,p:'a'}},
+ {c:'ط',n:'ṭaa',s:'ṭ',f:'6',note:'A heavy t. Franco-Arabic writes it 6.'},
+ {c:'ظ',n:'ẓaa',s:'ẓ',f:"6'",note:'A heavy “th” in formal Arabic. Egyptians mostly say a heavy z.',dots:{n:1,p:'any'}},
+ {c:'ع',n:'ʿein',s:'ʿ',f:'3',note:'A squeeze in the throat with no English match. Franco-Arabic writes it 3.'},
+ {c:'غ',n:'ghein',s:'gh',f:"3'",note:'A gargled gh, close to a French r. Franco-Arabic writes it gh.',dots:{n:1,p:'a'}},
+ {c:'ف',n:'faa',s:'f',f:'f',note:'Like English f. A small loop with one dot.',dots:{n:1,p:'a'}},
+ {c:'ق',n:'ʾaaf',s:'ʾ / q',f:'2',note:'In Cairo this is a glottal stop, the catch in “uh-oh”. You only hear a real q in formal words like Qurʾaan.',dots:{n:2,p:'a'}},
+ {c:'ك',n:'kaaf',s:'k',f:'k',note:'Like English k. The small mark inside is part of the letter, not a dot.',dots:{n:0,extra:true}},
+ {c:'ل',n:'laam',s:'l',f:'l',note:'Like English l. ل followed by ا makes a special joined shape: لا (la).'},
+ {c:'م',n:'miim',s:'m',f:'m',note:'Like English m. A small round loop with a tail.'},
+ {c:'ه',n:'haa',s:'h',f:'h',note:'A light English h. Its shape changes a lot between the start, middle and end of a word.'},
+ {c:'ة',n:'taaʾ marbuuṭa',s:'-a',f:'a',note:'Only ever at the end of a word, where it sounds like “-a”. It looks like ه with two dots.',join:false,endOnly:true,dots:{n:2,p:'a'}},
+ {c:'ء',n:'hamza',s:'ʾ (catch)',f:'2',note:'A catch in the throat, like the break in “uh-oh”. It often sits on a seat: أ at the start of a word, إ under an i-sound.',join:false,aloneOnly:true,noWrite:true},
+];
+const AUX = {'أ':'ʾa','إ':'ʾe','آ':'ʾaa','ى':'a','ؤ':'ʾ','ئ':'ʾ'};
+const LMAP = {}; LETTERS.forEach(l => LMAP[l.c] = l);
+const FAMILIES = [['ب','ت','ث'],['ج','ح','خ'],['د','ذ'],['ر','ز'],['س','ش'],['ص','ض'],['ط','ظ'],['ع','غ'],['ف','ق'],['ه','ة']];
+const LOOKALIKE = [['ب','ت','ث','ن','ي'],['ج','ح','خ'],['د','ذ','ر','ز','و'],['س','ش','ص','ض'],['ط','ظ','ع','غ'],['ف','ق','و','م'],['ا','ل','ك'],['ه','ة','م']];
+const famOf = c => (FAMILIES.find(f => f.includes(c)) || [c]);
+const lookOf = c => LOOKALIKE.filter(f => f.includes(c)).flat();
+
+const W = (ar,tr,en,note) => ({ar,tr,en,note});
+const UNITS = [
+ {ar:'ا ب ت ث ن ي', en:'Tooth letters', desc:'One tooth shape, five letters. The dots tell them apart.', lessons:[
+   {t:'L', letters:['ا','ب','ت']},
+   {t:'L', letters:['ث','ن','ي']},
+   {t:'W', words:[W('باب','baab','door'),W('بيت','beit','house'),W('بنت','bint','girl'),W('تين','tiin','figs'),W('اتنين','itnein','two','Egyptians write and say ت here, where formal Arabic has ث.'),W('بنات','banaat','girls')]},
+   {t:'R'} ]},
+ {ar:'ج ح خ', en:'Bowl letters', desc:'Three letters, one bowl. Watch for the Egyptian hard g.', lessons:[
+   {t:'L', letters:['ج','ح','خ']},
+   {t:'W', words:[W('حب','ḥobb','love'),W('تحت','taḥt','under'),W('جيب','geib','pocket','ج is a hard g in Egypt, so this is geib, not jeib.'),W('بخت','bakht','luck'),W('ناجح','nageḥ','passed (an exam)')]},
+   {t:'R'} ]},
+ {ar:'د ذ ر ز و', en:'Letters that never join forward', desc:'These, plus ا, never connect to the letter after them.', lessons:[
+   {t:'L', letters:['د','ذ','ر']},
+   {t:'L', letters:['ز','و']},
+   {t:'W', words:[W('ورد','ward','roses'),W('زيت','zeit','oil'),W('بدري','badri','early'),W('نور','nuur','light'),W('دور','door','floor (of a building)')]},
+   {t:'R'} ]},
+ {ar:'س ش ص ض', en:'Teeth and heavy letters', desc:'Light s and sh, then their heavy cousins.', lessons:[
+   {t:'L', letters:['س','ش']},
+   {t:'L', letters:['ص','ض']},
+   {t:'W', words:[W('شاي','shaai','tea'),W('بس','bass','just / that’s enough','Said constantly in Cairo: “bass!” means enough, stop.'),W('صح','ṣaḥḥ','right, correct'),W('شجر','shagar','trees'),W('بيض','beiḍ','eggs'),W('سبت','sabt','Saturday')]},
+   {t:'R'} ]},
+ {ar:'ط ظ ع غ', en:'Heavy letters and the throat', desc:'Tall loops and the famous ʿein.', lessons:[
+   {t:'L', letters:['ط','ظ']},
+   {t:'L', letters:['ع','غ']},
+   {t:'W', words:[W('عيش','ʿeish','bread','Literally “life”. Egyptians call bread life.'),W('طيب','ṭayyib','okay, fine'),W('عربي','ʿarabi','Arabic'),W('عصير','ʿaṣiir','juice'),W('غدا','ghada','lunch')]},
+   {t:'R'} ]},
+ {ar:'ف ق ك ل', en:'Loops and hooks', desc:'Including ق, which Cairo says as a glottal stop.', lessons:[
+   {t:'L', letters:['ف','ق']},
+   {t:'L', letters:['ك','ل']},
+   {t:'W', words:[W('قلب','ʾalb','heart','Cairo turns ق into a catch in the throat: ʾalb, not qalb.'),W('فول','fuul','fava beans'),W('كبير','kibiir','big'),W('كويس','kwayyis','good, fine'),W('فين','fein','where?'),W('كتير','kitiir','a lot')]},
+   {t:'R'} ]},
+ {ar:'م ه ة', en:'Last letters', desc:'The final three, including the word-ending ة.', lessons:[
+   {t:'L', letters:['م','ه','ة']},
+   {t:'W', words:[W('مصر','Maṣr','Egypt','Egyptians also say Maṣr when they mean Cairo.'),W('ده','da','this (masculine)'),W('مية','mayya','water'),W('قهوة','ʾahwa','coffee / café','Both letters you learned are here: ق as a catch, ة as -a.'),W('جبنة','gibna','cheese'),W('هنا','hina','here')]},
+   {t:'R'} ]},
+ {ar:'يلا نتكلم', en:'Talk like Cairo', desc:'Everyday phrases, and the hamza that starts many of them.', lessons:[
+   {t:'W', intro:['ء'], words:[W('إزيك','izzayyak','how are you?'),W('شكرا','shukran','thank you'),W('أيوه','aywa','yes'),W('لأ','laʾ','no'),W('يلا','yalla','let’s go')]},
+   {t:'W', words:[W('معلش','maʿlesh','never mind / sorry'),W('الحمد لله','il-ḥamdu lillah','thank God (I’m fine)'),W('مش عارف','mish ʿaarif','I don’t know'),W('إن شاء الله','in shaaʾ allah','God willing'),W('القاهرة','il-ʾaahira','Cairo','Locals say il-ʾaahira, with ق as a catch.')]},
+   {t:'R'} ]},
+];
+const LESSONS = [];
+UNITS.forEach((u,ui) => u.lessons.forEach((l,li) => { l.unit = ui; l.id = `u${ui+1}-${li+1}`; l.idx = LESSONS.length; LESSONS.push(l); }));
+function lettersUpTo(i){ const s=[]; for(let k=0;k<=i;k++){ const l=LESSONS[k]; (l.letters||[]).forEach(c=>s.push(c)); (l.intro||[]).forEach(c=>s.push(c)); } return [...new Set(s)]; }
+function wordsUpTo(i){ const s=[]; for(let k=0;k<=i;k++) (LESSONS[k].words||[]).forEach(w=>s.push(w)); return s; }
+const ALLWORDS = LESSONS.flatMap(l => l.words || []);
+
+/* ================= State ================= */
+const KEY = 'ektib-progress-v1';
+const blank = () => ({v:1, done:{}, xp:0, streak:0, lastDay:'', today:{day:'',xp:0}, unlockAll:false, updated:0});
+let S = blank();
+try { const raw = localStorage.getItem(KEY); if (raw) S = Object.assign(blank(), JSON.parse(raw)); } catch(e) {}
+let syncState = 'local', saving = false, saveAgain = false, saveTimer = null, authed = false;
+const dayStr = d => { const x = d || new Date(); return `${x.getFullYear()}-${String(x.getMonth()+1).padStart(2,'0')}-${String(x.getDate()).padStart(2,'0')}`; };
+async function api(method, path, body){
+  const r = await fetch(path, {method, credentials:'same-origin', headers: body !== undefined ? {'Content-Type':'application/json'} : {}, body: body !== undefined ? JSON.stringify(body) : undefined});
+  let data = {}; try { data = await r.json(); } catch(e) {}
+  return {status:r.status, data};
+}
+function cacheLocal(){ try { localStorage.setItem(KEY, JSON.stringify(S)); } catch(e) {} }
+function save(){
+  S.updated = Date.now();
+  cacheLocal();
+  clearTimeout(saveTimer); saveTimer = setTimeout(pushRemote, 600);
+}
+function adopt(remote){
+  S = Object.assign(blank(), remote); cacheLocal();
+  if (lessonEl.hidden) renderHome();
+}
+async function pushRemote(){
+  if (!authed) return;
+  if (saving) { saveAgain = true; return; }
+  saving = true;
+  try {
+    const r = await api('PUT', '/api/progress', S);
+    if (r.status === 200) syncState = 'cloud';
+    else if (r.status === 409 && r.data.progress) { syncState = 'cloud'; adopt(r.data.progress); }
+    else if (r.status === 401) { authed = false; syncState = 'local'; showLogin(); }
+    else syncState = 'error';
+  } catch(e) { syncState = 'offline'; }
+  saving = false;
+  if (saveAgain) { saveAgain = false; pushRemote(); }
+}
+async function pullRemote(){
+  try {
+    const r = await api('GET', '/api/progress');
+    if (r.status === 401) { authed = false; return showLogin(); }
+    if (r.status !== 200) { syncState = 'error'; return; }
+    syncState = 'cloud';
+    const remote = r.data.progress;
+    if (remote && (remote.updated||0) > (S.updated||0)) adopt(remote);
+    else if (S.updated && (!remote || (S.updated||0) > (remote.updated||0))) pushRemote();
+  } catch(e) { syncState = 'offline'; }
+}
+async function startSync(){
+  try {
+    const r = await api('GET', '/api/session');
+    if (r.status !== 200 || !r.data.configured) { syncState = 'local'; return; }
+    if (!r.data.authed) return showLogin();
+    authed = true; await pullRemote();
+  } catch(e) { syncState = 'offline'; }
+}
+function showLogin(msg){
+  openSheet(`<h3>Sign in to Ektib</h3><p>Enter your passcode so your progress syncs between devices.</p>
+    <form id="loginForm" style="display:grid;gap:12px">
+      <input id="passIn" type="password" autocomplete="current-password" placeholder="Passcode" aria-label="Passcode" style="font:inherit;font-size:18px;padding:12px 14px;border-radius:14px;border:2px solid var(--line);background:var(--surface-2);color:var(--ink)">
+      <p id="loginMsg" style="color:var(--bad-deep);margin:0" ${msg?'':'hidden'}>${msg||''}</p>
+      <div class="row"><button type="button" class="ghost" data-close>Use without syncing</button><button class="btn small" type="submit">Sign in</button></div>
+    </form>`);
+  const inp = $('#passIn'); setTimeout(() => inp && inp.focus(), 50);
+  $('#loginForm').addEventListener('submit', async e => {
+    e.preventDefault();
+    const m = $('#loginMsg');
+    try {
+      const r = await api('POST', '/api/login', {passcode: inp.value});
+      if (r.status === 200){ authed = true; closeSheet(); await pullRemote(); return; }
+      m.textContent = r.data.message || 'Sign-in failed. Try again.'; m.hidden = false;
+    } catch(_) { m.textContent = 'You seem to be offline. Try again when you’re connected.'; m.hidden = false; }
+  });
+}
+function currentStreak(){
+  if (!S.lastDay) return 0;
+  const t = dayStr(), y = dayStr(new Date(Date.now()-864e5));
+  return (S.lastDay === t || S.lastDay === y) ? S.streak : 0;
+}
+function todayXp(){ return S.today.day === dayStr() ? S.today.xp : 0; }
+function firstOpen(){ const i = LESSONS.findIndex(l => !S.done[l.id]); return i < 0 ? LESSONS.length : i; }
+
+/* ================= Helpers ================= */
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const shuffle = a => { a = a.slice(); for (let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; };
+const pick = a => a[Math.floor(Math.random()*a.length)];
+const clamp = (v,a,b) => Math.max(a, Math.min(b, v));
+const TATWEEL = 'ـ';
+function formsOf(c){
+  const l = LMAP[c];
+  if (l.aloneOnly) return {alone:c};
+  if (l.endOnly) return {alone:c, end:TATWEEL+c};
+  if (l.join === false) return {alone:c, start:c, mid:TATWEEL+c, end:TATWEEL+c};
+  return {alone:c, start:c+TATWEEL, mid:TATWEEL+c+TATWEEL, end:TATWEEL+c};
+}
+function breakdown(word){
+  return [...word].filter(ch => !/[ً-ْ]/.test(ch)).map(ch => {
+    if (ch === ' ') return {gap:true};
+    const l = LMAP[ch]; return {c:ch, s: l ? l.s : (AUX[ch] || '')};
+  });
+}
+const ICON = {
+  check:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 12.5 10 18 19.5 6.5"/></svg>',
+  x:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>',
+  undo:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 14 4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/></svg>',
+  clear:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg>',
+  eye:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg>',
+  star:'<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2.5l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.4l-5.9 3.1 1.2-6.5L2.5 9.4l6.6-.9z"/></svg>',
+  lock:'<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 10V8a5 5 0 0 1 10 0v2h1a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1v-9a1 1 0 0 1 1-1h1Zm2 0h6V8a3 3 0 0 0-6 0v2Z"/></svg>',
+};
+
+/* ================= Home ================= */
+const lessonEl = $('#lesson');
+function nodeFace(l){
+  if (l.t === 'L') return `<span class="ar">${l.letters.join(' ')}</span>`;
+  if (l.t === 'W') return `<span class="ar" style="font-size:18px">${esc(l.words[0].ar.split(' ')[0])}</span>`;
+  return ICON.star;
+}
+function nodeLabel(l){
+  if (l.t === 'L') return 'New letters';
+  if (l.t === 'W') return l.unit === 7 ? (l.intro ? 'Hamza + phrases' : 'More phrases') : 'Words';
+  return 'Unit review';
+}
+const OFFS = [0, 1, 1.4, 1, 0, -1, -1.4, -1];
+function renderHome(){
+  $('#streakNum').textContent = currentStreak();
+  $('#streakStat').classList.toggle('off', currentStreak() === 0 || S.lastDay !== dayStr());
+  $('#xpNum').textContent = S.xp;
+  const tx = todayXp();
+  $('#todayNum').textContent = tx;
+  $('#todayBar').style.width = Math.min(100, tx/30*100) + '%';
+  $('#practiceBtn').hidden = !Object.keys(S.done).length;
+  const cur = firstOpen();
+  let k = 0;
+  $('#units').innerHTML = UNITS.map((u,ui) => `
+    <section class="unit">
+      <div class="plaque"><div class="plaque-in">
+        <span class="eyebrow">Unit ${ui+1}</span>
+        <h3>${esc(u.en)}</h3>
+        <p>${esc(u.desc)}</p>
+        <span class="ar-title">${u.ar}</span>
+      </div></div>
+      <div class="path">
+        ${u.lessons.map(l => {
+          const done = !!S.done[l.id], isCur = l.idx === cur, open = S.unlockAll || l.idx <= cur;
+          const off = OFFS[(k++) % OFFS.length] * 54;
+          const cls = done ? 'done' : isCur ? 'current' : open ? 'open' : 'locked';
+          return `<div class="stop ${cls}" style="transform:translateX(${off}px)">
+            ${isCur ? '<span class="bubble">Start</span>' : ''}
+            <button class="node" data-l="${l.idx}" aria-label="${esc(nodeLabel(l))}${done?' (done)':''}">${nodeFace(l)}</button>
+            ${done ? `<span class="check">${ICON.check}</span>` : ''}
+            <span class="stop-label">${nodeLabel(l)}</span>
+          </div>`;
+        }).join('')}
+      </div>
+    </section>`).join('');
+}
+$('#units').addEventListener('click', e => {
+  const b = e.target.closest('.node'); if (!b) return;
+  const i = +b.dataset.l, cur = firstOpen();
+  if (S.unlockAll || i <= cur) return startLesson(i);
+  openSheet(`<h3>Not unlocked yet</h3><p>Finish the lessons before this one to unlock it, or jump ahead if you already know this material.</p>
+    <div class="row"><button class="ghost" data-close>Cancel</button><button class="btn small" id="jumpBtn">Jump here</button></div>`);
+  $('#jumpBtn').onclick = () => { closeSheet(); startLesson(i); };
+});
+$('#practiceBtn').onclick = () => startLesson(-1);
+
+/* ================= Sheet ================= */
+function openSheet(html){ $('#sheet').innerHTML = html; $('#scrim').hidden = false; const f = $('#sheet').querySelector('button'); f && f.focus(); }
+function closeSheet(){ $('#scrim').hidden = true; }
+$('#scrim').addEventListener('click', e => { if (e.target.id === 'scrim' || e.target.closest('[data-close]')) closeSheet(); });
+$('#settingsBtn').onclick = () => {
+  openSheet(`<h3>Settings</h3>
+    <p>${authed ? (syncState === 'offline' ? 'You’re offline. Progress is kept on this device and syncs when you’re back.' : 'Your progress syncs between your devices.') : 'Your progress is saved on this device only.'}</p>
+    <div class="toggle"><span><b>${authed ? 'Signed in' : 'Not signed in'}</b><small>${authed ? 'Signing out keeps this device’s progress.' : 'Sign in with your passcode to sync.'}</small></span><button class="ghost" id="authBtn">${authed ? 'Sign out' : 'Sign in'}</button></div>
+    <label class="toggle"><span><b>Unlock every lesson</b><small>Jump around freely instead of following the path.</small></span><input type="checkbox" id="unlockT" ${S.unlockAll?'checked':''}></label>
+    <div class="toggle"><span><b>Reset progress</b><small>Clears lessons, XP and streak.</small></span><button class="ghost" id="resetBtn">Reset</button></div>
+    <div class="row"><button class="btn small" data-close>Done</button></div>`);
+  $('#authBtn').onclick = async () => {
+    if (!authed) return showLogin();
+    try { await api('POST', '/api/logout'); } catch(e) {}
+    authed = false; syncState = 'local'; closeSheet();
+  };
+  $('#unlockT').onchange = e => { S.unlockAll = e.target.checked; save(); renderHome(); };
+  $('#resetBtn').onclick = () => {
+    openSheet(`<h3>Reset all progress?</h3><p>This clears every finished lesson, your XP and your streak. It can’t be undone.</p>
+      <div class="row"><button class="ghost" data-close>Keep my progress</button><button class="btn bad small" id="resetYes">Reset</button></div>`);
+    $('#resetYes').onclick = () => { S = Object.assign(blank(), {updated:Date.now()}); save(); closeSheet(); renderHome(); };
+  };
+};
+
+/* ================= Exercise builders ================= */
+const soundOpts = (c, pool) => {
+  const want = new Set([LMAP[c].s]); const out = [c];
+  const cands = [...shuffle(lookOf(c)), ...shuffle(pool), ...shuffle(LETTERS.slice(0,12).map(l=>l.c))];
+  for (const x of cands) { if (out.length >= 4) break; const l = LMAP[x]; if (!l || l.aloneOnly || want.has(l.s)) continue; want.add(l.s); out.push(x); }
+  return shuffle(out);
+};
+function mcLS(c, pool){ const o = soundOpts(c, pool); return {t:'mc', kicker:'Read', prompt:'What sound does this letter make?', big:c, opts:o.map(x=>({label:LMAP[x].s})), ans:o.indexOf(c), explain:`${c} is ${LMAP[c].n}: “${LMAP[c].s}”.`}; }
+function mcSL(c, pool){ const o = soundOpts(c, pool); return {t:'mc', kicker:'Recognise', prompt:`Which letter says “${LMAP[c].s}”?`, lat:LMAP[c].s, opts:o.map(x=>({label:x, ar:true})), ans:o.indexOf(c), explain:`“${LMAP[c].s}” is ${c} (${LMAP[c].n}).`}; }
+function mcForm(c, pool){
+  const f = formsOf(c); const keys = Object.keys(f).filter(k => k !== 'alone' && f[k] !== c);
+  if (!keys.length) return null;
+  const k = pick(keys), names = {start:'start of a word', mid:'middle of a word', end:'end of a word'};
+  const o = soundOpts(c, pool).filter(x => !LMAP[x].aloneOnly);
+  return {t:'mc', kicker:'Letter shapes', prompt:'Which letter is this?', big:f[k], tag:`as it looks at the ${names[k]}`, opts:o.map(x=>({label:x, ar:true})), ans:o.indexOf(c), explain:`${f[k]} is ${c} (${LMAP[c].n}) joined to its neighbours.`};
+}
+function mcRead(w, pool){
+  const o = [w, ...shuffle(pool.filter(x => x !== w && x.en !== w.en)).slice(0,3)];
+  while (o.length < 4) { const x = pick(ALLWORDS); if (!o.includes(x)) o.push(x); }
+  const s = shuffle(o);
+  return {t:'mc', kicker:'Read', prompt:'What does this say?', big:w.ar, word:true, opts:s.map(x=>({label:`${x.tr} · ${x.en}`})), ans:s.indexOf(w), explain:`${w.ar} = ${w.tr}, “${w.en}”.`};
+}
+function mcMean(w, pool){
+  const o = [w, ...shuffle(pool.filter(x => x !== w)).slice(0,3)];
+  while (o.length < 4) { const x = pick(ALLWORDS); if (!o.includes(x)) o.push(x); }
+  const s = shuffle(o);
+  return {t:'mc', kicker:'Recognise', prompt:`Which one means “${w.en}”?`, lat:w.tr, small:true, opts:s.map(x=>({label:x.ar, ar:true})), ans:s.indexOf(w), explain:`“${w.en}” is ${w.ar} (${w.tr}).`};
+}
+function matchLetters(cs){ return {t:'match', kicker:'Match', prompt:'Match each letter to its sound', pairs: shuffle(cs).slice(0,5).map(c => [c, LMAP[c].s])}; }
+function matchWords(ws){ return {t:'match', kicker:'Match', prompt:'Match each word to its meaning', pairs: shuffle(ws).slice(0,5).map(w => [w.ar, w.en])}; }
+const trace = c => ({t:'trace', text:c, letter:LMAP[c] ? c : null, word:!LMAP[c]});
+const write = (text, w) => ({t:'write', text, letter:LMAP[text] ? text : null, word:!LMAP[text], w});
+
+function buildLesson(i){
+  const items = [];
+  if (i === -1) return buildReview(lettersUpTo(Math.max(0, Math.min(firstOpen(), LESSONS.length) - 1)).filter(c=>!LMAP[c].aloneOnly), wordsUpTo(Math.max(0, firstOpen()-1)), true);
+  const L = LESSONS[i], pool = lettersUpTo(i).filter(c=>!LMAP[c].aloneOnly), wpool = wordsUpTo(i);
+  if (L.t === 'L') {
+    L.letters.forEach(c => { items.push({t:'introL', c}); items.push(trace(c)); });
+    const mixed = [];
+    L.letters.forEach((c,k) => { mixed.push(k % 2 ? mcSL(c,pool) : mcLS(c,pool)); mixed.push(write(c)); });
+    shuffle(L.letters).slice(0,2).forEach(c => { const f = mcForm(c,pool); if (f) mixed.push(f); });
+    if (pool.length > L.letters.length) mixed.push(mcLS(pick(pool.filter(c=>!L.letters.includes(c))), pool));
+    items.push(...shuffle(mixed));
+    const m = [...L.letters, ...shuffle(pool.filter(c=>!L.letters.includes(c)))].slice(0,4);
+    items.push(matchLetters(m.length >= 3 ? m : [...m, ...LETTERS.slice(0,4).map(l=>l.c)].filter((v,j,a)=>a.indexOf(v)===j).slice(0,4)));
+    return items;
+  }
+  if (L.t === 'W') {
+    (L.intro||[]).forEach(c => items.push({t:'introL', c}));
+    L.words.forEach(w => items.push({t:'introW', w}));
+    const ws = shuffle(L.words), mixed = [];
+    ws.slice(0,4).forEach(w => mixed.push(mcRead(w, wpool)));
+    ws.slice(0,2).forEach(w => mixed.push(mcMean(w, wpool)));
+    items.push(...shuffle(mixed));
+    const short = shuffle(L.words.filter(w => w.ar.length <= 5));
+    short.slice(0,2).forEach(w => items.push(trace(w.ar)));
+    (short.length >= 4 ? short.slice(2,4) : short.slice(0,2)).forEach(w => items.push(write(w.ar, w)));
+    items.push(matchWords(L.words));
+    return items;
+  }
+  const U = UNITS[L.unit];
+  const ul = U.lessons.flatMap(l => l.letters || []), uw = U.lessons.flatMap(l => l.words || []);
+  return buildReview(ul.length ? ul : pool.slice(-6), uw, false, pool, wpool);
+}
+function buildReview(letters, words, practice, pool, wpool){
+  pool = pool || letters; wpool = wpool || words;
+  const items = [], ls = shuffle(letters), ws = shuffle(words);
+  ls.slice(0,3).forEach(c => items.push(mcLS(c,pool)));
+  ls.slice(3,5).forEach(c => items.push(mcSL(c,pool)));
+  ls.slice(0,2).forEach(c => { const f = mcForm(c,pool); if (f) items.push(f); });
+  ws.slice(0,3).forEach(w => items.push(mcRead(w, wpool)));
+  if (ws[3]) items.push(mcMean(ws[3], wpool));
+  const out = shuffle(items);
+  ls.slice(5,7).concat(ls.length < 6 ? ls.slice(0,2) : []).slice(0,2).forEach(c => out.push(write(c)));
+  const sw = ws.filter(w => w.ar.length <= 5); if (sw[0]) out.push(write(sw[0].ar, sw[0]));
+  out.push(ws.length >= 3 ? matchWords(ws) : matchLetters(ls.length >= 3 ? ls : LETTERS.slice(0,5).map(l=>l.c)));
+  return out;
+}
+
+/* ================= Glyph layout + grading ================= */
+const NASKH = '"Noto Naskh Arabic","Geeza Pro","Times New Roman",serif';
+const fontsReady = (async () => {
+  try { await Promise.race([Promise.all([
+    document.fonts.load(`500 60px "Noto Naskh Arabic"`, 'ابتثجحخدذرزسشصضطظعغفقكلمنهويةءأإ'),
+    document.fonts.load(`700 20px "Baloo Bhaijaan 2"`, 'abc')]), new Promise(r=>setTimeout(r,4000))]); } catch(e) {}
+})();
+function layoutGlyph(ctx, text, Wd, Ht, word){
+  let size = Ht * (word ? 0.5 : 0.6);
+  ctx.direction = 'rtl'; ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic';
+  ctx.font = `500 ${size}px ${NASKH}`;
+  let m = ctx.measureText(text);
+  let w = m.actualBoundingBoxLeft + m.actualBoundingBoxRight, h = m.actualBoundingBoxAscent + m.actualBoundingBoxDescent;
+  const sc = Math.min(1.25, (Wd*0.8)/Math.max(w,1), (Ht*0.74)/Math.max(h,1));
+  size *= sc; ctx.font = `500 ${size}px ${NASKH}`; m = ctx.measureText(text);
+  const x = Wd/2 - (m.actualBoundingBoxRight - m.actualBoundingBoxLeft)/2;
+  const y = Ht/2 - (m.actualBoundingBoxDescent - m.actualBoundingBoxAscent)/2;
+  return {x, y, size};
+}
+function drawGlyph(ctx, text, Wd, Ht, word, color){
+  const g = layoutGlyph(ctx, text, Wd, Ht, word);
+  ctx.fillStyle = color; ctx.fillText(text, g.x, g.y); return g;
+}
+const GH = 112;
+function mkCanvas(w,h){ const c = document.createElement('canvas'); c.width = w; c.height = h; return c; }
+function toMask(c){
+  const ctx = c.getContext('2d', {willReadFrequently:true});
+  const d = ctx.getImageData(0,0,c.width,c.height).data, w=c.width, h=c.height, m = new Uint8Array(w*h);
+  let n = 0, x0=w, y0=h, x1=-1, y1=-1;
+  for (let y=0;y<h;y++) for (let x=0;x<w;x++){ if (d[(y*w+x)*4+3] > 90){ m[y*w+x]=1; n++; if(x<x0)x0=x; if(x>x1)x1=x; if(y<y0)y0=y; if(y>y1)y1=y; } }
+  return {m, n, w, h, box:{x0,y0,x1,y1}};
+}
+function dilate(src, w, h, r){
+  const tmp = new Uint8Array(w*h), out = new Uint8Array(w*h);
+  for (let y=0;y<h;y++){ const o=y*w; let last=-1e9;
+    for (let x=0;x<w;x++){ if (src[o+x]) last=x; if (x-last<=r) tmp[o+x]=1; }
+    last=1e9; for (let x=w-1;x>=0;x--){ if (src[o+x]) last=x; if (last-x<=r) tmp[o+x]=1; } }
+  for (let x=0;x<w;x++){ let last=-1e9;
+    for (let y=0;y<h;y++){ if (tmp[y*w+x]) last=y; if (y-last<=r) out[y*w+x]=1; }
+    last=1e9; for (let y=h-1;y>=0;y--){ if (tmp[y*w+x]) last=y; if (last-y<=r) out[y*w+x]=1; } }
+  return out;
+}
+const tCache = new Map();
+function targetMask(text, word){
+  const key = text + '|' + word;
+  if (tCache.has(key)) return tCache.get(key);
+  const gw = word ? GH*2 : GH, c = mkCanvas(gw, GH);
+  drawGlyph(c.getContext('2d'), text, gw, GH, word, '#000');
+  const t = toMask(c); t.dil = {}; tCache.set(key, t); return t;
+}
+function userMask(strokes, gw, gh, tf){
+  const c = mkCanvas(gw, gh), ctx = c.getContext('2d');
+  ctx.strokeStyle = ctx.fillStyle = '#000'; ctx.lineCap = ctx.lineJoin = 'round'; ctx.lineWidth = gh*0.045;
+  const P = p => [p.x*gw*tf.sx + tf.tx, p.y*gh*tf.sy + tf.ty];
+  strokes.forEach(s => {
+    if (s.length === 1){ const [x,y] = P(s[0]); ctx.beginPath(); ctx.arc(x,y,ctx.lineWidth/2,0,7); ctx.fill(); return; }
+    ctx.beginPath(); s.forEach((p,i) => { const [x,y] = P(p); i ? ctx.lineTo(x,y) : ctx.moveTo(x,y); }); ctx.stroke();
+  });
+  return toMask(c);
+}
+function chamfer(mask, w, h){
+  const d = new Float32Array(w*h), D = 1.4142;
+  for (let i=0;i<d.length;i++) d[i] = mask[i] ? 0 : 1e6;
+  for (let y=0;y<h;y++) for (let x=0;x<w;x++){ const i=y*w+x; let v=d[i];
+    if (x>0) v=Math.min(v,d[i-1]+1);
+    if (y>0){ v=Math.min(v,d[i-w]+1); if (x>0) v=Math.min(v,d[i-w-1]+D); if (x<w-1) v=Math.min(v,d[i-w+1]+D); }
+    d[i]=v; }
+  for (let y=h-1;y>=0;y--) for (let x=w-1;x>=0;x--){ const i=y*w+x; let v=d[i];
+    if (x<w-1) v=Math.min(v,d[i+1]+1);
+    if (y<h-1){ v=Math.min(v,d[i+w]+1); if (x<w-1) v=Math.min(v,d[i+w+1]+D); if (x>0) v=Math.min(v,d[i+w-1]+D); }
+    d[i]=v; }
+  return d;
+}
+function prepTarget(T){
+  if (T.dt) return T;
+  const {w,h,m} = T;
+  T.dt = chamfer(m, w, h);
+  const inv = new Uint8Array(w*h); for (let i=0;i<m.length;i++) inv[i] = m[i] ? 0 : 1;
+  const din = chamfer(inv, w, h), sk = [];
+  for (let y=1;y<h-1;y++) for (let x=1;x<w-1;x++){ const i=y*w+x; if (!m[i]) continue; const v=din[i];
+    if (v>=din[i-1] && v>=din[i+1] && v>=din[i-w] && v>=din[i+w]) sk.push(i); }
+  T.sk = sk; T.size = Math.max(T.box.x1-T.box.x0, T.box.y1-T.box.y0, 1);
+  return T;
+}
+/* Mean distance from your ink to the letter (dUT) and from the letter's centre-line to your ink (dTU), as a fraction of letter size. */
+function shapeDist(U, T){
+  prepTarget(T);
+  if (!U.n || !T.n) return {D:1, dUT:1, dTU:1};
+  const du = chamfer(U.m, U.w, U.h);
+  let a=0; for (let i=0;i<U.m.length;i++) if (U.m[i]) a += T.dt[i];
+  let b=0; for (const i of T.sk) b += du[i];
+  const dUT = a/U.n/T.size, dTU = b/Math.max(T.sk.length,1)/T.size;
+  return {D:(dUT+dTU)/2, dUT, dTU};
+}
+function ptsBox(strokes, gw, gh){
+  let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;
+  strokes.forEach(s => s.forEach(p => { const x=p.x*gw, y=p.y*gh; if(x<x0)x0=x; if(x>x1)x1=x; if(y<y0)y0=y; if(y>y1)y1=y; }));
+  return {x0,y0,x1,y1};
+}
+function fitTf(ub, T, gh){
+  const sh = gh*0.022, tb = {x0:T.box.x0+sh, x1:T.box.x1-sh, y0:T.box.y0+sh, y1:T.box.y1-sh};
+  const uw = Math.max(ub.x1-ub.x0, 1e-3), uh = Math.max(ub.y1-ub.y0, 1e-3);
+  const tw = Math.max(tb.x1-tb.x0, 1), th = Math.max(tb.y1-tb.y0, 1);
+  let sx = tw/uw, sy = th/uh;
+  if (uw < uh*0.18) sx = sy; else if (uh < uw*0.18) sy = sx;
+  const g = Math.sqrt(sx*sy); sx = clamp(sx, g*0.7, g*1.43); sy = clamp(sy, g*0.7, g*1.43);
+  return {sx, sy, tx:(tb.x0+tb.x1)/2 - (ub.x0+ub.x1)/2*sx, ty:(tb.y0+tb.y1)/2 - (ub.y0+ub.y1)/2*sy};
+}
+function writeScore(strokes, text, word){
+  const gw = word ? GH*2 : GH, T = targetMask(text, word);
+  const tf = fitTf(ptsBox(strokes, gw, GH), T, GH);
+  return shapeDist(userMask(strokes, gw, GH, tf), T);
+}
+function dotCheck(strokes, aspect, c){
+  const spec = LMAP[c].dots || {n:0};
+  const boxes = strokes.map(s => { let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9; s.forEach(p => { const x=p.x*aspect, y=p.y; if(x<x0)x0=x; if(x>x1)x1=x; if(y<y0)y0=y; if(y>y1)y1=y; }); return {x0,y0,x1,y1,w:x1-x0,h:y1-y0}; });
+  const all = boxes.reduce((a,b) => ({x0:Math.min(a.x0,b.x0),y0:Math.min(a.y0,b.y0),x1:Math.max(a.x1,b.x1),y1:Math.max(a.y1,b.y1)}));
+  const size = Math.max(all.x1-all.x0, all.y1-all.y0, 1e-3);
+  let dots = boxes.filter(b => strokes.length > 1 && Math.max(b.w,b.h) < size*0.22);
+  let mains = boxes.filter(b => !dots.includes(b));
+  if (!mains.length){ const big = boxes.reduce((a,b)=> Math.max(b.w,b.h) > Math.max(a.w,a.h) ? b : a); mains=[big]; dots = dots.filter(d=>d!==big); }
+  const mb = mains.reduce((a,b) => ({x0:Math.min(a.x0,b.x0),y0:Math.min(a.y0,b.y0),x1:Math.max(a.x1,b.x1),y1:Math.max(a.y1,b.y1)}));
+  const where = spec.p === 'b' ? 'below' : 'above';
+  const plural = n => n === 1 ? 'one dot' : n === 2 ? 'two dots' : 'three dots';
+  if (!spec.n){
+    if (spec.extra) return null;
+    const pad = size*0.05;
+    const outside = dots.filter(d => d.x1 < mb.x0-pad || d.x0 > mb.x1+pad || d.y1 < mb.y0-pad || d.y0 > mb.y1+pad);
+    return outside.length ? `${c} has no dots.` : null;
+  }
+  if (!dots.length) return `Don’t forget the dots: ${c} has ${plural(spec.n)}${spec.p==='any'?'':' '+where}.`;
+  const elong = d => Math.max(d.w,d.h) > 2*Math.max(Math.min(d.w,d.h), size*0.02);
+  const countOk = dots.length === spec.n || (spec.n >= 2 && dots.length === 1 && elong(dots[0]));
+  if (!countOk) return `Check the dots: ${c} has ${plural(spec.n)}${spec.p==='any'?'':' '+where}.`;
+  if (spec.p !== 'any'){
+    const mid = (mb.y0+mb.y1)/2;
+    const bad = dots.some(d => spec.p === 'a' ? (d.y0+d.y1)/2 > mid : (d.y0+d.y1)/2 < mid);
+    if (bad) return `The dots on ${c} go ${where} the letter.`;
+  }
+  return null;
+}
+function grade(item, slate){
+  const st = slate.strokes;
+  if (!st.length) return {ok:false, msg:'Write something first.'};
+  const word = !!item.word, gw = word ? GH*2 : GH;
+  if (item.t === 'trace'){
+    const T = targetMask(item.text, word), U = userMask(st, gw, GH, {sx:1,sy:1,tx:0,ty:0});
+    const d = shapeDist(U, T);
+    if (d.dUT <= 0.06 && d.dTU <= 0.07) return {ok:true, msg: d.D < 0.025 ? 'Clean tracing.' : 'Good tracing.'};
+    return {ok:false, msg: d.dTU > 0.07 ? 'Some of the letter is missing. Cover the whole shape, dots included.' : 'Stay closer to the guide.'};
+  }
+  if (!word){ const dm = dotCheck(st, slate.aspect, item.text); if (dm) return {ok:false, msg:dm}; }
+  const d = writeScore(st, item.text, word);
+  if (d.D <= (word ? 0.09 : 0.075)){
+    return {ok:true, msg: word ? `${item.w.tr}, “${item.w.en}”. Compare yours with the guide behind it.` : `That’s ${item.text}, ${LMAP[item.text].n}. Compare yours with the guide behind it.`};
+  }
+  return {ok:false, msg: d.dTU > d.dUT ? 'Part of the shape is missing. Compare yours with the guide now showing.' : 'The shape is off. Compare yours with the guide now showing.'};
+}
+
+/* ================= Slate (Pencil canvas) ================= */
+let penSeen = false;
+class Slate {
+  constructor(wrap, opts){
+    this.wrap = wrap; this.text = opts.text; this.word = !!opts.word; this.guide = !!opts.guide;
+    this.aspect = this.word ? 2 : 1; this.strokes = []; this.active = null; this.reveal = false; this.locked = false; this.onChange = opts.onChange || (()=>{});
+    const cv = this.cv = document.createElement('canvas'); cv.className = 'slate';
+    cv.setAttribute('aria-label', 'Writing area'); wrap.appendChild(cv);
+    cv.addEventListener('pointerdown', e => this.down(e));
+    cv.addEventListener('pointermove', e => this.move(e));
+    ['pointerup','pointercancel','lostpointercapture'].forEach(t => cv.addEventListener(t, e => this.up(e)));
+    cv.addEventListener('touchstart', e => e.preventDefault(), {passive:false});
+    cv.addEventListener('contextmenu', e => e.preventDefault());
+    this.ro = new ResizeObserver(() => this.resize()); this.ro.observe(wrap);
+    this.resize();
+  }
+  resize(){
+    const r = this.wrap.getBoundingClientRect();
+    if (r.width < 10 || r.height < 10) return;
+    let w = r.width, h = w / this.aspect;
+    if (h > r.height){ h = r.height; w = h * this.aspect; }
+    w = Math.floor(Math.min(w, this.word ? 900 : 620)); h = Math.floor(w / this.aspect);
+    const dpr = Math.min(window.devicePixelRatio || 1, 3);
+    this.W = w; this.H = h;
+    this.cv.style.width = w + 'px'; this.cv.style.height = h + 'px';
+    this.cv.width = Math.round(w*dpr); this.cv.height = Math.round(h*dpr);
+    this.ctx = this.cv.getContext('2d'); this.ctx.setTransform(dpr,0,0,dpr,0,0);
+    this.draw();
+  }
+  pt(e){
+    const r = this.cv.getBoundingClientRect();
+    const p = e.pointerType === 'pen' ? (e.pressure || 0.5) : 0.5;
+    return {x:(e.clientX-r.left)/r.width, y:(e.clientY-r.top)/r.height, p};
+  }
+  down(e){
+    if (e.pointerType === 'pen' && !penSeen){ penSeen = true; const n = document.querySelector('.pen-note'); if (n) n.textContent = 'Pencil detected: finger and palm touches on the slate are ignored.'; }
+    if (penSeen && e.pointerType === 'touch') return;
+    if (this.locked || this.active !== null) return;
+    e.preventDefault();
+    try { this.cv.setPointerCapture(e.pointerId); } catch(_) {}
+    this.active = e.pointerId; this.cur = [this.pt(e)]; this.strokes.push(this.cur);
+    this.draw(); this.onChange();
+  }
+  move(e){
+    if (e.pointerId !== this.active) return;
+    e.preventDefault();
+    const evs = e.getCoalescedEvents ? e.getCoalescedEvents() : [];
+    (evs.length ? evs : [e]).forEach(ev => this.cur.push(this.pt(ev)));
+    this.draw();
+  }
+  up(e){ if (e.pointerId === this.active){ this.active = null; this.cur = null; } }
+  undo(){ this.strokes.pop(); this.draw(); this.onChange(); }
+  clear(){ this.strokes = []; this.draw(); this.onChange(); }
+  css(n){ return getComputedStyle(document.documentElement).getPropertyValue(n).trim(); }
+  draw(){
+    const {ctx, W:w, H:h} = this; if (!ctx) return;
+    ctx.clearRect(0,0,w,h);
+    const g = layoutGlyph(ctx, this.text, w, h, this.word);
+    ctx.save(); ctx.setLineDash([8,8]); ctx.strokeStyle = this.css('--baseline'); ctx.globalAlpha = .55; ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.moveTo(w*0.06, g.y); ctx.lineTo(w*0.94, g.y); ctx.stroke(); ctx.restore();
+    if (this.guide || this.reveal || this.peek){ ctx.fillStyle = this.css('--guide'); ctx.fillText(this.text, g.x, g.y); }
+    const col = this.css('--stroke'), base = h*0.024;
+    ctx.strokeStyle = ctx.fillStyle = col; ctx.lineCap = ctx.lineJoin = 'round';
+    this.strokes.forEach(s => {
+      if (s.length === 1){ const p = s[0]; ctx.beginPath(); ctx.arc(p.x*w, p.y*h, base*(0.55+0.9*p.p)/2, 0, 7); ctx.fill(); return; }
+      for (let i=1;i<s.length;i++){
+        const a = s[i-1], b = s[i];
+        ctx.lineWidth = base*(0.55 + 0.9*(a.p+b.p)/2);
+        ctx.beginPath(); ctx.moveTo(a.x*w, a.y*h); ctx.lineTo(b.x*w, b.y*h); ctx.stroke();
+      }
+    });
+  }
+  destroy(){ this.ro.disconnect(); }
+}
+
+/* ================= Lesson runner ================= */
+let R = null; // running lesson
+const lbody = $('#lbody'), mainBtn = $('#mainBtn'), lfoot = $('#lfoot'), fb = $('#fb');
+function startLesson(i){
+  R = {i, queue: buildLesson(i), pos:0, graded:0, firstOk:0, slate:null, state:'answer', sel:null, lastRetry:null, peeked:false};
+  $('#home').hidden = true; document.querySelector('.top').hidden = true; lessonEl.hidden = false;
+  window.scrollTo(0,0); renderItem();
+}
+function endLesson(){
+  if (R && R.slate) R.slate.destroy();
+  R = null; lessonEl.hidden = true; $('#home').hidden = false; document.querySelector('.top').hidden = false; renderHome();
+}
+$('#quitBtn').onclick = () => {
+  if (!R || R.state === 'complete') return endLesson();
+  openSheet(`<h3>Leave this lesson?</h3><p>Your progress in this lesson won’t be saved.</p>
+    <div class="row"><button class="ghost" id="quitYes">Leave</button><button class="btn small" data-close>Keep going</button></div>`);
+  $('#quitYes').onclick = () => { closeSheet(); endLesson(); };
+};
+function setBar(){ $('#barFill').style.width = (R.pos / R.queue.length * 100) + '%'; }
+function footer(mode, opts={}){
+  lfoot.classList.remove('ok','no'); fb.innerHTML = '';
+  mainBtn.className = 'btn'; mainBtn.disabled = false;
+  if (mode === 'check'){ mainBtn.textContent = 'Check'; mainBtn.disabled = !opts.ready; }
+  if (mode === 'continue'){ mainBtn.textContent = opts.label || 'Continue'; }
+  if (mode === 'ok' || mode === 'no'){
+    lfoot.classList.add(mode); mainBtn.classList.add(mode === 'ok' ? 'good' : 'bad'); mainBtn.textContent = 'Continue';
+    fb.innerHTML = `<h4>${mode==='ok'?ICON.check:ICON.x} ${esc(opts.title)}</h4>${opts.msg ? `<p>${opts.msg}</p>` : ''}${opts.override ? '<button class="link" id="overrideBtn">I wrote it right, count it</button>' : ''}`;
+  }
+}
+function exHead(kicker, prompt, sub){
+  return `<p class="kicker">${kicker}</p><h2 class="prompt">${prompt}</h2>${sub ? `<p class="sub">${sub}</p>` : ''}`;
+}
+async function renderItem(){
+  if (R.slate){ R.slate.destroy(); R.slate = null; }
+  R.state = 'answer'; R.sel = null; setBar();
+  const it = R.queue[R.pos];
+  if (!it) return complete();
+  const ex = document.createElement('div'); ex.className = 'ex';
+  lbody.innerHTML = ''; lbody.appendChild(ex); lbody.scrollTop = 0;
+
+  if (it.t === 'introL'){
+    const l = LMAP[it.c], f = formsOf(it.c);
+    const box = (k, lab) => `<div class="form ${f[k]?'':'na'}"><b class="ar">${f[k] || '–'}</b><span>${lab}</span></div>`;
+    ex.innerHTML = exHead('New letter', `Meet ${esc(l.n)}`) + `
+      <div class="intro">
+        <div class="tile ar">${l.c}</div>
+        <div class="facts">
+          <div class="name">${esc(l.n)}</div>
+          <div class="chips"><span class="chip"><i>Sound</i>${esc(l.s)}</span><span class="chip"><i>Franco</i>${esc(l.f)}</span>${l.join===false && !l.aloneOnly ? '<span class="chip">Never joins forward</span>' : ''}</div>
+          <p class="note">${esc(l.note)}</p>
+        </div>
+        ${l.aloneOnly ? '' : `<div class="forms">${box('start','Start')}${box('mid','Middle')}${box('end','End')}${box('alone','Alone')}</div>
+        <p class="rtl-note">Arabic runs right to left, so a word’s start is on the right.</p>`}
+      </div>`;
+    footer('continue', {label:'Got it'}); return;
+  }
+  if (it.t === 'introW'){
+    const w = it.w;
+    ex.innerHTML = exHead('New word', 'Read it, letter by letter') + `
+      <div class="word-hero"><div class="w naskh">${esc(w.ar)}</div><div class="tr">${esc(w.tr)}</div><div class="en">${esc(w.en)}</div></div>
+      <div class="breakdown">${breakdown(w.ar).map(b => b.gap ? '<div class="bd gap"></div>' : `<div class="bd"><b>${b.c}</b><span>${esc(b.s)}</span></div>`).join('')}</div>
+      ${w.note ? `<p class="note" style="text-align:center;margin:0 auto">${esc(w.note)}</p>` : ''}`;
+    footer('continue', {label:'Got it'}); return;
+  }
+  if (it.t === 'mc'){
+    const stage = it.big ? `<div class="big naskh ${it.word?'word':''}">${esc(it.big)}</div>${it.tag ? `<div class="tag">${esc(it.tag)}</div>`:''}` : `<div class="lat" style="${it.small?'font-size:clamp(34px,6vw,52px)':''}">${esc(it.lat)}</div>`;
+    ex.innerHTML = exHead(it.kicker, esc(it.prompt)) + `<div class="stage">${stage}</div>
+      <div class="opts">${it.opts.map((o,k) => `<button class="opt" data-k="${k}">${o.ar ? `<span class="naskh ar">${esc(o.label)}</span>` : esc(o.label)}</button>`).join('')}</div>`;
+    ex.querySelector('.opts').addEventListener('click', e => {
+      const b = e.target.closest('.opt'); if (!b || R.state !== 'answer') return;
+      ex.querySelectorAll('.opt').forEach(x => x.classList.remove('sel')); b.classList.add('sel');
+      R.sel = +b.dataset.k; footer('check', {ready:true});
+    });
+    footer('check', {ready:false}); return;
+  }
+  if (it.t === 'match'){
+    const L = shuffle(it.pairs.map((p,k)=>({k, v:p[0]}))), Rr = shuffle(it.pairs.map((p,k)=>({k, v:p[1]})));
+    const arCol = it.pairs[0][0].length > 1 ? 'font-size:30px' : '';
+    ex.innerHTML = exHead(it.kicker, esc(it.prompt)) + `<div class="match">
+      <div class="col">${L.map(o => `<button class="opt" data-side="a" data-k="${o.k}"><span class="naskh ar" style="${arCol}">${esc(o.v)}</span></button>`).join('')}</div>
+      <div class="col">${Rr.map(o => `<button class="opt" data-side="b" data-k="${o.k}">${esc(o.v)}</button>`).join('')}</div></div>`;
+    let pickA = null, pickB = null, left = it.pairs.length, misses = 0;
+    ex.querySelector('.match').addEventListener('click', e => {
+      const b = e.target.closest('.opt'); if (!b || b.disabled) return;
+      if (b.dataset.side === 'a'){ if (pickA) pickA.classList.remove('sel'); pickA = b; } else { if (pickB) pickB.classList.remove('sel'); pickB = b; }
+      b.classList.add('sel');
+      if (pickA && pickB){
+        const a = pickA, c = pickB; pickA = pickB = null;
+        if (a.dataset.k === c.dataset.k){
+          [a,c].forEach(x => { x.classList.remove('sel'); x.classList.add('right'); setTimeout(()=>{ x.classList.remove('right'); x.classList.add('done'); x.disabled = true; }, 260); });
+          if (--left === 0){ R.graded++; if (!misses) R.firstOk++; setTimeout(() => { R.state='checked'; footer('ok', {title: misses ? 'All matched' : 'Perfect match', msg: misses ? `${misses} wrong ${misses===1?'try':'tries'} on the way.` : ''}); }, 300); }
+        } else {
+          misses++;
+          [a,c].forEach(x => { x.classList.remove('sel'); x.classList.add('wrong','shake'); setTimeout(()=>x.classList.remove('wrong','shake'), 420); });
+        }
+      }
+    });
+    footer('check', {ready:false}); mainBtn.textContent = 'Match all pairs'; return;
+  }
+  // trace / write
+  const isTrace = it.t === 'trace';
+  let prompt, kicker, sub = '';
+  if (isTrace){ kicker = it.word ? 'Trace the word' : 'Trace'; prompt = it.word ? `Trace <span class="naskh ar">${esc(it.text)}</span>` : `Trace <span class="naskh ar">${it.text}</span> ${esc(LMAP[it.text].n)}`; sub = 'Start on the right and add dots last.'; }
+  else if (it.word){ kicker = 'Write from memory'; prompt = `Write “${esc(it.w.tr)}”`; sub = `Means “${esc(it.w.en)}”. Write the whole word, joined up.`; }
+  else { const l = LMAP[it.text]; kicker = 'Write from memory'; prompt = `Write the letter for “${esc(l.s)}”`; sub = `It’s called ${esc(l.n)}. Write it on its own, the way it looks alone.`; }
+  ex.innerHTML = exHead(kicker, prompt, sub) + `<div class="slate-zone"><div class="slate-wrap"></div>
+    <div class="slate-tools">
+      <button class="ghost" data-a="undo">${ICON.undo} Undo</button>
+      <button class="ghost" data-a="clear">${ICON.clear} Clear</button>
+      ${isTrace ? '' : `<button class="ghost" data-a="peek">${ICON.eye} Peek</button>`}
+    </div>
+    <p class="pen-note">${penSeen ? 'Pencil detected: finger and palm touches on the slate are ignored.' : 'Use your Apple Pencil or a finger.'}</p></div>`;
+  footer('check', {ready:false});
+  await fontsReady;
+  if (!R || R.queue[R.pos] !== it) return;
+  const slate = R.slate = new Slate(ex.querySelector('.slate-wrap'), {text:it.text, word:it.word, guide:isTrace, onChange: () => { if (R.state === 'answer') footer('check', {ready: slate.strokes.length > 0}); }});
+  ex.querySelector('.slate-tools').addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b || slate.locked) return;
+    if (b.dataset.a === 'undo') slate.undo();
+    if (b.dataset.a === 'clear') slate.clear();
+    if (b.dataset.a === 'peek'){ R.peeked = true; slate.peek = true; slate.draw(); clearTimeout(slate.pt2); slate.pt2 = setTimeout(() => { slate.peek = false; slate.draw(); }, 1400); }
+  });
+}
+function check(){
+  const it = R.queue[R.pos];
+  let ok, title, msg, override = false;
+  if (it.t === 'mc'){
+    ok = R.sel === it.ans;
+    lbody.querySelectorAll('.opt').forEach((b,k) => { b.disabled = true; b.classList.remove('sel'); if (k === it.ans) b.classList.add('right'); else if (k === R.sel) b.classList.add('wrong'); });
+    title = ok ? pick(['Nice!','Correct','Exactly','Yes!']) : 'Not quite';
+    msg = esc(it.explain).replace(/([؀-ۿـ ]{1,}[؀-ۿ])/g, '<span class="naskh ar">$1</span>');
+  } else {
+    const g = grade(it, R.slate); ok = g.ok;
+    R.slate.locked = true; R.slate.reveal = true; R.slate.draw();
+    title = ok ? (it.t === 'trace' ? 'Nice tracing' : pick(['Nice writing!','Spot on','Well written'])) : 'Not quite';
+    msg = esc(g.msg).replace(/([؀-ۿ]+)/g, '<span class="naskh ar">$1</span>');
+    if (it.t === 'write' && R.peeked && ok) msg += ' (You peeked, so try it blind next time.)';
+    override = !ok;
+  }
+  R.peeked = false;
+  finishCheck(ok, it);
+  footer(ok ? 'ok' : 'no', {title, msg, override});
+  const ob = document.getElementById('overrideBtn');
+  if (ob) ob.onclick = () => {
+    const qi = R.lastRetry ? R.queue.lastIndexOf(R.lastRetry) : -1;
+    if (qi > R.pos) R.queue.splice(qi, 1);
+    if (!it._retry) R.firstOk++;
+    setBar();
+    footer('ok', {title:'Counted', msg:'Auto-checking handwriting is rough, so you have the final say.'});
+  };
+}
+function finishCheck(ok, it){
+  R.state = 'checked';
+  if (!it._retry){ R.graded++; if (ok) R.firstOk++; }
+  R.lastRetry = null;
+  if (!ok && !it._retry){ const c = Object.assign({}, it, {_retry:true}); R.queue.push(c); R.lastRetry = c; }
+}
+mainBtn.addEventListener('click', () => {
+  if (!R) return;
+  if (R.state === 'complete') return endLesson();
+  const it = R.queue[R.pos];
+  if (R.state === 'answer' && (it.t === 'introL' || it.t === 'introW')){ R.pos++; return renderItem(); }
+  if (R.state === 'answer'){ if (!mainBtn.disabled) check(); return; }
+  if (R.state === 'checked'){ R.pos++; renderItem(); }
+});
+document.addEventListener('keydown', e => {
+  if (!R || !$('#scrim').hidden) return;
+  if (e.key === 'Enter' && !mainBtn.disabled && !(e.target && e.target.tagName === 'BUTTON')){ e.preventDefault(); mainBtn.click(); }
+  const it = R.queue[R.pos];
+  if (it && it.t === 'mc' && R.state === 'answer' && /^[1-4]$/.test(e.key)){ const b = lbody.querySelectorAll('.opt')[+e.key-1]; b && b.click(); }
+});
+function complete(){
+  R.state = 'complete'; $('#barFill').style.width = '100%';
+  const acc = R.graded ? Math.round(R.firstOk / R.graded * 100) : 100;
+  const practice = R.i === -1;
+  const gained = (practice ? 6 : 10) + (acc === 100 ? 5 : acc >= 80 ? 2 : 0);
+  if (!practice) S.done[LESSONS[R.i].id] = true;
+  S.xp += gained;
+  const t = dayStr(), y = dayStr(new Date(Date.now()-864e5));
+  if (S.lastDay !== t){ S.streak = S.lastDay === y ? S.streak + 1 : 1; S.lastDay = t; }
+  if (S.today.day !== t) S.today = {day:t, xp:0};
+  S.today.xp += gained;
+  save();
+  const L = practice ? null : LESSONS[R.i];
+  const seal = L && L.t === 'L' ? L.letters.join(' ') : 'برافو';
+  lbody.innerHTML = `<div class="ex"><div class="done-screen">
+    <div class="seal ar">${seal}</div>
+    <h2>${practice ? 'Practice done' : L.t === 'R' ? 'Unit review done' : 'Lesson complete'}</h2>
+    <p class="sub" style="margin:0">${acc === 100 ? 'Not a single slip.' : acc >= 80 ? 'Solid work.' : 'The ones you missed came back, so they’re sticking now.'}</p>
+    <div class="tiles"><div><b>+${gained}</b><span>XP</span></div><div><b>${acc}%</b><span>Accuracy</span></div><div><b>${S.streak}</b><span>Day streak</span></div></div>
+  </div></div>`;
+  footer('continue', {label:'Continue'});
+}
+
+renderHome();
+startSync();
+window.addEventListener('online', () => { if (authed) pullRemote(); });
+document.addEventListener('visibilitychange', () => { if (!document.hidden && authed && lessonEl.hidden) pullRemote(); });
+</script>
+
+</body>
+</html>
