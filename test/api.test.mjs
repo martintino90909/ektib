@@ -80,3 +80,41 @@ test('no passcode set means nothing is reachable', async () => {
   const r = await handleApi(req('GET', '/api/progress'), {}, store);
   assert.equal(r.status, 503);
 });
+
+const audioReq = (method, key, body, cookie, type = 'audio/mp4') => new Request(`${base}/api/audio/${key}`, {
+  method, headers: {...(body ? {'Content-Type': type, 'X-Text': encodeURIComponent('بيت')} : {}), ...(cookie ? {Cookie: cookie} : {})}, body,
+});
+
+test('recordings save, list, play back and delete', async () => {
+  const store = makeStore(memKv());
+  const c = await login(store);
+  const key = '0123456789abcdef';
+  const bytes = new Uint8Array(2000).fill(7);
+  let r = await handleApi(audioReq('PUT', key, bytes, c), env, store);
+  assert.equal(r.status, 200);
+  r = await handleApi(req('GET', '/api/audio', undefined, c), env, store);
+  const {index} = await r.json();
+  assert.equal(index[key].t, 'بيت');
+  r = await handleApi(audioReq('GET', key, undefined, c), env, store);
+  assert.equal(r.status, 200);
+  assert.equal(r.headers.get('Content-Type'), 'audio/mp4');
+  assert.equal((await r.arrayBuffer()).byteLength, 2000);
+  r = await handleApi(audioReq('DELETE', key, undefined, c), env, store);
+  assert.equal(r.status, 200);
+  r = await handleApi(audioReq('GET', key, undefined, c), env, store);
+  assert.equal(r.status, 404);
+});
+
+test('recordings need a session and real audio', async () => {
+  const store = makeStore(memKv());
+  const key = '0123456789abcdef';
+  let r = await handleApi(audioReq('PUT', key, new Uint8Array(2000)), env, store);
+  assert.equal(r.status, 401);
+  const c = await login(store);
+  r = await handleApi(audioReq('PUT', key, new Uint8Array(2000), c, 'text/html'), env, store);
+  assert.equal(r.status, 415);
+  r = await handleApi(audioReq('PUT', key, new Uint8Array(2 * 1024 * 1024), c), env, store);
+  assert.equal(r.status, 413);
+  r = await handleApi(audioReq('GET', 'not-a-key', undefined, c), env, store);
+  assert.equal(r.status, 404);
+});

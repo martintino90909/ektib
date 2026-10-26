@@ -1,11 +1,14 @@
 // API for Ektib. Kept free of Cloudflare-only imports so it can be tested in Node.
 // `store` is the Durable Object stub (or a test double) with:
-//   getProgress(), putProgress(p), loginFailures(), noteLoginFailure(), clearLoginFailures()
+//   getProgress(), putProgress(p), loginFailures(), noteLoginFailure(), clearLoginFailures(),
+//   audioIndex(), getAudio(key), putAudio(key, type, buf, text), delAudio(key)
 
 export const COOKIE = 'ektib_session';
 const SESSION_MSG = 'ektib-session-v1';
 const MAX_BODY = 64 * 1024;
 const MAX_FAILURES = 10;
+const MAX_AUDIO = 1024 * 1024;
+const AUDIO_KEY = /^\/api\/audio\/([a-f0-9]{16})$/;
 
 const enc = new TextEncoder();
 
@@ -111,6 +114,33 @@ export async function handleApi(request, env, store) {
       return json({ok: true});
     }
 
+    // Recordings of words and story lines, keyed by a hash of their text.
+    if (path === '/api/audio' && method === 'GET') {
+      return json({index: await store.audioIndex()});
+    }
+    const am = path.match(AUDIO_KEY);
+    if (am) {
+      const key = am[1];
+      if (method === 'GET') {
+        const a = await store.getAudio(key);
+        if (!a) return err(404, 'not_found', 'There is no recording for that yet.');
+        return new Response(a.data, {headers: {'Content-Type': a.type, 'Cache-Control': 'private, max-age=31536000, immutable'}});
+      }
+      if (method === 'PUT') {
+        const type = (request.headers.get('Content-Type') || '').split(';')[0].trim();
+        if (!/^audio\/[a-z0-9.+-]+$/.test(type)) return err(415, 'bad_type', 'Send an audio recording.');
+        const buf = await request.arrayBuffer();
+        if (buf.byteLength > MAX_AUDIO) return err(413, 'too_big', 'That recording is too long. Keep it under a few seconds.');
+        if (buf.byteLength < 100) return err(400, 'empty', 'That recording is empty.');
+        let text = '';
+        try { text = decodeURIComponent(request.headers.get('X-Text') || '').slice(0, 300); } catch {}
+        const entry = await store.putAudio(key, type, buf, text);
+        return json({ok: true, ts: entry.ts});
+      }
+      if (method === 'DELETE') { await store.delAudio(key); return json({ok: true}); }
+      return err(405, 'bad_method', 'Use GET, PUT or DELETE.');
+    }
+
     return err(404, 'not_found', 'No such API route.');
   } catch (e) {
     if (e && e.status) return err(e.status, 'bad_request', e.message);
@@ -137,5 +167,21 @@ export function makeStore(kv) {
       await kv.put(FAIL, fresh ? {count: 1, since: Date.now()} : {count: f.count + 1, since: f.since});
     },
     async clearLoginFailures() { await kv.delete(FAIL); },
+    async audioIndex() { return (await kv.get('audioidx')) || {}; },
+    async getAudio(key) { return (await kv.get('audio:' + key)) || null; },
+    async putAudio(key, type, buf, text) {
+      await kv.put('audio:' + key, {type, data: buf});
+      const idx = (await kv.get('audioidx')) || {};
+      idx[key] = {t: text, ts: Date.now()};
+      await kv.put('audioidx', idx);
+      return idx[key];
+    },
+    async delAudio(key) {
+      await kv.delete('audio:' + key);
+      const idx = (await kv.get('audioidx')) || {};
+      delete idx[key];
+      await kv.put('audioidx', idx);
+      return true;
+    },
   };
 }

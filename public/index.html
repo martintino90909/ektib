@@ -233,10 +233,133 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
   .lfoot .btn{width:100%;margin-left:0}
 }
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* ---------- Tabs ---------- */
+.tabs{position:fixed;left:0;right:0;bottom:0;z-index:8;background:color-mix(in srgb,var(--surface) 94%,transparent);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px)}
+.tabs-in{max-width:640px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);padding-left:max(8px,env(safe-area-inset-left,0px));padding-right:max(8px,env(safe-area-inset-right,0px))}
+.tab{border:0;background:none;display:grid;justify-items:center;gap:2px;padding:8px 4px 10px;font-weight:700;font-size:13px;color:var(--muted);position:relative}
+.tab svg{width:26px;height:26px}
+.tab[aria-current="page"]{color:var(--enamel)}
+.tab[aria-current="page"]::before{content:"";position:absolute;top:0;left:30%;right:30%;height:3px;border-radius:0 0 3px 3px;background:var(--enamel)}
+.badge{position:absolute;top:4px;left:calc(50% + 6px);min-width:20px;height:20px;padding:0 5px;box-sizing:border-box;border-radius:99px;background:var(--bad);color:#fff;font-size:12px;line-height:20px;font-variant-numeric:tabular-nums}
+.view{display:flex;flex-direction:column;gap:18px}
+
+/* ---------- Panels ---------- */
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px;display:grid;gap:10px}
+.panel-h{margin:0;font-size:18px;font-weight:800}
+.panel-title{margin:0;font-size:24px;font-weight:800;line-height:1.2;text-wrap:balance}
+.muted{margin:0;color:var(--muted)}
+.small{font-size:14.5px}
+.due-panel{grid-template-columns:1fr auto;align-items:center;gap:16px}
+.due-actions{display:grid;gap:10px}
+.big-num{margin:2px 0;font-size:52px;font-weight:800;line-height:1;font-variant-numeric:tabular-nums;color:var(--enamel);display:flex;align-items:baseline;gap:10px}
+.big-num span{font-size:18px;color:var(--muted);font-weight:700}
+.lgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(64px,1fr));gap:8px;direction:rtl}
+.lcell{border-radius:12px;padding:2px 4px 6px;display:grid;justify-items:center;border:2px solid var(--line);background:var(--surface-2);direction:ltr}
+.lcell b{font-family:var(--naskh);font-size:28px;line-height:1.5;font-weight:500}
+.lcell span{font-size:12px;font-weight:700;color:var(--muted)}
+.lcell.s0{opacity:.45}
+.lcell.s1{border-color:var(--mango);background:color-mix(in srgb,var(--mango) 12%,var(--surface))}
+.lcell.s2{border-color:var(--enamel);background:color-mix(in srgb,var(--enamel) 12%,var(--surface))}
+.lcell.s3{border-color:var(--good);background:var(--good-tint)}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:13.5px;color:var(--muted);font-weight:600}
+.legend span{display:flex;align-items:center;gap:6px}
+.legend i{width:14px;height:14px;border-radius:4px;border:2px solid var(--line);background:var(--surface-2)}
+.legend i.s1{border-color:var(--mango)}.legend i.s2{border-color:var(--enamel)}.legend i.s3{border-color:var(--good);background:var(--good-tint)}
+.wstats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.wstats div{border:2px solid var(--line);border-radius:14px;padding:8px 10px;display:grid}
+.wstats b{font-size:26px;font-weight:800;font-variant-numeric:tabular-nums}
+.wstats span{font-size:12.5px;letter-spacing:.06em;text-transform:uppercase;font-weight:800;color:var(--muted)}
+.btn-review{grid-row:1/3;grid-column:2}
+
+/* ---------- Stories ---------- */
+.stories{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px}
+.story-card{border:2px solid var(--line);background:var(--surface);border-radius:18px;box-shadow:0 5px 0 var(--line);padding:14px 14px 12px;display:grid;gap:2px;text-align:left;transition:transform .08s}
+.story-card:active{transform:translateY(3px);box-shadow:0 2px 0 var(--line)}
+.sc-ar{font-family:var(--naskh);font-size:32px;line-height:1.5;color:var(--enamel);text-align:right}
+.sc-en{font-weight:800;font-size:18px}
+.sc-meta{display:flex;align-items:center;gap:6px;color:var(--muted);font-weight:700;font-size:14px}
+.sc-meta svg{width:16px;height:16px}
+.story-card.locked{opacity:.6}
+.story-card.locked .sc-ar{color:var(--muted)}
+.story-card.done .sc-meta{color:var(--good-deep)}
+.story{display:grid;gap:14px}
+.story-top{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap}
+.story-title{margin:0;font-family:var(--naskh);font-size:40px;line-height:1.4;color:var(--enamel);font-weight:600}
+.seg{display:inline-flex;border:2px solid var(--line);border-radius:12px;overflow:hidden;background:var(--surface)}
+.seg button{border:0;background:none;padding:8px 12px;font-weight:700;font-size:14.5px;color:var(--muted);min-height:40px}
+.seg button+button{border-left:2px solid var(--line)}
+.seg button[aria-pressed="true"]{background:var(--enamel);color:var(--on-enamel)}
+.lines{display:grid;gap:12px}
+.line{background:var(--surface);border:2px solid var(--line);border-radius:18px;padding:10px 14px}
+.line.fresh{border-color:var(--enamel);animation:rise .35s ease-out}
+@keyframes rise{from{transform:translateY(8px);opacity:.4}}
+.line-row{display:flex;align-items:center;gap:10px}
+.line-ar{flex:1;min-width:0;direction:rtl;display:flex;flex-wrap:wrap;align-items:flex-end;gap:2px 10px}
+.tok{border:0;background:none;padding:0 2px;border-radius:8px;display:inline-grid;justify-items:center;color:var(--ink)}
+.tok:hover,.tok:focus-visible{background:color-mix(in srgb,var(--enamel) 12%,transparent)}
+.tok-ar{font-family:var(--naskh);font-size:clamp(28px,4.4vw,36px);line-height:1.6;border-bottom:2px dotted color-mix(in srgb,var(--muted) 55%,transparent)}
+.tok-tr{display:none;font-size:13px;font-weight:700;color:var(--muted);direction:ltr;line-height:1.1;padding-bottom:2px}
+.show-tr .tok-tr{display:block}
+.punct{font-family:var(--naskh);font-size:clamp(28px,4.4vw,36px);line-height:1.6;color:var(--muted);margin-inline-start:-8px}
+.who{display:inline-flex;align-items:flex-end;color:var(--mango-deep)}
+.who .tok{color:var(--mango-deep)}
+.line-en{display:none;margin:2px 0 0;color:var(--muted);font-size:16px}
+.show-en .line-en{display:block}
+.wsheet{display:flex;justify-content:center;align-items:center;gap:14px}
+.wsheet b{font-family:var(--naskh);font-size:64px;line-height:1.5;color:var(--enamel)}
+
+/* ---------- Audio ---------- */
+.spk{border:2px solid var(--line);background:var(--surface);color:var(--enamel);width:40px;height:40px;border-radius:12px;display:inline-grid;place-items:center;vertical-align:middle;box-shadow:0 3px 0 var(--line);flex:none}
+.spk svg{width:22px;height:22px}
+.spk.big{width:52px;height:52px}
+.spk.big svg{width:28px;height:28px}
+.listen-btn{width:120px;height:120px;border-radius:32px;border:0;background:var(--enamel);color:var(--on-enamel);display:grid;place-items:center;box-shadow:0 7px 0 var(--enamel-deep)}
+.listen-btn:active{transform:translateY(5px);box-shadow:0 2px 0 var(--enamel-deep)}
+.listen-btn svg{width:56px;height:56px}
+.rec-top{display:flex;align-items:center;gap:12px}
+.rec-top .meter{flex:1;height:12px;border-radius:99px;background:var(--surface-2);border:1px solid var(--line);overflow:hidden}
+.rec-top .meter span{display:block;height:100%;background:var(--good);border-radius:99px}
+.rec-top b{font-variant-numeric:tabular-nums}
+.rec-list{display:grid}
+.rec-row{display:flex;align-items:center;gap:12px;padding:8px 0;border-top:1px solid var(--line)}
+.rec-row:first-child{border-top:0}
+.rec-row.live{background:var(--bad-tint);border-radius:12px;padding-inline:10px}
+.rec-text{flex:1;min-width:0;display:grid}
+.rec-text b{font-family:var(--naskh);font-size:26px;line-height:1.5;font-weight:500;text-align:right}
+.rec-text span{font-size:14px;color:var(--muted)}
+.rec-btns{display:flex;gap:8px;align-items:center}
+.ghost.icon{width:44px;padding:0;display:grid;place-items:center;color:var(--enamel)}
+.ghost.icon svg{width:22px;height:22px}
+.rec-btn{border:0;border-radius:12px;min-height:44px;padding:6px 14px;display:flex;align-items:center;gap:6px;font-weight:800;background:var(--bad);color:#fff;box-shadow:0 4px 0 var(--bad-deep)}
+.rec-btn svg{width:20px;height:20px}
+.rec-btn.on{animation:pulse 1s ease-in-out infinite}
+.rec-btn:disabled{opacity:.6}
+@keyframes pulse{50%{box-shadow:0 4px 0 var(--bad-deep),0 0 0 8px color-mix(in srgb,var(--bad) 25%,transparent)}}
+
+/* ---------- Vowels + joining ---------- */
+.mark-ex{font-family:var(--naskh);font-size:44px;line-height:1.6;color:var(--ink)}
+.lchips{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:center;direction:rtl}
+.lchips b{font-family:var(--naskh);font-size:40px;line-height:1.4;min-width:58px;text-align:center;background:var(--surface);border:2px solid var(--line);border-radius:14px;padding:0 8px 4px;font-weight:500;color:var(--enamel)}
+.lchips .plus{font-weight:800;color:var(--muted);font-size:20px}
+.sub .lchips{justify-content:flex-start;margin:6px 0 4px}
+.join-mean{color:var(--muted);font-weight:600}
+.join-demo{display:grid;gap:14px}
+.join-demo>div{display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;background:var(--surface);border:2px solid var(--line);border-radius:18px;padding:12px 14px}
+.join-demo .arrow{font-size:24px;color:var(--muted);font-weight:800}
+.join-demo>div>b{font-family:var(--naskh);font-size:46px;line-height:1.4;color:var(--ink);font-weight:500}
+.join-demo small{color:var(--muted);font-size:14.5px;font-weight:600;flex-basis:100%}
+.opt.seq .naskh{letter-spacing:.02em;word-spacing:.15em}
+.seal.long{font-size:30px;width:auto;min-width:132px;padding:0 24px;border-radius:66px}
+
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(92px + env(safe-area-inset-bottom,0px));z-index:60;background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:12px;font-weight:600;max-width:min(92vw,480px);box-shadow:0 8px 24px color-mix(in srgb,#000 25%,transparent)}
+@media (max-width:620px){
+  .due-panel{grid-template-columns:1fr}
+  .story-title{font-size:32px}
+}
 </style>
 </head>
 <body>
-
 <header class="top">
   <div class="top-in">
     <div class="brand"><b class="ar">اكتب</b><span>Ektib</span></div>
@@ -255,14 +378,27 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 </header>
 
 <main class="home" id="home">
-  <section class="goal" aria-label="Daily goal">
-    <h2>Today’s goal</h2>
-    <button class="btn mango small btn-practice" id="practiceBtn" hidden>Practice</button>
-    <p><span class="num" id="todayNum">0</span> / 30 XP</p>
-    <div class="meter"><span id="todayBar"></span></div>
+  <section class="view" id="view-learn">
+    <section class="goal" aria-label="Daily goal">
+      <h2>Today’s goal</h2>
+      <button class="btn mango small btn-review" id="reviewBtn" hidden>Review</button>
+      <p><span class="num" id="todayNum">0</span> / 30 XP</p>
+      <div class="meter"><span id="todayBar"></span></div>
+    </section>
+    <div id="units"></div>
   </section>
-  <div id="units"></div>
+  <section class="view" id="view-review" hidden></section>
+  <section class="view" id="view-read" hidden></section>
+  <section class="view" id="view-record" hidden></section>
 </main>
+
+<nav class="tabs" id="tabs" aria-label="Sections"><div class="tabs-in">
+  <button class="tab" data-v="learn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="7" cy="5.5" r="2.5" fill="currentColor"/><circle cx="17" cy="12" r="2.5" fill="currentColor"/><circle cx="7" cy="18.5" r="2.5" fill="currentColor"/><path d="M9 7l6 3.5M15 13.5 9 17"/></svg>Learn</button>
+  <button class="tab" data-v="review"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" aria-hidden="true"><rect x="7" y="3.5" width="13" height="15" rx="2.5"/><path d="M4 7v11.5A2.5 2.5 0 0 0 6.5 21H15"/></svg>Review<span class="badge" id="dueBadge" hidden>0</span></button>
+  <button class="tab" data-v="read"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" aria-hidden="true"><path d="M12 6.5C10 5 7 4.5 3.5 5v13c3.5-.5 6.5 0 8.5 1.5 2-1.5 5-2 8.5-1.5V5C17 4.5 14 5 12 6.5Z"/><path d="M12 6.5v13"/></svg>Read</button>
+  <button class="tab" data-v="record"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3" fill="currentColor"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></svg>Record</button>
+</div></nav>
+<div class="toast" id="toast" role="status" hidden></div>
 
 <div class="lesson" id="lesson" hidden>
   <div class="lhead">
@@ -325,6 +461,20 @@ const famOf = c => (FAMILIES.find(f => f.includes(c)) || [c]);
 const lookOf = c => LOOKALIKE.filter(f => f.includes(c)).flat();
 
 const W = (ar,tr,en,note) => ({ar,tr,en,note});
+const HARAKAT = /[ً-ْٰ]/g;
+const plain = s => s.replace(HARAKAT,'').replace(/ـ/g,'');
+const MARKS = [
+ {m:'َ', n:'fatḥa', v:'a', ex:'بَ تَ سَ', note:'A small slash above the letter: a short “a”. بَ is “ba”.'},
+ {m:'ِ', n:'kasra', v:'i', ex:'بِ تِ سِ', note:'A small slash below the letter: a short “i”. In Egyptian it often sounds closer to “e”. بِ is “bi”.'},
+ {m:'ُ', n:'ḍamma', v:'u', ex:'بُ تُ سُ', note:'A tiny و above the letter: a short “u”, often closer to “o” in Egyptian. بُ is “bu”.'},
+ {m:'ْ', n:'sukuun', v:'', ex:'بِنْت', note:'A small circle above: no vowel after this letter. In بِنْت the ن has a sukuun, so it is “bint”, not “binat”.'},
+ {m:'ّ', n:'shadda', v:'', ex:'مَيَّة', note:'A small w-shape above: say the letter twice as long. حُبّ is “ḥubb”, مَيَّة is “mayya”.'},
+];
+const MMAP = {}; MARKS.forEach(x => MMAP[x.m] = x);
+const CONS = {'ي':'y','و':'w','ق':'ʾ','ء':'ʾ','ذ':'z','ث':'th','ج':'g','ح':'ḥ','خ':'kh','ش':'sh','ص':'ṣ','ض':'ḍ','ط':'ṭ','ظ':'ẓ','ع':'ʿ','غ':'gh'};
+const cons = c => CONS[c] || LMAP[c].s;
+const NONJOIN = ['ا','د','ذ','ر','ز','و'];
+
 const UNITS = [
  {ar:'ا ب ت ث ن ي', en:'Tooth letters', desc:'One tooth shape, five letters. The dots tell them apart.', lessons:[
    {t:'L', letters:['ا','ب','ت']},
@@ -359,20 +509,107 @@ const UNITS = [
    {t:'L', letters:['م','ه','ة']},
    {t:'W', words:[W('مصر','Maṣr','Egypt','Egyptians also say Maṣr when they mean Cairo.'),W('ده','da','this (masculine)'),W('مية','mayya','water'),W('قهوة','ʾahwa','coffee / café','Both letters you learned are here: ق as a catch, ة as -a.'),W('جبنة','gibna','cheese'),W('هنا','hina','here')]},
    {t:'R'} ]},
- {ar:'يلا نتكلم', en:'Talk like Cairo', desc:'Everyday phrases, and the hamza that starts many of them.', lessons:[
-   {t:'W', intro:['ء'], words:[W('إزيك','izzayyak','how are you?'),W('شكرا','shukran','thank you'),W('أيوه','aywa','yes'),W('لأ','laʾ','no'),W('يلا','yalla','let’s go')]},
-   {t:'W', words:[W('معلش','maʿlesh','never mind / sorry'),W('الحمد لله','il-ḥamdu lillah','thank God (I’m fine)'),W('مش عارف','mish ʿaarif','I don’t know'),W('إن شاء الله','in shaaʾ allah','God willing'),W('القاهرة','il-ʾaahira','Cairo','Locals say il-ʾaahira, with ق as a catch.')]},
-   {t:'R'} ]},
+ {ar:'بَ بِ بُ', en:'Vowel marks', desc:'The small marks that show short vowels, plus the hamza.', lessons:[
+   {t:'V', id:'v-1', intro:['ء'], marks:['َ','ِ','ُ'], words:[W('كَتَب','katab','wrote'),W('وَلَد','walad','boy'),W('جَمَل','gamal','camel','ج is g in Egypt, so gamal.'),W('قَلَم','ʾalam','pen'),W('سَمَك','samak','fish'),W('كُتُب','kutub','books'),W('عِنَب','ʿinab','grapes')]},
+   {t:'V', id:'v-2', marks:['ْ','ّ'], words:[W('بِنْت','bint','girl'),W('قَلْب','ʾalb','heart'),W('شَمْس','shams','sun'),W('حُبّ','ḥubb','love'),W('مَيَّة','mayya','water'),W('طَيِّب','ṭayyib','okay, fine'),W('سُكَّر','sukkar','sugar'),W('أُمّ','umm','mother')]},
+   {t:'V', id:'v-3', words:[W('جِبْنَة','gibna','cheese'),W('مَصْر','Maṣr','Egypt'),W('عَرَبِي','ʿarabi','Arabic'),W('كِبِير','kibiir','big'),W('غَدَا','ghada','lunch'),W('تَحْت','taḥt','under'),W('شَجَر','shagar','trees'),W('بَاب','baab','door')]},
+   {t:'R', id:'v-r'} ]},
+ {ar:'ب + ي + ت', en:'Joined writing', desc:'Put letters together into real words, and learn where the breaks go.', lessons:[
+   {t:'J', id:'j-1', words:[W('بيت','beit','house'),W('بنت','bint','girl'),W('شمس','shams','sun'),W('قلب','ʾalb','heart'),W('حلو','ḥilw','sweet, nice'),W('لبن','laban','milk'),W('سمك','samak','fish'),W('فين','fein','where?')]},
+   {t:'J', id:'j-2', breaks:true, words:[W('باب','baab','door'),W('ورد','ward','roses'),W('بدري','badri','early'),W('كتاب','kitaab','book'),W('شارع','shaariʿ','street'),W('عربية','ʿarabiyya','car','Egyptians call a car ʿarabiyya.'),W('تمام','tamaam','great, all good','The all-purpose Egyptian “OK”.'),W('دور','door','floor (of a building)')]},
+   {t:'R', id:'j-r'} ]},
+ {ar:'يلا نتكلم', en:'Talk like Cairo', desc:'Everyday phrases you’ll hear all day in Egypt.', lessons:[
+   {t:'W', id:'u8-1', words:[W('إزيك','izzayyak','how are you?'),W('شكرا','shukran','thank you'),W('أيوه','aywa','yes'),W('لأ','laʾ','no'),W('يلا','yalla','let’s go')]},
+   {t:'W', id:'u8-2', words:[W('معلش','maʿlesh','never mind / sorry'),W('الحمد لله','il-ḥamdu lillah','thank God (I’m fine)'),W('مش عارف','mish ʿaarif','I don’t know'),W('إن شاء الله','in shaaʾ allah','God willing'),W('القاهرة','il-ʾaahira','Cairo','Locals say il-ʾaahira, with ق as a catch.')]},
+   {t:'R', id:'u8-3'} ]},
 ];
 const LESSONS = [];
-UNITS.forEach((u,ui) => u.lessons.forEach((l,li) => { l.unit = ui; l.id = `u${ui+1}-${li+1}`; l.idx = LESSONS.length; LESSONS.push(l); }));
-function lettersUpTo(i){ const s=[]; for(let k=0;k<=i;k++){ const l=LESSONS[k]; (l.letters||[]).forEach(c=>s.push(c)); (l.intro||[]).forEach(c=>s.push(c)); } return [...new Set(s)]; }
-function wordsUpTo(i){ const s=[]; for(let k=0;k<=i;k++) (LESSONS[k].words||[]).forEach(w=>s.push(w)); return s; }
-const ALLWORDS = LESSONS.flatMap(l => l.words || []);
+UNITS.forEach((u,ui) => u.lessons.forEach((l,li) => { l.unit = ui; l.id = l.id || `u${ui+1}-${li+1}`; l.idx = LESSONS.length; LESSONS.push(l); }));
+function lettersUpTo(i){ const s=[]; for(let k=0;k<=i&&k<LESSONS.length;k++){ const l=LESSONS[k]; (l.letters||[]).forEach(c=>s.push(c)); (l.intro||[]).forEach(c=>s.push(c)); } return [...new Set(s)]; }
+
+/* Every plain (unvocalised) word, first meaning wins */
+const WIDX = {}, VIDX = {};
+LESSONS.forEach(l => (l.words||[]).forEach(w => { if (l.t === 'V') VIDX[w.ar] = w; else if (!WIDX[plain(w.ar)]) WIDX[plain(w.ar)] = w; }));
+const ALLWORDS = Object.values(WIDX);
+const VWORDS = Object.values(VIDX);
+
+/* ---------- Stories ---------- */
+const tok = s => { const [ar,tr,en] = s.split(':'); return en === undefined ? {p:ar} : {ar, tr, en:en.replace(/_/g,' ')}; };
+const Ln = (str, en, who) => ({toks: str.split(' ').map(tok), en, who: who ? tok(who) : null});
+const STORIES = [
+ {id:'s-home', ar:'في البيت', en:'At home', lines:[
+   Ln('ده:da:this بيت:beit:house كبير:kibiir:big .', 'This is a big house.'),
+   Ln('البيت:il-beit:the_house ده:da:this في:fi:in مصر:Maṣr:Egypt .', 'This house is in Egypt.'),
+   Ln('في:fi:in البيت:il-beit:the_house بنت:bint:a_girl .', 'There’s a girl in the house.'),
+   Ln('البنت:il-bint:the_girl عايزة:ʿayza:wants شاي:shaai:tea .', 'The girl wants tea.'),
+   Ln('الشاي:ish-shaai:the_tea حلو:ḥilw:nice .', 'The tea is nice.'),
+   Ln('البنت:il-bint:the_girl مبسوطة:mabsuuṭa:happy .', 'The girl is happy.'),
+ ], qs:[['Where is the house?',['In Egypt','In London','In Lebanon']],['What does the girl want?',['Tea','Coffee','Juice']],['How does the girl feel?',['Happy','Tired','Hungry']]]},
+ {id:'s-breakfast', ar:'الفطار', en:'Breakfast', lines:[
+   Ln('أنا:ana:I جعان:gaʿaan:hungry .', 'I’m hungry.'),
+   Ln('عايز:ʿaayiz:I_want فول:fuul:fava_beans وعيش:wi-ʿeish:and_bread .', 'I want fava beans and bread.'),
+   Ln('ماما:mama:Mum بتعمل:bitiʿmil:is_making بيض:beiḍ:eggs كمان:kamaan:too .', 'Mum is making eggs too.'),
+   Ln('الفطار:il-fiṭaar:breakfast جاهز:gaahiz:ready !', 'Breakfast is ready!'),
+   Ln('الأكل:il-akl:the_food حلو:ḥilw:good أوي:awi:really .', 'The food is really good.'),
+   Ln('الحمد:il-ḥamdu:praise لله:lillah:be_to_God .', 'Thank God.'),
+ ], qs:[['What does he want to eat?',['Fava beans and bread','Cheese and tomatoes','Just tea']],['Who is making eggs?',['Mum','Dad','His friend']],['How is the food?',['Really good','Cold','Too salty']]]},
+ {id:'s-cafe', ar:'في القهوة', en:'At the café', note:'In Egypt قهوة means both coffee and a café.', lines:[
+   Ln('أنا:ana:I في:fi:at القهوة:il-ʾahwa:the_café مع:maʿa:with صاحبي:ṣaḥbi:my_friend .', 'I’m at the café with my friend.'),
+   Ln('صاحبي:ṣaḥbi:my_friend اسمه:ismu:his_name_is كريم:Kariim:Karim .', 'My friend’s name is Karim.'),
+   Ln('كريم:Kariim:Karim بيشرب:biyishrab:is_drinking قهوة:ʾahwa:coffee .', 'Karim is drinking coffee.'),
+   Ln('وأنا:w-ana:and_I بشرب:bashrab:am_drinking شاي:shaai:tea بالنعناع:bin-niʿnaaʿ:with_mint .', 'And I’m drinking mint tea.'),
+   Ln('القهوة:il-ʾahwa:the_café زحمة:zaḥma:crowded النهارده:innaharda:today .', 'The café is crowded today.'),
+   Ln('بس:bass:but إحنا:iḥna:we مبسوطين:mabsuuṭiin:happy .', 'But we’re happy.'),
+ ], qs:[['What is Karim drinking?',['Coffee','Mint tea','Water']],['What is the narrator drinking?',['Mint tea','Coffee','Juice']],['What is the café like today?',['Crowded','Empty','Closed']]]},
+ {id:'s-taxi', ar:'التاكسي', en:'The taxi', lines:[
+   Ln('أنا:ana:I في:fi:on شارع:shaariʿ:a_street كبير:kibiir:big في:fi:in القاهرة:il-ʾaahira:Cairo .', 'I’m on a big street in Cairo.'),
+   Ln('فين:fein:where التاكسي:it-taksi:the_taxi ؟', 'Where’s the taxi?'),
+   Ln('أهو:ahu:there_it_is !', 'There it is!'),
+   Ln('على:ʿala:to فين:fein:where ؟', 'Where to?', 'السواق:is-sawwaaʾ:the_driver'),
+   Ln('الزمالك:iz-Zamaalik:Zamalek ، لو:law:if سمحت:samaḥt:you_allow .', 'Zamalek, please.', 'أنا:ana:me'),
+   Ln('ماشي:maashi:OK ، يلا:yalla:let’s_go بينا:biina:with_us .', 'OK, let’s go.', 'السواق:is-sawwaaʾ:the_driver'),
+ ], qs:[['Which city is this?',['Cairo','Alexandria','Aswan']],['Where does the passenger want to go?',['Zamalek','The airport','Home']],['“Law samaḥt” means…',['Please','Thank you','Sorry']]]},
+ {id:'s-market', ar:'في السوق', en:'At the market', lines:[
+   Ln('النهارده:innaharda:today الجمعة:il-gumʿa:Friday .', 'Today is Friday.'),
+   Ln('أنا:ana:I وماما:wi-mama:and_Mum في:fi:at السوق:is-suuʾ:the_market .', 'Mum and I are at the market.'),
+   Ln('ماما:mama:Mum عايزة:ʿayza:wants طماطم:ṭamaaṭim:tomatoes وبطاطس:wi-baṭaaṭis:and_potatoes .', 'Mum wants tomatoes and potatoes.'),
+   Ln('الطماطم:iṭ-ṭamaaṭim:the_tomatoes بكام:bikaam:how_much ؟', 'How much are the tomatoes?', 'ماما:mama:Mum'),
+   Ln('بعشرة:bi-ʿashara:for_ten جنيه:gineih:pounds الكيلو:il-kiilu:the_kilo .', 'Ten pounds a kilo.', 'البياع:il-bayyaaʿ:the_seller'),
+   Ln('غالي:ghaali:expensive أوي:awi:very !', 'That’s too expensive!', 'ماما:mama:Mum'),
+   Ln('خلاص:khalaaṣ:fine ، بتمانية:bi-tamanya:for_eight .', 'Fine, eight.', 'البياع:il-bayyaaʿ:the_seller'),
+ ], qs:[['What day is it?',['Friday','Saturday','Sunday']],['What was the first price?',['10 pounds a kilo','8 pounds a kilo','5 pounds a kilo']],['What price did they agree on?',['8 pounds','10 pounds','12 pounds']]]},
+ {id:'s-match', ar:'الماتش', en:'The match', lines:[
+   Ln('النهارده:innaharda:today فيه:fi:there’s ماتش:matsh:a_match .', 'There’s a match today.'),
+   Ln('الأهلي:il-Ahli:Al_Ahly والزمالك:wiz-Zamaalik:and_Zamalek .', 'Al Ahly against Zamalek.'),
+   Ln('كل:kull:all الناس:in-naas:the_people في:fi:in القهوة:il-ʾahwa:the_café .', 'Everyone is at the café.'),
+   Ln('جون:goon:goal !', 'Goal!'),
+   Ln('صاحبي:ṣaḥbi:my_friend زعلان:zaʿlaan:upset ، هو:huwwa:he’s زملكاوي:zamalkaawi:a_Zamalek_fan .', 'My friend is upset. He supports Zamalek.'),
+   Ln('وأنا:w-ana:and_me ؟ أنا:ana:I’m أهلاوي:ahlaawi:an_Ahly_fan !', 'And me? I support Al Ahly!'),
+ ], qs:[['Who is playing?',['Al Ahly and Zamalek','Egypt and Morocco','Two local teams']],['Why is the friend upset?',['He supports Zamalek','He missed the match','The café is closed']],['Where is everyone watching?',['At the café','At home','At the stadium']]]},
+];
+const lineText = ln => ln.toks.filter(t => t.ar).map(t => t.ar).join(' ');
+/* Letters a piece of text needs, with hamza seats counted as ء plus their seat */
+function lettersIn(text){
+  const out = new Set();
+  for (const ch of plain(text)){
+    if (ch === 'أ' || ch === 'إ' || ch === 'آ'){ out.add('ء'); out.add('ا'); }
+    else if (ch === 'ؤ'){ out.add('ء'); out.add('و'); }
+    else if (ch === 'ئ'){ out.add('ء'); out.add('ي'); }
+    else if (ch === 'ى') out.add('ي');
+    else if (LMAP[ch]) out.add(ch);
+  }
+  return out;
+}
+STORIES.forEach(st => {
+  const need = new Set(); st.lines.forEach(ln => { lettersIn(lineText(ln)).forEach(c => need.add(c)); if (ln.who) lettersIn(ln.who.ar).forEach(c => need.add(c)); });
+  st.need = LESSONS.findIndex((l,i) => [...need].every(c => lettersUpTo(i).includes(c)));
+  st.lines.forEach(ln => [...ln.toks, ln.who].forEach(t => { if (t && t.ar && !WIDX[t.ar]) WIDX[t.ar] = {ar:t.ar, tr:t.tr, en:t.en}; }));
+});
+STORIES.sort((a,b) => a.need - b.need);
 
 /* ================= State ================= */
 const KEY = 'ektib-progress-v1';
-const blank = () => ({v:1, done:{}, xp:0, streak:0, lastDay:'', today:{day:'',xp:0}, unlockAll:false, updated:0});
+const blank = () => ({v:2, done:{}, xp:0, streak:0, lastDay:'', today:{day:'',xp:0}, unlockAll:false, srs:{}, stories:{}, updated:0});
 let S = blank();
 try { const raw = localStorage.getItem(KEY); if (raw) S = Object.assign(blank(), JSON.parse(raw)); } catch(e) {}
 let syncState = 'local', saving = false, saveAgain = false, saveTimer = null, authed = false;
@@ -422,7 +659,7 @@ async function startSync(){
     const r = await api('GET', '/api/session');
     if (r.status !== 200 || !r.data.configured) { syncState = 'local'; return; }
     if (!r.data.authed) return showLogin();
-    authed = true; await pullRemote();
+    authed = true; await pullRemote(); loadAudioIndex();
   } catch(e) { syncState = 'offline'; }
 }
 function showLogin(msg){
@@ -438,7 +675,7 @@ function showLogin(msg){
     const m = $('#loginMsg');
     try {
       const r = await api('POST', '/api/login', {passcode: inp.value});
-      if (r.status === 200){ authed = true; closeSheet(); await pullRemote(); return; }
+      if (r.status === 200){ authed = true; closeSheet(); await pullRemote(); loadAudioIndex(); refreshViews(); return; }
       m.textContent = r.data.message || 'Sign-in failed. Try again.'; m.hidden = false;
     } catch(_) { m.textContent = 'You seem to be offline. Try again when you’re connected.'; m.hidden = false; }
   });
@@ -481,27 +718,109 @@ const ICON = {
   lock:'<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 10V8a5 5 0 0 1 10 0v2h1a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1v-9a1 1 0 0 1 1-1h1Zm2 0h6V8a3 3 0 0 0-6 0v2Z"/></svg>',
 };
 
-/* ================= Home ================= */
+
+/* ================= Spaced repetition ================= */
+const DAY = 864e5, INT = [1,2,4,8,16,32,64];
+function srsAdd(id){ if (!S.srs[id]) S.srs[id] = {b:0, d:Date.now() + DAY}; }
+function srsGrade(id, ok){
+  const c = S.srs[id] || (S.srs[id] = {b:0, d:0});
+  if (ok){ c.d = Date.now() + INT[c.b]*DAY; c.b = Math.min(c.b + 1, INT.length - 1); }
+  else { c.b = 0; c.d = Date.now() + 10*60e3; }
+}
+const dueIds = () => { const now = Date.now(); return Object.entries(S.srs).filter(([id,c]) => c.d <= now && cardKnown(id)).sort((a,b) => a[1].d - b[1].d).map(([id]) => id); };
+function cardKnown(id){ const [k, v] = [id.slice(0,1), id.slice(2)]; return k === 'L' ? !!LMAP[v] : k === 'V' ? !!VIDX[v] : !!WIDX[v]; }
+function nextDueIn(){ const ds = Object.values(S.srs).map(c => c.d).filter(d => d > Date.now()); return ds.length ? Math.min(...ds) - Date.now() : null; }
+function lessonCards(l){
+  const ids = [];
+  (l.letters||[]).forEach(c => ids.push('L:'+c));
+  (l.words||[]).forEach(w => ids.push(l.t === 'V' ? 'V:'+w.ar : 'W:'+plain(w.ar)));
+  return ids;
+}
+
+/* ================= Recordings ================= */
+function akey(text){
+  const s = plain(text).replace(/[.!؟،?,:]/g,'').replace(/\s+/g,' ').trim();
+  let h1 = 0x811c9dc5, h2 = 0x9747b28c;
+  for (let i=0;i<s.length;i++){ const c = s.charCodeAt(i); h1 = Math.imul(h1 ^ c, 16777619) >>> 0; h2 = Math.imul(h2 ^ c, 2246822519) >>> 0; h2 = ((h2 << 13) | (h2 >>> 19)) >>> 0; }
+  return h1.toString(16).padStart(8,'0') + h2.toString(16).padStart(8,'0');
+}
+let AUD = {};
+const hasAudio = t => !!AUD[akey(t)];
+let curAudio = null;
+function playAudio(t){
+  const k = akey(t); if (!AUD[k]) return false;
+  try { if (curAudio) curAudio.pause(); curAudio = new Audio(`/api/audio/${k}?v=${AUD[k].ts||0}`); curAudio.play().catch(()=>{}); } catch(e) {}
+  return true;
+}
+async function loadAudioIndex(){
+  try { const r = await api('GET', '/api/audio'); if (r.status === 200){ AUD = r.data.index || {}; refreshViews(); } } catch(e) {}
+}
+const spk = (t, big) => hasAudio(t) ? `<button class="spk ${big?'big':''}" data-say="${esc(t)}" aria-label="Play recording">${ICON.speaker}</button>` : '';
+document.addEventListener('click', e => { const b = e.target.closest('[data-say]'); if (b){ e.preventDefault(); playAudio(b.dataset.say); } });
+
+let toastT = null;
+function toast(msg){ const t = $('#toast'); t.textContent = msg; t.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => t.hidden = true, 3200); }
+
+
+Object.assign(ICON, {
+  speaker:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9.5h3.5L12 5v14l-4.5-4.5H4z" fill="currentColor"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/></svg>',
+  mic:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3" fill="currentColor"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></svg>',
+  stop:'<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="6" y="6" width="12" height="12" rx="2.5"/></svg>',
+  book:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" aria-hidden="true"><path d="M12 6.5C10 5 7 4.5 3.5 5v13c3.5-.5 6.5 0 8.5 1.5 2-1.5 5-2 8.5-1.5V5C17 4.5 14 5 12 6.5Z"/><path d="M12 6.5v13"/></svg>',
+  path:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="7" cy="5.5" r="2.5" fill="currentColor"/><circle cx="17" cy="12" r="2.5" fill="currentColor"/><circle cx="7" cy="18.5" r="2.5" fill="currentColor"/><path d="M9 7l6 3.5M15 13.5 9 17"/></svg>',
+  cards:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" aria-hidden="true"><rect x="7" y="3.5" width="13" height="15" rx="2.5"/><path d="M4 7v11.5A2.5 2.5 0 0 0 6.5 21H15"/></svg>',
+  plus:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>',
+});
+
+/* ================= Home: views ================= */
 const lessonEl = $('#lesson');
+const VIEWS = ['learn','review','read','record'];
+let view = VIEWS.includes(location.hash.slice(1)) ? location.hash.slice(1) : 'learn';
+function showView(v){
+  view = v;
+  VIEWS.forEach(x => { $('#view-'+x).hidden = x !== v; const t = document.querySelector(`.tab[data-v="${x}"]`); t.setAttribute('aria-current', x === v ? 'page' : 'false'); });
+  try { history.replaceState(null, '', '#' + v); } catch(e) {}
+  refreshViews(); window.scrollTo(0,0);
+}
+$('#tabs').addEventListener('click', e => { const t = e.target.closest('.tab'); if (t) showView(t.dataset.v); });
+function refreshViews(){
+  if (!lessonEl.hidden) return;
+  renderHeader();
+  if (view === 'learn') renderLearn();
+  if (view === 'review') renderReview();
+  if (view === 'read') renderRead();
+  if (view === 'record') renderRecord();
+}
+const renderHome = refreshViews;
+function renderHeader(){
+  $('#streakNum').textContent = currentStreak();
+  $('#streakStat').classList.toggle('off', currentStreak() === 0 || S.lastDay !== dayStr());
+  $('#xpNum').textContent = S.xp;
+  const n = dueIds().length, badge = $('#dueBadge');
+  badge.textContent = n > 99 ? '99+' : n; badge.hidden = !n;
+}
+
 function nodeFace(l){
   if (l.t === 'L') return `<span class="ar">${l.letters.join(' ')}</span>`;
+  if (l.t === 'V') return `<span class="ar">${l.marks ? l.marks.map(m => 'ب'+m).join(' ') : 'بَاب'}</span>`;
+  if (l.t === 'J') return `<span class="ar" style="font-size:18px">${l.breaks ? 'و|ر|د' : 'بيت'}</span>`;
   if (l.t === 'W') return `<span class="ar" style="font-size:18px">${esc(l.words[0].ar.split(' ')[0])}</span>`;
   return ICON.star;
 }
 function nodeLabel(l){
   if (l.t === 'L') return 'New letters';
-  if (l.t === 'W') return l.unit === 7 ? (l.intro ? 'Hamza + phrases' : 'More phrases') : 'Words';
+  if (l.t === 'V') return l.intro ? 'Hamza + a, i, u' : l.marks ? 'Sukuun + shadda' : 'Sound it out';
+  if (l.t === 'J') return l.breaks ? 'Where words break' : 'Joining letters';
+  if (l.t === 'W') return UNITS[l.unit].lessons[0] === l && l.unit === UNITS.length-1 ? 'Phrases' : (l.unit === UNITS.length-1 ? 'More phrases' : 'Words');
   return 'Unit review';
 }
 const OFFS = [0, 1, 1.4, 1, 0, -1, -1.4, -1];
-function renderHome(){
-  $('#streakNum').textContent = currentStreak();
-  $('#streakStat').classList.toggle('off', currentStreak() === 0 || S.lastDay !== dayStr());
-  $('#xpNum').textContent = S.xp;
+function renderLearn(){
   const tx = todayXp();
   $('#todayNum').textContent = tx;
   $('#todayBar').style.width = Math.min(100, tx/30*100) + '%';
-  $('#practiceBtn').hidden = !Object.keys(S.done).length;
+  const due = dueIds().length;
+  const rb = $('#reviewBtn'); rb.hidden = !due; rb.textContent = `Review ${due}`;
   const cur = firstOpen();
   let k = 0;
   $('#units').innerHTML = UNITS.map((u,ui) => `
@@ -535,7 +854,146 @@ $('#units').addEventListener('click', e => {
     <div class="row"><button class="ghost" data-close>Cancel</button><button class="btn small" id="jumpBtn">Jump here</button></div>`);
   $('#jumpBtn').onclick = () => { closeSheet(); startLesson(i); };
 });
-$('#practiceBtn').onclick = () => startLesson(-1);
+$('#reviewBtn').onclick = () => startLesson(-2);
+
+/* ---------- Review view ---------- */
+function strength(id){ const c = S.srs[id]; if (!c) return 0; return c.b >= 4 ? 3 : c.b >= 2 ? 2 : 1; }
+function renderReview(){
+  const due = dueIds(), all = Object.keys(S.srs).filter(cardKnown);
+  const nd = nextDueIn();
+  const when = nd == null ? '' : nd < 3600e3 ? 'in under an hour' : nd < DAY ? `in about ${Math.round(nd/3600e3)} hours` : `in ${Math.round(nd/DAY)} days`;
+  const words = all.filter(id => id[0] !== 'L');
+  const cnt = [1,2,3].map(s => words.filter(id => strength(id) === s).length);
+  $('#view-review').innerHTML = `
+    <section class="panel due-panel">
+      <div><p class="kicker">Spaced review</p>
+      <h2 class="big-num">${due.length}<span>${due.length === 1 ? 'card due' : 'cards due'}</span></h2>
+      <p class="muted">${due.length ? 'Each card comes back just before you’d forget it. Getting it right pushes it further away.' : all.length ? `All caught up. The next card is due ${when}.` : 'Finish your first lesson and its letters and words land here.'}</p></div>
+      <div class="due-actions">
+        <button class="btn mango" id="srsStart" ${due.length ? '' : 'disabled'}>Start review</button>
+        <button class="ghost" id="practiceBtn" ${all.length ? '' : 'disabled'}>Extra practice</button>
+      </div>
+    </section>
+    <section class="panel">
+      <h3 class="panel-h">Letters</h3>
+      <div class="lgrid">${LETTERS.map(l => `<div class="lcell s${strength('L:'+l.c)}" title="${esc(l.n)}"><b class="ar">${l.c}</b><span>${esc(l.s)}</span></div>`).join('')}</div>
+      <div class="legend"><span><i class="s0"></i>Not learned</span><span><i class="s1"></i>Learning</span><span><i class="s2"></i>Getting there</span><span><i class="s3"></i>Strong</span></div>
+    </section>
+    <section class="panel">
+      <h3 class="panel-h">Words</h3>
+      <div class="wstats"><div><b>${cnt[0]}</b><span>Learning</span></div><div><b>${cnt[1]}</b><span>Getting there</span></div><div><b>${cnt[2]}</b><span>Strong</span></div></div>
+    </section>`;
+  $('#srsStart').onclick = () => startLesson(-2);
+  $('#practiceBtn').onclick = () => startLesson(-1);
+}
+
+/* ---------- Read view ---------- */
+function storyOpen(st){ return S.unlockAll || (st.need >= 0 && firstOpen() > st.need); }
+function renderRead(){
+  $('#view-read').innerHTML = `
+    <section class="panel intro-panel">
+      <p class="kicker">Stories</p>
+      <h2 class="panel-title">Read real Egyptian Arabic</h2>
+      <p class="muted">Short scenes from everyday Cairo life. Tap any word for its meaning, turn on transliteration when you’re stuck, then answer a few questions. Each story unlocks once you’ve learned all of its letters.</p>
+    </section>
+    <div class="stories">${STORIES.map(st => {
+      const open = storyOpen(st), done = !!(S.stories||{})[st.id];
+      const L = LESSONS[st.need];
+      return `<button class="story-card ${open?'':'locked'} ${done?'done':''}" data-s="${st.id}">
+        <span class="sc-ar ar">${st.ar}</span>
+        <span class="sc-en">${esc(st.en)}</span>
+        <span class="sc-meta">${done ? `${ICON.check} Read` : open ? `${st.lines.length} lines` : `${ICON.lock} After unit ${L ? L.unit+1 : '?'}`}</span>
+      </button>`;
+    }).join('')}</div>`;
+}
+$('#view-read').addEventListener('click', e => {
+  const b = e.target.closest('.story-card'); if (!b) return;
+  const st = STORIES.find(s => s.id === b.dataset.s);
+  if (storyOpen(st)) return startStory(st);
+  const L = LESSONS[st.need];
+  openSheet(`<h3>Not unlocked yet</h3><p>This story uses letters from unit ${L.unit+1} (${esc(UNITS[L.unit].en)}). Finish up to there to unlock it, or read it now anyway.</p>
+    <div class="row"><button class="ghost" data-close>Cancel</button><button class="btn small" id="readAnyway">Read anyway</button></div>`);
+  $('#readAnyway').onclick = () => { closeSheet(); startStory(st); };
+});
+
+/* ---------- Record view ---------- */
+let recFilter = 'missing';
+const REC = {mr:null, chunks:[], text:null, stream:null, timer:null, busy:null};
+function recItems(){
+  return [
+    {title:'Letters', hint:'Say the letter’s name, as an Egyptian would.', rows: LETTERS.map(l => ({t:l.c, ar:l.c, sub:`${l.n} · ${l.s}`}))},
+    {title:'Words', hint:'Say the word naturally, the way you’d say it in Cairo.', rows: Object.values(WIDX).filter((w,i,a) => a.findIndex(x => plain(x.ar) === plain(w.ar)) === i).map(w => ({t:w.ar, ar:w.ar, sub:`${w.tr} · ${w.en}`}))},
+    ...STORIES.map(st => ({title:`Story: ${st.en}`, hint:'Read each line at a normal speed.', rows: st.lines.map(ln => ({t:lineText(ln), ar:lineText(ln), sub:ln.en}))})),
+  ];
+}
+function renderRecord(){
+  const el = $('#view-record');
+  if (!authed){
+    el.innerHTML = `<section class="panel intro-panel"><p class="kicker">Recordings</p><h2 class="panel-title">Real Egyptian voices</h2>
+      <p class="muted">Recordings are saved with your synced progress, so you need to be signed in.</p>
+      <div><button class="btn small" id="recLogin">Sign in</button></div></section>`;
+    $('#recLogin').onclick = () => showLogin();
+    return;
+  }
+  const groups = recItems();
+  const total = groups.reduce((a,g) => a + g.rows.length, 0), have = groups.reduce((a,g) => a + g.rows.filter(r => hasAudio(r.t)).length, 0);
+  el.innerHTML = `<section class="panel intro-panel">
+      <p class="kicker">Recordings</p><h2 class="panel-title">Real Egyptian voices</h2>
+      <p class="muted">Hand the iPad to an Egyptian speaker. They tap the microphone, say the word, and tap stop. Their recordings play in your lessons, stories and listening questions.</p>
+      <div class="rec-top"><div class="meter"><span style="width:${total ? have/total*100 : 0}%"></span></div><b>${have} / ${total}</b></div>
+      <div class="seg" role="group" aria-label="Show"><button data-f="missing" aria-pressed="${recFilter==='missing'}">Not recorded</button><button data-f="all" aria-pressed="${recFilter==='all'}">All</button></div>
+    </section>
+    ${groups.map(g => {
+      const rows = g.rows.filter(r => recFilter === 'all' || !hasAudio(r.t) || REC.text === r.t);
+      if (!rows.length) return '';
+      return `<section class="panel"><h3 class="panel-h">${esc(g.title)}</h3><p class="muted small">${esc(g.hint)}</p>
+        <div class="rec-list">${rows.map(r => {
+          const on = REC.text === r.t, has = hasAudio(r.t), busy = REC.busy === r.t;
+          return `<div class="rec-row ${on?'live':''}">
+            <div class="rec-text"><b class="ar">${esc(r.ar)}</b><span>${esc(r.sub)}</span></div>
+            <div class="rec-btns">
+              ${has && !on ? `<button class="ghost icon" data-say="${esc(r.t)}" aria-label="Play">${ICON.speaker}</button>` : ''}
+              <button class="rec-btn ${on?'on':''}" data-rec="${esc(r.t)}" ${busy?'disabled':''} aria-label="${on?'Stop recording':has?'Record again':'Record'}">${on ? ICON.stop : ICON.mic}<span>${on ? 'Stop' : busy ? 'Saving…' : has ? 'Redo' : 'Record'}</span></button>
+            </div></div>`;
+        }).join('')}</div></section>`;
+    }).join('')}`;
+}
+$('#view-record').addEventListener('click', e => {
+  const f = e.target.closest('[data-f]'); if (f){ recFilter = f.dataset.f; return renderRecord(); }
+  const b = e.target.closest('[data-rec]'); if (!b) return;
+  if (REC.text === b.dataset.rec) recStop(); else recStart(b.dataset.rec);
+});
+async function recStart(text){
+  if (REC.mr) recStop();
+  if (!navigator.mediaDevices || !window.MediaRecorder) return toast('This browser can’t record audio.');
+  try { REC.stream = await navigator.mediaDevices.getUserMedia({audio:true}); }
+  catch(e){ return toast('Microphone access is blocked. Allow it for this site in Safari settings.'); }
+  const type = ['audio/mp4','audio/webm;codecs=opus','audio/webm'].find(t => MediaRecorder.isTypeSupported(t)) || '';
+  REC.mr = new MediaRecorder(REC.stream, type ? {mimeType:type} : undefined);
+  REC.chunks = []; REC.text = text;
+  REC.mr.ondataavailable = ev => { if (ev.data && ev.data.size) REC.chunks.push(ev.data); };
+  REC.mr.onstop = recSave;
+  REC.mr.start();
+  REC.timer = setTimeout(recStop, 8000);
+  renderRecord();
+}
+function recStop(){ clearTimeout(REC.timer); if (REC.mr && REC.mr.state !== 'inactive') REC.mr.stop(); }
+async function recSave(){
+  const type = (REC.mr.mimeType || 'audio/mp4').split(';')[0];
+  const blob = new Blob(REC.chunks, {type});
+  if (REC.stream) REC.stream.getTracks().forEach(t => t.stop());
+  const text = REC.text; REC.mr = null; REC.stream = null; REC.text = null;
+  if (blob.size < 800){ renderRecord(); return toast('Nothing was recorded. Try again and speak after tapping.'); }
+  REC.busy = text; renderRecord();
+  const k = akey(text);
+  try {
+    const r = await fetch('/api/audio/' + k, {method:'PUT', headers:{'Content-Type':type, 'X-Text':encodeURIComponent(plain(text))}, body:blob});
+    if (r.ok){ const d = await r.json(); AUD[k] = {t:plain(text), ts:d.ts || Date.now()}; playAudio(text); }
+    else if (r.status === 401){ authed = false; showLogin(); }
+    else toast('That recording couldn’t be saved. Try again.');
+  } catch(e){ toast('You seem to be offline, so the recording wasn’t saved.'); }
+  REC.busy = null; renderRecord(); renderHeader();
+}
 
 /* ================= Sheet ================= */
 function openSheet(html){ $('#sheet').innerHTML = html; $('#scrim').hidden = false; const f = $('#sheet').querySelector('button'); f && f.focus(); }
@@ -561,6 +1019,7 @@ $('#settingsBtn').onclick = () => {
   };
 };
 
+
 /* ================= Exercise builders ================= */
 const soundOpts = (c, pool) => {
   const want = new Set([LMAP[c].s]); const out = [c];
@@ -568,36 +1027,103 @@ const soundOpts = (c, pool) => {
   for (const x of cands) { if (out.length >= 4) break; const l = LMAP[x]; if (!l || l.aloneOnly || want.has(l.s)) continue; want.add(l.s); out.push(x); }
   return shuffle(out);
 };
-function mcLS(c, pool){ const o = soundOpts(c, pool); return {t:'mc', kicker:'Read', prompt:'What sound does this letter make?', big:c, opts:o.map(x=>({label:LMAP[x].s})), ans:o.indexOf(c), explain:`${c} is ${LMAP[c].n}: “${LMAP[c].s}”.`}; }
-function mcSL(c, pool){ const o = soundOpts(c, pool); return {t:'mc', kicker:'Recognise', prompt:`Which letter says “${LMAP[c].s}”?`, lat:LMAP[c].s, opts:o.map(x=>({label:x, ar:true})), ans:o.indexOf(c), explain:`“${LMAP[c].s}” is ${c} (${LMAP[c].n}).`}; }
+function mcLS(c, pool){ const o = soundOpts(c, pool); return {t:'mc', card:'L:'+c, kicker:'Read', prompt:'What sound does this letter make?', big:c, say:c, opts:o.map(x=>({label:LMAP[x].s})), ans:o.indexOf(c), explain:`${c} is ${LMAP[c].n}: “${LMAP[c].s}”.`}; }
+function mcSL(c, pool){ const o = soundOpts(c, pool); return {t:'mc', card:'L:'+c, kicker:'Recognise', prompt:`Which letter says “${LMAP[c].s}”?`, lat:LMAP[c].s, opts:o.map(x=>({label:x, ar:true})), ans:o.indexOf(c), explain:`“${LMAP[c].s}” is ${c} (${LMAP[c].n}).`}; }
 function mcForm(c, pool){
   const f = formsOf(c); const keys = Object.keys(f).filter(k => k !== 'alone' && f[k] !== c);
   if (!keys.length) return null;
   const k = pick(keys), names = {start:'start of a word', mid:'middle of a word', end:'end of a word'};
   const o = soundOpts(c, pool).filter(x => !LMAP[x].aloneOnly);
-  return {t:'mc', kicker:'Letter shapes', prompt:'Which letter is this?', big:f[k], tag:`as it looks at the ${names[k]}`, opts:o.map(x=>({label:x, ar:true})), ans:o.indexOf(c), explain:`${f[k]} is ${c} (${LMAP[c].n}) joined to its neighbours.`};
+  return {t:'mc', card:'L:'+c, kicker:'Letter shapes', prompt:'Which letter is this?', big:f[k], tag:`as it looks at the ${names[k]}`, opts:o.map(x=>({label:x, ar:true})), ans:o.indexOf(c), explain:`${f[k]} is ${c} (${LMAP[c].n}) joined to its neighbours.`};
 }
-function mcRead(w, pool){
-  const o = [w, ...shuffle(pool.filter(x => x !== w && x.en !== w.en)).slice(0,3)];
-  while (o.length < 4) { const x = pick(ALLWORDS); if (!o.includes(x)) o.push(x); }
-  const s = shuffle(o);
-  return {t:'mc', kicker:'Read', prompt:'What does this say?', big:w.ar, word:true, opts:s.map(x=>({label:`${x.tr} · ${x.en}`})), ans:s.indexOf(w), explain:`${w.ar} = ${w.tr}, “${w.en}”.`};
-}
-function mcMean(w, pool){
-  const o = [w, ...shuffle(pool.filter(x => x !== w)).slice(0,3)];
-  while (o.length < 4) { const x = pick(ALLWORDS); if (!o.includes(x)) o.push(x); }
-  const s = shuffle(o);
-  return {t:'mc', kicker:'Recognise', prompt:`Which one means “${w.en}”?`, lat:w.tr, small:true, opts:s.map(x=>({label:x.ar, ar:true})), ans:s.indexOf(w), explain:`“${w.en}” is ${w.ar} (${w.tr}).`};
-}
+const wordPool = (pool, w) => shuffle((pool && pool.length >= 4 ? pool : ALLWORDS).filter(x => plain(x.ar) !== plain(w.ar) && x.en !== w.en));
+function fill4(w, pool){ const o = [w, ...wordPool(pool, w).slice(0,3)]; for (const x of shuffle(ALLWORDS)){ if (o.length >= 4) break; if (!o.some(y => plain(y.ar) === plain(x.ar) || y.en === x.en)) o.push(x); } return shuffle(o); }
+function mcRead(w, pool){ const s = fill4(w, pool); return {t:'mc', card:'W:'+plain(w.ar), kicker:'Read', prompt:'What does this say?', big:w.ar, word:true, say:w.ar, opts:s.map(x=>({label:`${x.tr} · ${x.en}`})), ans:s.indexOf(w), explain:`${w.ar} = ${w.tr}, “${w.en}”.`}; }
+function mcMean(w, pool){ const s = fill4(w, pool); return {t:'mc', card:'W:'+plain(w.ar), kicker:'Recognise', prompt:`Which one means “${w.en}”?`, lat:w.tr, small:true, opts:s.map(x=>({label:x.ar, ar:true})), ans:s.indexOf(w), explain:`“${w.en}” is ${w.ar} (${w.tr}).`}; }
+function mcListen(w, pool){ const s = fill4(w, pool); return {t:'mc', card:'W:'+plain(w.ar), kicker:'Listen', prompt:'Which word did you hear?', listen:w.ar, opts:s.map(x=>({label:x.ar, ar:true})), ans:s.indexOf(w), explain:`You heard ${w.ar} (${w.tr}), “${w.en}”.`}; }
 function matchLetters(cs){ return {t:'match', kicker:'Match', prompt:'Match each letter to its sound', pairs: shuffle(cs).slice(0,5).map(c => [c, LMAP[c].s])}; }
-function matchWords(ws){ return {t:'match', kicker:'Match', prompt:'Match each word to its meaning', pairs: shuffle(ws).slice(0,5).map(w => [w.ar, w.en])}; }
+function matchWords(ws){ return {t:'match', kicker:'Match', prompt:'Match each word to its meaning', pairs: shuffle(ws).filter((w,i,a)=>a.findIndex(x=>x.en===w.en)===i).slice(0,5).map(w => [w.ar, w.en])}; }
+function matchSounds(ws){ return {t:'match', kicker:'Match', prompt:'Match each word to how it sounds', pairs: shuffle(ws).slice(0,5).map(w => [w.ar, w.tr])}; }
 const trace = c => ({t:'trace', text:c, letter:LMAP[c] ? c : null, word:!LMAP[c]});
-const write = (text, w) => ({t:'write', text, letter:LMAP[text] ? text : null, word:!LMAP[text], w});
+const write = (text, w) => ({t:'write', text:plain(text), letter:LMAP[text] ? text : null, word:!LMAP[text], w, card: LMAP[text] ? 'L:'+text : w ? 'W:'+plain(w.ar) : null});
 
+/* vowel marks */
+const SYL = c => !['ا','ة','ء','و','ي'].includes(c);
+function mcSyl(c, mk, marks){
+  const ms = marks.includes('ْ') ? ['َ','ِ','ُ','ْ'] : ['َ','ِ','ُ'];
+  const o = shuffle(ms);
+  return {t:'mc', kicker:'Vowel marks', prompt:'How do you say this?', big:c+mk, opts:o.map(m => ({label: cons(c) + MMAP[m].v})), ans:o.indexOf(mk), explain:`${c+mk}: ${MMAP[mk].n} on ${c}, so “${cons(c)+MMAP[mk].v}”.`};
+}
+function mcSylRev(c, mk){
+  const o = shuffle(['َ','ِ','ُ']);
+  return {t:'mc', kicker:'Vowel marks', prompt:`Which one says “${cons(c)+MMAP[mk].v}”?`, lat:cons(c)+MMAP[mk].v, opts:o.map(m => ({label:c+m, ar:true})), ans:o.indexOf(mk), explain:`“${cons(c)+MMAP[mk].v}” is ${c+mk}, with a ${MMAP[mk].n}.`};
+}
+function vowelVariants(tr){
+  const out = new Set(), idx = [];
+  for (let i=0;i<tr.length;i++) if ('aiu'.includes(tr[i]) && tr[i-1] !== tr[i] && tr[i+1] !== tr[i]) idx.push(i);
+  for (const i of shuffle(idx)) for (const v of shuffle(['a','i','u'])) if (v !== tr[i]) out.add(tr.slice(0,i) + v + tr.slice(i+1));
+  if (/(.)\1/.test(tr)) out.add(tr.replace(/(.)\1/, '$1'));
+  return shuffle([...out]);
+}
+function mcSound(w){
+  const v = vowelVariants(w.tr).slice(0,3);
+  for (const x of shuffle(VWORDS)){ if (v.length >= 3) break; if (x.tr !== w.tr && !v.includes(x.tr)) v.push(x.tr); }
+  const o = shuffle([w.tr, ...v]);
+  return {t:'mc', card:'V:'+w.ar, kicker:'Sound it out', prompt:'Read the vowel marks. How does it sound?', big:w.ar, word:true, say:w.ar, opts:o.map(x => ({label:x})), ans:o.indexOf(w.tr), explain:`${w.ar} is “${w.tr}”, ${w.en}.`};
+}
+
+/* joined writing */
+const lettersOf = w => [...plain(w.ar)].filter(c => c !== ' ');
+const sepStr = arr => arr.join('  ');
+function mcJoin(w, pool){
+  const ls = lettersOf(w), rev = [...ls].reverse().join('');
+  const o = [plain(w.ar)];
+  if (rev !== o[0]) o.push(rev);
+  for (const x of wordPool(pool, w)){ if (o.length >= 4) break; const p = plain(x.ar); if (!o.includes(p) && !p.includes(' ')) o.push(p); }
+  const s = shuffle(o);
+  return {t:'mc', card:'W:'+plain(w.ar), kicker:'Join the letters', prompt:'Which word do these letters make?', chips:ls, opts:s.map(x => ({label:x, ar:true})), ans:s.indexOf(o[0]), explain:`${sepStr(ls)} joins up as ${w.ar} (${w.tr}).`};
+}
+function mcSplit(w, pool){
+  const ls = lettersOf(w), right = sepStr(ls), opts = [right];
+  const rev = sepStr([...ls].reverse()); if (rev !== right) opts.push(rev);
+  const j = ls.findIndex(c => famOf(c).length > 1);
+  if (j >= 0){ const alt = famOf(ls[j]).find(c => c !== ls[j]); const sw = [...ls]; sw[j] = alt; opts.push(sepStr(sw)); }
+  for (const x of wordPool(pool, w)){ if (opts.length >= 4) break; const s = sepStr(lettersOf(x)); if (!opts.includes(s) && !x.ar.includes(' ')) opts.push(s); }
+  const s = shuffle(opts.slice(0,4));
+  return {t:'mc', card:'W:'+plain(w.ar), kicker:'Split the word', prompt:'Which letters is this word made of?', big:w.ar, word:true, tag:'Remember: Arabic runs right to left', opts:s.map(x => ({label:x, ar:true, seq:true})), ans:s.indexOf(right), explain:`${w.ar} is ${right}, read from the right.`};
+}
+const joinWrite = w => Object.assign(write(w.ar, w), {join:true});
+
+/* one exercise for a review card */
+function learnedLetters(){ const s = new Set(lettersUpTo(firstOpen()-1)); Object.keys(S.srs).forEach(id => { if (id[0] === 'L') s.add(id.slice(2)); }); return [...s].filter(c => LMAP[c] && !LMAP[c].aloneOnly); }
+function cardItem(id, pool, wpool){
+  const k = id[0], v = id.slice(2);
+  if (k === 'L'){
+    if (LMAP[v].aloneOnly) return mcSL(v, pool);
+    const r = Math.random(), f = mcForm(v, pool);
+    if (r < 0.3) return write(v);
+    if (r < 0.5 && f) return f;
+    return r < 0.75 ? mcLS(v, pool) : mcSL(v, pool);
+  }
+  if (k === 'V') return mcSound(VIDX[v]);
+  const w = WIDX[v];
+  const opts = [() => mcRead(w, wpool), () => mcMean(w, wpool)];
+  if (hasAudio(w.ar)) opts.push(() => mcListen(w, wpool), () => mcListen(w, wpool));
+  if (!w.ar.includes(' ') && plain(w.ar).length <= 5){ opts.push(() => write(w.ar, w)); if (plain(w.ar).length >= 3) opts.push(() => mcSplit(w, wpool)); }
+  return pick(opts)();
+}
+function cardsToItems(ids){
+  const pool = learnedLetters(), wpool = ALLWORDS;
+  const items = ids.map(id => cardItem(id, pool.length >= 4 ? pool : LETTERS.slice(0,8).map(l=>l.c), wpool));
+  const writes = items.filter(x => x.t === 'write'), rest = items.filter(x => x.t !== 'write');
+  return [...rest, ...writes];
+}
+
+/* ================= Lessons ================= */
 function buildLesson(i){
+  const L = LESSONS[i], pool = lettersUpTo(i).filter(c=>!LMAP[c].aloneOnly), wpool = Object.values(WIDX).filter(w => ALLWORDS.includes(w));
   const items = [];
-  if (i === -1) return buildReview(lettersUpTo(Math.max(0, Math.min(firstOpen(), LESSONS.length) - 1)).filter(c=>!LMAP[c].aloneOnly), wordsUpTo(Math.max(0, firstOpen()-1)), true);
-  const L = LESSONS[i], pool = lettersUpTo(i).filter(c=>!LMAP[c].aloneOnly), wpool = wordsUpTo(i);
+  (L.intro||[]).forEach(c => items.push({t:'introL', c}));
   if (L.t === 'L') {
     L.letters.forEach(c => { items.push({t:'introL', c}); items.push(trace(c)); });
     const mixed = [];
@@ -610,35 +1136,64 @@ function buildLesson(i){
     return items;
   }
   if (L.t === 'W') {
-    (L.intro||[]).forEach(c => items.push({t:'introL', c}));
     L.words.forEach(w => items.push({t:'introW', w}));
     const ws = shuffle(L.words), mixed = [];
     ws.slice(0,4).forEach(w => mixed.push(mcRead(w, wpool)));
     ws.slice(0,2).forEach(w => mixed.push(mcMean(w, wpool)));
+    ws.filter(w => hasAudio(w.ar)).slice(0,2).forEach(w => mixed.push(mcListen(w, wpool)));
     items.push(...shuffle(mixed));
-    const short = shuffle(L.words.filter(w => w.ar.length <= 5));
-    short.slice(0,2).forEach(w => items.push(trace(w.ar)));
+    const short = shuffle(L.words.filter(w => plain(w.ar).length <= 5 && !w.ar.includes(' ')));
+    short.slice(0,2).forEach(w => items.push(trace(plain(w.ar))));
     (short.length >= 4 ? short.slice(2,4) : short.slice(0,2)).forEach(w => items.push(write(w.ar, w)));
     items.push(matchWords(L.words));
     return items;
   }
+  if (L.t === 'V') {
+    (L.marks||[]).forEach(m => items.push({t:'introMark', m}));
+    const cs = shuffle(pool.filter(SYL));
+    if (L.marks){
+      const mixed = [];
+      cs.slice(0,6).forEach((c,k) => { const mk = L.marks[k % L.marks.length]; if (mk === 'ّ') return; mixed.push(k % 2 ? mcSylRev(c, mk === 'ْ' ? 'َ' : mk) : mcSyl(c, mk, L.marks)); });
+      items.push(...mixed);
+    }
+    const ws = shuffle(L.words);
+    ws.slice(0,3).forEach(w => items.push({t:'introW', w, vowel:true}));
+    items.push(...shuffle(ws.slice(0,5).map(w => mcSound(w))));
+    ws.slice(0,2).forEach(w => items.push(Object.assign(mcMean(w, ws), {card:'V:'+w.ar})));
+    items.push(matchSounds(L.words));
+    return items;
+  }
+  if (L.t === 'J') {
+    items.push({t:'introJoin', breaks:!!L.breaks});
+    const ws = shuffle(L.words), mixed = [];
+    ws.slice(0,3).forEach(w => mixed.push(mcJoin(w, L.words)));
+    ws.slice(3,6).forEach(w => mixed.push(mcSplit(w, L.words)));
+    items.push(...shuffle(mixed));
+    const longW = ws.slice().sort((a,b) => plain(b.ar).length - plain(a.ar).length)[0];
+    items.push(trace(plain(longW.ar)));
+    ws.filter(w => w !== longW).slice(0,3).forEach(w => items.push(joinWrite(w)));
+    items.push(matchWords(L.words));
+    return items;
+  }
+  // unit review
   const U = UNITS[L.unit];
-  const ul = U.lessons.flatMap(l => l.letters || []), uw = U.lessons.flatMap(l => l.words || []);
-  return buildReview(ul.length ? ul : pool.slice(-6), uw, false, pool, wpool);
-}
-function buildReview(letters, words, practice, pool, wpool){
-  pool = pool || letters; wpool = wpool || words;
-  const items = [], ls = shuffle(letters), ws = shuffle(words);
-  ls.slice(0,3).forEach(c => items.push(mcLS(c,pool)));
-  ls.slice(3,5).forEach(c => items.push(mcSL(c,pool)));
-  ls.slice(0,2).forEach(c => { const f = mcForm(c,pool); if (f) items.push(f); });
-  ws.slice(0,3).forEach(w => items.push(mcRead(w, wpool)));
-  if (ws[3]) items.push(mcMean(ws[3], wpool));
-  const out = shuffle(items);
-  ls.slice(5,7).concat(ls.length < 6 ? ls.slice(0,2) : []).slice(0,2).forEach(c => out.push(write(c)));
-  const sw = ws.filter(w => w.ar.length <= 5); if (sw[0]) out.push(write(sw[0].ar, sw[0]));
-  out.push(ws.length >= 3 ? matchWords(ws) : matchLetters(ls.length >= 3 ? ls : LETTERS.slice(0,5).map(l=>l.c)));
+  const ids = [...new Set(U.lessons.flatMap(lessonCards))];
+  const out = cardsToItems(shuffle(ids).slice(0, 12));
+  const uw = U.lessons.filter(l => l.t !== 'V').flatMap(l => l.words || []), vw = U.lessons.filter(l => l.t === 'V').flatMap(l => l.words || []);
+  const ul = U.lessons.flatMap(l => l.letters || []);
+  out.push(vw.length ? matchSounds(vw) : uw.length >= 3 ? matchWords(uw) : matchLetters(ul.length >= 3 ? ul : pool.slice(-5)));
   return out;
+}
+function buildPractice(){
+  const ids = Object.keys(S.srs).filter(cardKnown);
+  const pick12 = shuffle(ids.length ? ids : lessonCards(LESSONS[0])).slice(0, 12);
+  return cardsToItems(pick12);
+}
+function buildDue(){ return cardsToItems(dueIds().slice(0, 15)); }
+function buildStory(st){
+  const items = [{t:'story', st}];
+  st.qs.forEach(([q, opts]) => { const o = shuffle(opts); items.push({t:'mc', kicker:'Check your understanding', prompt:q, opts:o.map(x => ({label:x})), ans:o.indexOf(opts[0]), explain:`The answer is: ${opts[0]}.`}); });
+  return items;
 }
 
 /* ================= Glyph layout + grading ================= */
@@ -875,23 +1430,32 @@ class Slate {
   destroy(){ this.ro.disconnect(); }
 }
 
+
 /* ================= Lesson runner ================= */
 let R = null; // running lesson
 const lbody = $('#lbody'), mainBtn = $('#mainBtn'), lfoot = $('#lfoot'), fb = $('#fb');
-function startLesson(i){
-  R = {i, queue: buildLesson(i), pos:0, graded:0, firstOk:0, slate:null, state:'answer', sel:null, lastRetry:null, peeked:false};
-  $('#home').hidden = true; document.querySelector('.top').hidden = true; lessonEl.hidden = false;
+function run(kind, queue, extra){
+  if (!queue.length) return toast('Nothing to review right now.');
+  R = Object.assign({kind, queue, pos:0, graded:0, firstOk:0, slate:null, state:'answer', sel:null, lastRetry:null, lastCard:null, peeked:false}, extra);
+  $('#home').hidden = true; $('#tabs').hidden = true; document.querySelector('.top').hidden = true; lessonEl.hidden = false;
   window.scrollTo(0,0); renderItem();
 }
+function startLesson(i){
+  if (i === -1) return run('practice', buildPractice());
+  if (i === -2) return run('review', buildDue());
+  run('lesson', buildLesson(i), {i});
+}
+function startStory(st){ run('story', buildStory(st), {st}); }
 function endLesson(){
   if (R && R.slate) R.slate.destroy();
-  R = null; lessonEl.hidden = true; $('#home').hidden = false; document.querySelector('.top').hidden = false; renderHome();
+  if (curAudio) curAudio.pause();
+  R = null; lessonEl.hidden = true; $('#home').hidden = false; $('#tabs').hidden = false; document.querySelector('.top').hidden = false; refreshViews();
 }
 $('#quitBtn').onclick = () => {
   if (!R || R.state === 'complete') return endLesson();
-  openSheet(`<h3>Leave this lesson?</h3><p>Your progress in this lesson won’t be saved.</p>
+  openSheet(`<h3>Leave this ${R.kind === 'story' ? 'story' : 'lesson'}?</h3><p>Your progress in it won’t be saved${R.kind === 'review' ? ', but cards you already answered keep their new review dates' : ''}.</p>
     <div class="row"><button class="ghost" id="quitYes">Leave</button><button class="btn small" data-close>Keep going</button></div>`);
-  $('#quitYes').onclick = () => { closeSheet(); endLesson(); };
+  $('#quitYes').onclick = () => { closeSheet(); if (R && R.kind !== 'lesson' && R.graded) save(); endLesson(); };
 };
 function setBar(){ $('#barFill').style.width = (R.pos / R.queue.length * 100) + '%'; }
 function footer(mode, opts={}){
@@ -904,9 +1468,12 @@ function footer(mode, opts={}){
     fb.innerHTML = `<h4>${mode==='ok'?ICON.check:ICON.x} ${esc(opts.title)}</h4>${opts.msg ? `<p>${opts.msg}</p>` : ''}${opts.override ? '<button class="link" id="overrideBtn">I wrote it right, count it</button>' : ''}`;
   }
 }
+const arWrap = s => esc(s).replace(/([؀-ۿ][؀-ۿً-ْـ ]*[؀-ۿً-ْ]|[؀-ۿ])/g, '<span class="naskh ar">$1</span>');
 function exHead(kicker, prompt, sub){
   return `<p class="kicker">${kicker}</p><h2 class="prompt">${prompt}</h2>${sub ? `<p class="sub">${sub}</p>` : ''}`;
 }
+const chipsHtml = ls => `<div class="lchips">${ls.map((c,i) => `${i ? '<span class="plus">+</span>' : ''}<b class="ar">${c}</b>`).join('')}</div>`;
+
 async function renderItem(){
   if (R.slate){ R.slate.destroy(); R.slate = null; }
   R.state = 'answer'; R.sel = null; setBar();
@@ -922,32 +1489,65 @@ async function renderItem(){
       <div class="intro">
         <div class="tile ar">${l.c}</div>
         <div class="facts">
-          <div class="name">${esc(l.n)}</div>
+          <div class="name">${esc(l.n)} ${spk(l.c)}</div>
           <div class="chips"><span class="chip"><i>Sound</i>${esc(l.s)}</span><span class="chip"><i>Franco</i>${esc(l.f)}</span>${l.join===false && !l.aloneOnly ? '<span class="chip">Never joins forward</span>' : ''}</div>
-          <p class="note">${esc(l.note)}</p>
+          <p class="note">${arWrap(l.note)}</p>
         </div>
         ${l.aloneOnly ? '' : `<div class="forms">${box('start','Start')}${box('mid','Middle')}${box('end','End')}${box('alone','Alone')}</div>
         <p class="rtl-note">Arabic runs right to left, so a word’s start is on the right.</p>`}
       </div>`;
+    playAudio(l.c);
+    footer('continue', {label:'Got it'}); return;
+  }
+  if (it.t === 'introMark'){
+    const m = MMAP[it.m];
+    ex.innerHTML = exHead('New vowel mark', `Meet ${esc(m.n)}`) + `
+      <div class="intro">
+        <div class="tile ar">${'ـ' + it.m}</div>
+        <div class="facts">
+          <div class="name">${esc(m.n)}</div>
+          <p class="note">${arWrap(m.note)}</p>
+          <div class="mark-ex ar">${m.ex}</div>
+        </div>
+      </div>
+      <p class="rtl-note">Everyday Egyptian writing usually leaves these marks out. They show up in children’s books, the Qurʾan and anywhere a word could be misread, and they’re the fastest way to learn to sound words out.</p>`;
+    footer('continue', {label:'Got it'}); return;
+  }
+  if (it.t === 'introJoin'){
+    ex.innerHTML = it.breaks ? exHead('Joined writing', 'Where words break') + `
+      <p class="note">Six letters never join the letter after them: <span class="naskh ar">${NONJOIN.join(' ')}</span>. After one of these, the next letter starts fresh, in its start form, even in the middle of a word.</p>
+      <div class="join-demo"><div>${chipsHtml(['و','ر','د'])}<span class="arrow">→</span><b class="ar">ورد</b><small>ward · roses: no joins at all</small></div>
+      <div>${chipsHtml(['ك','ت','ا','ب'])}<span class="arrow">→</span><b class="ar">كتاب</b><small>kitaab · book: a break after ا</small></div></div>`
+    : exHead('Joined writing', 'Letters hold hands') + `
+      <p class="note">Inside a word, letters connect to each other, and each one takes its start, middle or end shape. Read and write from the right.</p>
+      <div class="join-demo"><div>${chipsHtml(['ب','ي','ت'])}<span class="arrow">→</span><b class="ar">بيت</b><small>beit · house</small></div>
+      <div>${chipsHtml(['ش','م','س'])}<span class="arrow">→</span><b class="ar">شمس</b><small>shams · sun</small></div></div>`;
     footer('continue', {label:'Got it'}); return;
   }
   if (it.t === 'introW'){
     const w = it.w;
-    ex.innerHTML = exHead('New word', 'Read it, letter by letter') + `
-      <div class="word-hero"><div class="w naskh">${esc(w.ar)}</div><div class="tr">${esc(w.tr)}</div><div class="en">${esc(w.en)}</div></div>
-      <div class="breakdown">${breakdown(w.ar).map(b => b.gap ? '<div class="bd gap"></div>' : `<div class="bd"><b>${b.c}</b><span>${esc(b.s)}</span></div>`).join('')}</div>
-      ${w.note ? `<p class="note" style="text-align:center;margin:0 auto">${esc(w.note)}</p>` : ''}`;
+    ex.innerHTML = exHead(it.vowel ? 'Read with vowel marks' : 'New word', it.vowel ? 'Sound it out, mark by mark' : 'Read it, letter by letter') + `
+      <div class="word-hero"><div class="w naskh">${esc(w.ar)}</div><div class="tr">${esc(w.tr)} ${spk(w.ar)}</div><div class="en">${esc(w.en)}</div></div>
+      <div class="breakdown">${breakdownV(w.ar).map(b => b.gap ? '<div class="bd gap"></div>' : `<div class="bd"><b>${b.c}</b><span>${esc(b.s)}</span></div>`).join('')}</div>
+      ${w.note ? `<p class="note" style="text-align:center;margin:0 auto">${arWrap(w.note)}</p>` : ''}`;
+    playAudio(w.ar);
     footer('continue', {label:'Got it'}); return;
   }
+  if (it.t === 'story') return renderStory(ex, it);
   if (it.t === 'mc'){
-    const stage = it.big ? `<div class="big naskh ${it.word?'word':''}">${esc(it.big)}</div>${it.tag ? `<div class="tag">${esc(it.tag)}</div>`:''}` : `<div class="lat" style="${it.small?'font-size:clamp(34px,6vw,52px)':''}">${esc(it.lat)}</div>`;
+    let stage;
+    if (it.listen) stage = `<button class="listen-btn" data-say="${esc(it.listen)}" aria-label="Play again">${ICON.speaker}</button><div class="tag">Tap to hear it again</div>`;
+    else if (it.chips) stage = chipsHtml(it.chips);
+    else if (it.big) stage = `<div class="big naskh ${it.word?'word':''}">${esc(it.big)}</div>${it.tag ? `<div class="tag">${esc(it.tag)}</div>`:''}`;
+    else stage = `<div class="lat" style="${it.small?'font-size:clamp(34px,6vw,52px)':''}">${esc(it.lat)}</div>`;
     ex.innerHTML = exHead(it.kicker, esc(it.prompt)) + `<div class="stage">${stage}</div>
-      <div class="opts">${it.opts.map((o,k) => `<button class="opt" data-k="${k}">${o.ar ? `<span class="naskh ar">${esc(o.label)}</span>` : esc(o.label)}</button>`).join('')}</div>`;
+      <div class="opts">${it.opts.map((o,k) => `<button class="opt ${o.seq?'seq':''}" data-k="${k}">${o.ar ? `<span class="naskh ar">${esc(o.label)}</span>` : esc(o.label)}</button>`).join('')}</div>`;
     ex.querySelector('.opts').addEventListener('click', e => {
       const b = e.target.closest('.opt'); if (!b || R.state !== 'answer') return;
       ex.querySelectorAll('.opt').forEach(x => x.classList.remove('sel')); b.classList.add('sel');
       R.sel = +b.dataset.k; footer('check', {ready:true});
     });
+    if (it.listen) playAudio(it.listen);
     footer('check', {ready:false}); return;
   }
   if (it.t === 'match'){
@@ -959,7 +1559,7 @@ async function renderItem(){
     let pickA = null, pickB = null, left = it.pairs.length, misses = 0;
     ex.querySelector('.match').addEventListener('click', e => {
       const b = e.target.closest('.opt'); if (!b || b.disabled) return;
-      if (b.dataset.side === 'a'){ if (pickA) pickA.classList.remove('sel'); pickA = b; } else { if (pickB) pickB.classList.remove('sel'); pickB = b; }
+      if (b.dataset.side === 'a'){ if (pickA) pickA.classList.remove('sel'); pickA = b; playAudio(it.pairs[+b.dataset.k][0]); } else { if (pickB) pickB.classList.remove('sel'); pickB = b; }
       b.classList.add('sel');
       if (pickA && pickB){
         const a = pickA, c = pickB; pickA = pickB = null;
@@ -978,9 +1578,10 @@ async function renderItem(){
   const isTrace = it.t === 'trace';
   let prompt, kicker, sub = '';
   if (isTrace){ kicker = it.word ? 'Trace the word' : 'Trace'; prompt = it.word ? `Trace <span class="naskh ar">${esc(it.text)}</span>` : `Trace <span class="naskh ar">${it.text}</span> ${esc(LMAP[it.text].n)}`; sub = 'Start on the right and add dots last.'; }
+  else if (it.join){ kicker = 'Join the letters'; prompt = 'Write these as one joined word'; sub = `${chipsHtml(lettersOf(it.w))}<span class="join-mean">${esc(it.w.tr)} · ${esc(it.w.en)}</span>`; }
   else if (it.word){ kicker = 'Write from memory'; prompt = `Write “${esc(it.w.tr)}”`; sub = `Means “${esc(it.w.en)}”. Write the whole word, joined up.`; }
   else { const l = LMAP[it.text]; kicker = 'Write from memory'; prompt = `Write the letter for “${esc(l.s)}”`; sub = `It’s called ${esc(l.n)}. Write it on its own, the way it looks alone.`; }
-  ex.innerHTML = exHead(kicker, prompt, sub) + `<div class="slate-zone"><div class="slate-wrap"></div>
+  ex.innerHTML = exHead(kicker, prompt, '') + (sub ? `<div class="sub">${sub}</div>` : '') + `<div class="slate-zone"><div class="slate-wrap"></div>
     <div class="slate-tools">
       <button class="ghost" data-a="undo">${ICON.undo} Undo</button>
       <button class="ghost" data-a="clear">${ICON.clear} Clear</button>
@@ -998,6 +1599,63 @@ async function renderItem(){
     if (b.dataset.a === 'peek'){ R.peeked = true; slate.peek = true; slate.draw(); clearTimeout(slate.pt2); slate.pt2 = setTimeout(() => { slate.peek = false; slate.draw(); }, 1400); }
   });
 }
+function breakdownV(word){
+  const vocal = word !== plain(word), out = [];
+  for (const ch of word){
+    if (ch === ' '){ out.push({gap:true}); continue; }
+    if (MMAP[ch] && out.length && !out[out.length-1].gap){ const p = out[out.length-1]; p.c += ch; p.s = ch === 'ّ' ? p.s + p.s.slice(-1) : p.s + MMAP[ch].v; continue; }
+    const l = LMAP[ch];
+    let s = l ? l.s : (AUX[ch] || '');
+    if (vocal){ if (l && !['ا','و','ي','ة'].includes(ch)) s = cons(ch); if (ch === 'أ' || ch === 'إ') s = 'ʾ'; }
+    out.push({c:ch, s});
+  }
+  return out;
+}
+
+/* ---------- Story reader ---------- */
+function renderStory(ex, it){
+  const st = it.st;
+  R.shown = R.shown || 1;
+  const prefs = S.readPrefs || (S.readPrefs = {tr:false, en:false});
+  const tokHtml = t => t.p ? `<span class="punct">${esc(t.p)}</span>` : `<button class="tok" data-w="${esc(t.ar)}"><span class="tok-ar ar">${esc(t.ar)}</span><span class="tok-tr">${esc(t.tr)}</span></button>`;
+  ex.innerHTML = `<div class="story ${prefs.tr?'show-tr':''} ${prefs.en?'show-en':''}">
+    <div class="story-top">
+      <div><h2 class="story-title ar">${st.ar}</h2><p class="muted">${esc(st.en)}</p></div>
+      <div class="seg" role="group" aria-label="Show">
+        <button data-p="tr" aria-pressed="${prefs.tr}">Transliteration</button>
+        <button data-p="en" aria-pressed="${prefs.en}">Translation</button>
+      </div>
+    </div>
+    ${st.note ? `<p class="note small">${arWrap(st.note)}</p>` : ''}
+    <div class="lines">${st.lines.slice(0, R.shown).map((ln, i) => `
+      <div class="line ${i === R.shown-1 ? 'fresh' : ''}">
+        <div class="line-row">
+          <div class="line-ar">${ln.who ? `<span class="who">${tokHtml(ln.who)}<span class="punct">:</span></span>` : ''}${ln.toks.map(tokHtml).join('')}</div>
+          ${spk(lineText(ln))}
+        </div>
+        <p class="line-en">${esc(ln.en)}</p>
+      </div>`).join('')}</div>
+  </div>`;
+  ex.querySelector('.seg').addEventListener('click', e => {
+    const b = e.target.closest('[data-p]'); if (!b) return;
+    prefs[b.dataset.p] = !prefs[b.dataset.p]; b.setAttribute('aria-pressed', prefs[b.dataset.p]);
+    ex.querySelector('.story').classList.toggle('show-' + b.dataset.p, prefs[b.dataset.p]);
+  });
+  ex.querySelector('.lines').addEventListener('click', e => { const t = e.target.closest('.tok'); if (t) wordSheet(t.dataset.w); });
+  const last = ex.querySelector('.line.fresh'); if (last && R.shown > 1) last.scrollIntoView({block:'nearest', behavior:'smooth'});
+  playAudio(lineText(st.lines[R.shown-1]));
+  footer('continue', {label: R.shown < st.lines.length ? 'Next line' : 'Answer questions'});
+}
+function wordSheet(ar){
+  const w = WIDX[ar] || {ar, tr:'', en:''}, id = 'W:' + ar, inDeck = !!S.srs[id];
+  openSheet(`<div class="wsheet"><b class="ar">${esc(w.ar)}</b>${spk(w.ar, true)}</div>
+    <h3 style="text-align:center">${esc(w.tr)}</h3><p style="text-align:center">${esc(w.en)}</p>
+    <div class="breakdown">${breakdown(w.ar).map(b => b.gap ? '<div class="bd gap"></div>' : `<div class="bd"><b>${b.c}</b><span>${esc(b.s)}</span></div>`).join('')}</div>
+    <div class="row"><button class="ghost" data-close>Close</button><button class="btn small ${inDeck?'good':''}" id="addDeck" ${inDeck?'disabled':''}>${inDeck ? 'In your review' : 'Add to review'}</button></div>`);
+  playAudio(w.ar);
+  const b = $('#addDeck'); if (b && !inDeck) b.onclick = () => { srsAdd(id); S.srs[id].d = Date.now(); save(); b.textContent = 'Added'; b.disabled = true; };
+}
+
 function check(){
   const it = R.queue[R.pos];
   let ok, title, msg, override = false;
@@ -1005,14 +1663,15 @@ function check(){
     ok = R.sel === it.ans;
     lbody.querySelectorAll('.opt').forEach((b,k) => { b.disabled = true; b.classList.remove('sel'); if (k === it.ans) b.classList.add('right'); else if (k === R.sel) b.classList.add('wrong'); });
     title = ok ? pick(['Nice!','Correct','Exactly','Yes!']) : 'Not quite';
-    msg = esc(it.explain).replace(/([؀-ۿـ ]{1,}[؀-ۿ])/g, '<span class="naskh ar">$1</span>');
+    msg = arWrap(it.explain);
+    if (it.say && !it.listen) playAudio(it.say);
   } else {
     const g = grade(it, R.slate); ok = g.ok;
     R.slate.locked = true; R.slate.reveal = true; R.slate.draw();
     title = ok ? (it.t === 'trace' ? 'Nice tracing' : pick(['Nice writing!','Spot on','Well written'])) : 'Not quite';
-    msg = esc(g.msg).replace(/([؀-ۿ]+)/g, '<span class="naskh ar">$1</span>');
+    msg = arWrap(g.msg);
     if (it.t === 'write' && R.peeked && ok) msg += ' (You peeked, so try it blind next time.)';
-    override = !ok;
+    override = !ok && g.msg !== 'Write something first.';
   }
   R.peeked = false;
   finishCheck(ok, it);
@@ -1022,21 +1681,30 @@ function check(){
     const qi = R.lastRetry ? R.queue.lastIndexOf(R.lastRetry) : -1;
     if (qi > R.pos) R.queue.splice(qi, 1);
     if (!it._retry) R.firstOk++;
+    if (R.lastCard){ S.srs[R.lastCard.id] = R.lastCard.prev; srsGrade(R.lastCard.id, true); }
     setBar();
     footer('ok', {title:'Counted', msg:'Auto-checking handwriting is rough, so you have the final say.'});
   };
 }
 function finishCheck(ok, it){
   R.state = 'checked';
-  if (!it._retry){ R.graded++; if (ok) R.firstOk++; }
-  R.lastRetry = null;
+  R.lastRetry = null; R.lastCard = null;
+  if (!it._retry){
+    R.graded++; if (ok) R.firstOk++;
+    if (it.card && cardKnown(it.card)){ R.lastCard = {id:it.card, prev: S.srs[it.card] ? Object.assign({}, S.srs[it.card]) : undefined}; srsGrade(it.card, ok); if (!R.lastCard.prev) delete R.lastCard.prev; }
+  }
   if (!ok && !it._retry){ const c = Object.assign({}, it, {_retry:true}); R.queue.push(c); R.lastRetry = c; }
+  if (R.kind !== 'lesson' && R.graded % 5 === 0) save();
 }
 mainBtn.addEventListener('click', () => {
   if (!R) return;
   if (R.state === 'complete') return endLesson();
   const it = R.queue[R.pos];
-  if (R.state === 'answer' && (it.t === 'introL' || it.t === 'introW')){ R.pos++; return renderItem(); }
+  if (it.t === 'story'){
+    if (R.shown < it.st.lines.length){ R.shown++; return renderItem(); }
+    R.pos++; return renderItem();
+  }
+  if (R.state === 'answer' && /^intro/.test(it.t)){ R.pos++; return renderItem(); }
   if (R.state === 'answer'){ if (!mainBtn.disabled) check(); return; }
   if (R.state === 'checked'){ R.pos++; renderItem(); }
 });
@@ -1049,31 +1717,36 @@ document.addEventListener('keydown', e => {
 function complete(){
   R.state = 'complete'; $('#barFill').style.width = '100%';
   const acc = R.graded ? Math.round(R.firstOk / R.graded * 100) : 100;
-  const practice = R.i === -1;
-  const gained = (practice ? 6 : 10) + (acc === 100 ? 5 : acc >= 80 ? 2 : 0);
-  if (!practice) S.done[LESSONS[R.i].id] = true;
+  const base = {lesson:10, practice:6, review:8, story:10}[R.kind];
+  const gained = base + (acc === 100 ? 5 : acc >= 80 ? 2 : 0);
+  const L = R.kind === 'lesson' ? LESSONS[R.i] : null;
+  if (L){ S.done[L.id] = true; lessonCards(L).forEach(srsAdd); (L.intro||[]).forEach(c => srsAdd('L:'+c)); }
+  if (R.kind === 'story'){ S.stories = S.stories || {}; S.stories[R.st.id] = true; }
   S.xp += gained;
   const t = dayStr(), y = dayStr(new Date(Date.now()-864e5));
   if (S.lastDay !== t){ S.streak = S.lastDay === y ? S.streak + 1 : 1; S.lastDay = t; }
   if (S.today.day !== t) S.today = {day:t, xp:0};
   S.today.xp += gained;
   save();
-  const L = practice ? null : LESSONS[R.i];
-  const seal = L && L.t === 'L' ? L.letters.join(' ') : 'برافو';
+  const seal = L && L.t === 'L' ? L.letters.join(' ') : R.kind === 'story' ? R.st.ar : 'برافو';
+  const title = R.kind === 'story' ? 'Story finished' : R.kind === 'review' ? 'Review done' : R.kind === 'practice' ? 'Practice done' : L.t === 'R' ? 'Unit review done' : 'Lesson complete';
+  const due = dueIds().length;
   lbody.innerHTML = `<div class="ex"><div class="done-screen">
-    <div class="seal ar">${seal}</div>
-    <h2>${practice ? 'Practice done' : L.t === 'R' ? 'Unit review done' : 'Lesson complete'}</h2>
-    <p class="sub" style="margin:0">${acc === 100 ? 'Not a single slip.' : acc >= 80 ? 'Solid work.' : 'The ones you missed came back, so they’re sticking now.'}</p>
+    <div class="seal ar ${seal.length > 6 ? 'long' : ''}">${seal}</div>
+    <h2>${title}</h2>
+    <p class="sub" style="margin:0">${acc === 100 ? 'Not a single slip.' : acc >= 80 ? 'Solid work.' : 'The ones you missed came back, so they’re sticking now.'}${L && L.t !== 'R' ? ' Everything from this lesson is now in your review deck.' : ''}${R.kind === 'review' && due ? ` ${due} more ${due === 1 ? 'card is' : 'cards are'} still due.` : ''}</p>
     <div class="tiles"><div><b>+${gained}</b><span>XP</span></div><div><b>${acc}%</b><span>Accuracy</span></div><div><b>${S.streak}</b><span>Day streak</span></div></div>
   </div></div>`;
   footer('continue', {label:'Continue'});
 }
 
-renderHome();
+/* ================= Start ================= */
+LESSONS.forEach(l => { if (S.done[l.id]) { lessonCards(l).forEach(srsAdd); (l.intro||[]).forEach(c => srsAdd('L:'+c)); } });
+showView(view);
 startSync();
 window.addEventListener('online', () => { if (authed) pullRemote(); });
 document.addEventListener('visibilitychange', () => { if (!document.hidden && authed && lessonEl.hidden) pullRemote(); });
-</script>
 
+</script>
 </body>
 </html>

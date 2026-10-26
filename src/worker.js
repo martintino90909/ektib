@@ -1,7 +1,7 @@
 import {DurableObject} from 'cloudflare:workers';
 import {handleApi, makeStore} from './api.js';
 
-// One Durable Object holds Martin's Ektib progress (strongly consistent, private to this Worker).
+// One Durable Object holds Martin's Ektib progress and recordings (strongly consistent, private to this Worker).
 export class Store extends DurableObject {
   constructor(ctx, env) {
     super(ctx, env);
@@ -12,6 +12,10 @@ export class Store extends DurableObject {
   loginFailures() { return this.s.loginFailures(); }
   noteLoginFailure() { return this.s.noteLoginFailure(); }
   clearLoginFailures() { return this.s.clearLoginFailures(); }
+  audioIndex() { return this.s.audioIndex(); }
+  getAudio(k) { return this.s.getAudio(k); }
+  putAudio(k, type, buf, text) { return this.s.putAudio(k, type, buf, text); }
+  delAudio(k) { return this.s.delAudio(k); }
 }
 
 const mainStore = (env) => env.STORE.get(env.STORE.idFromName('main'));
