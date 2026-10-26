@@ -302,8 +302,9 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .tok-tr{display:none;font-size:13px;font-weight:700;color:var(--muted);direction:ltr;line-height:1.1;padding-bottom:2px}
 .show-tr .tok-tr{display:block}
 .punct{font-family:var(--naskh);font-size:clamp(28px,4.4vw,36px);line-height:1.6;color:var(--muted);margin-inline-start:-8px}
-.who{display:inline-flex;align-items:flex-end;color:var(--mango-deep)}
+.who{display:inline-flex;align-items:center;gap:2px;align-self:center;background:color-mix(in srgb,var(--mango) 16%,var(--surface));border:2px solid color-mix(in srgb,var(--mango) 45%,var(--line));border-radius:12px;padding:0 6px;margin-inline-end:4px}
 .who .tok{color:var(--mango-deep)}
+.who-ar{font-family:var(--naskh);font-size:clamp(18px,2.6vw,22px);line-height:1.7;font-weight:600}
 .line-en{display:none;margin:2px 0 0;color:var(--muted);font-size:16px}
 .show-en .line-en{display:block}
 .wsheet{display:flex;justify-content:center;align-items:center;gap:14px}
@@ -352,10 +353,33 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .opt.seq .naskh{letter-spacing:.02em;word-spacing:.15em}
 .seal.long{font-size:30px;width:auto;min-width:132px;padding:0 24px;border-radius:66px}
 
+.series{gap:14px}
+.series-head{display:grid;grid-template-columns:1fr auto;gap:16px;align-items:start}
+.series-ar{font-family:var(--naskh);font-size:30px;line-height:1.35;color:var(--enamel);text-align:center;background:color-mix(in srgb,var(--enamel) 9%,var(--surface));border:2px solid color-mix(in srgb,var(--enamel) 35%,var(--line));border-radius:16px;padding:8px 14px 12px;font-weight:600}
+.cast{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:8px}
+.cast-m{display:flex;align-items:center;gap:10px;border:1px solid var(--line);border-radius:12px;padding:6px 10px;background:var(--surface-2);min-width:0}
+.cast-m b{font-family:var(--naskh);font-size:22px;line-height:1.5;color:var(--mango-deep);font-weight:600;min-width:56px;text-align:center}
+.cast-m span{font-size:14px;color:var(--muted);line-height:1.3}
+.cast-m strong{color:var(--ink)}
+.episodes{display:grid;gap:12px}
+.ep-card{border:2px solid var(--line);background:var(--surface);border-radius:18px;box-shadow:0 5px 0 var(--line);padding:14px;display:grid;grid-template-columns:auto 1fr;gap:14px;text-align:left;align-items:start;transition:transform .08s}
+.ep-card:active{transform:translateY(3px);box-shadow:0 2px 0 var(--line)}
+.ep-num{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:19px;background:var(--mango);color:var(--on-mango);box-shadow:0 4px 0 var(--mango-deep);font-variant-numeric:tabular-nums}
+.ep-card.done .ep-num{background:var(--enamel);color:var(--on-enamel);box-shadow:0 4px 0 var(--enamel-deep)}
+.ep-card.locked .ep-num{background:var(--locked);color:var(--locked-ink);box-shadow:0 4px 0 var(--locked-deep)}
+.ep-card.locked{opacity:.7}
+.ep-body{display:grid;gap:4px;min-width:0}
+.ep-title{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}
+.ep-title b{font-size:19px;font-weight:800}
+.ep-title .ar{font-family:var(--naskh);font-size:26px;line-height:1.3;color:var(--enamel)}
+.ep-teaser{color:var(--muted);font-size:15.5px;line-height:1.4}
+.ep-card.done .sc-meta{color:var(--good-deep)}
 .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(92px + env(safe-area-inset-bottom,0px));z-index:60;background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:12px;font-weight:600;max-width:min(92vw,480px);box-shadow:0 8px 24px color-mix(in srgb,#000 25%,transparent)}
 @media (max-width:620px){
   .due-panel{grid-template-columns:1fr}
   .story-title{font-size:32px}
+  .series-head{grid-template-columns:1fr}
+  .series-ar{justify-self:start;font-size:24px}
 }
 </style>
 </head>
@@ -537,65 +561,278 @@ const VWORDS = Object.values(VIDX);
 
 /* ---------- Stories ---------- */
 const tok = s => { const [ar,tr,en] = s.split(':'); return en === undefined ? {p:ar} : {ar, tr, en:en.replace(/_/g,' ')}; };
-const Ln = (str, en, who) => ({toks: str.split(' ').map(tok), en, who: who ? tok(who) : null});
+const Ln = (str, en, who) => ({toks: str.split(' ').map(tok), en, who: who ? who.split(' ').map(tok) : null});
 const STORIES = [
- {id:'s-home', ar:'في البيت', en:'At home', lines:[
-   Ln('ده:da:this بيت:beit:house كبير:kibiir:big .', 'This is a big house.'),
-   Ln('البيت:il-beit:the_house ده:da:this في:fi:in اسكندرية:Iskindiriyya:Alexandria .', 'This house is in Alexandria.'),
-   Ln('في:fi:in البيت:il-beit:the_house بنت:bint:a_girl .', 'There’s a girl in the house.'),
-   Ln('البنت:il-bint:the_girl عايزة:ʿayza:wants شاي:shaai:tea .', 'The girl wants tea.'),
-   Ln('الشاي:ish-shaai:the_tea حلو:ḥilw:nice .', 'The tea is nice.'),
-   Ln('البنت:il-bint:the_girl مبسوطة:mabsuuṭa:happy .', 'The girl is happy.'),
- ], qs:[['Where is the house?',['In Alexandria','In Cairo','In London']],['What does the girl want?',['Tea','Coffee','Juice']],['How does the girl feel?',['Happy','Tired','Hungry']]]},
- {id:'s-breakfast', ar:'الفطار', en:'Breakfast', note:'Two Alexandrian giveaways here: فلافل instead of Cairo’s ṭaʿmiyya, and ناكلوا (naaklu, “we eat”) with the Alexandrian -u ending.', lines:[
-   Ln('أنا:ana:I جعان:gaʿaan:hungry .', 'I’m hungry.'),
-   Ln('إحنا:iḥna:we ناكلوا:naaklu:eat فول:fuul:fava_beans وفلافل:wi-falaafil:and_falafel .', 'We’re having fuul and falafel.'),
-   Ln('ماما:mama:Mum بتعمل:bitiʿmil:is_making بيض:beiḍ:eggs كمان:kamaan:too .', 'Mum is making eggs too.'),
-   Ln('الفطار:il-fiṭaar:breakfast جاهز:gaahiz:ready !', 'Breakfast is ready!'),
-   Ln('الأكل:il-akl:the_food حلو:ḥilw:good أوي:awi:really .', 'The food is really good.'),
-   Ln('الحمد:il-ḥamdu:praise لله:lillah:be_to_God .', 'Thank God.'),
- ], qs:[['What are they eating?',['Fuul and falafel','Cheese and tomatoes','Fish and rice']],['Who is making eggs?',['Mum','Dad','A friend']],['How is the food?',['Really good','Cold','Too salty']]]},
- {id:'s-sea', ar:'ع البحر', en:'By the sea', note:'Alexandrians add -u to “we” verbs: نروحوا (nirūḥu, “we go”) and نتمشوا (nitmashshu, “we walk”). In Cairo it’s nirūḥ and nitmashsha.', lines:[
-   Ln('النهارده:innaharda:today الجو:ig-gaww:the_weather حلو:ḥilw:lovely .', 'The weather is lovely today.'),
-   Ln('إحنا:iḥna:we نروحوا:nirūḥu:go ع:ʿa:to البحر:il-baḥr:the_sea .', 'We’re going down to the sea.'),
-   Ln('نتمشوا:nitmashshu:we_walk على:ʿala:along الكورنيش:il-kurniish:the_Corniche .', 'We walk along the Corniche.'),
-   Ln('البحر:il-baḥr:the_sea أزرق:azraʾ:blue والهوا:wil-hawa:and_the_breeze حلو:ḥilw:nice .', 'The sea is blue and the breeze is nice.'),
-   Ln('صاحبي:ṣaḥbi:my_friend عايز:ʿaayiz:wants درة:dura:corn مشوية:mashwiyya:grilled .', 'My friend wants grilled corn.'),
-   Ln('وأنا:w-ana:and_I عايز:ʿaayiz:want فريسكا:friska:fresca !', 'And I want fresca!'),
- ], qs:[['How is the weather?',['Lovely','Stormy','Very cold']],['Where do they walk?',['Along the Corniche','Through the market','Around the station']],['What does the friend want?',['Grilled corn','Fresca','Fish']]]},
- {id:'s-tram', ar:'الترام', en:'The tram', note:'Alexandria’s tram network dates back to the 1860s, one of the oldest in Africa.', lines:[
-   Ln('أنا:ana:I في:fi:at محطة:maḥaṭṭit:the_station_of الرمل:ir-Raml:Raml .', 'I’m at Raml Station.'),
-   Ln('الترام:it-traam:the_tram جه:geh:has_come !', 'The tram’s here!'),
-   Ln('الترام:it-traam:the_tram بطيء:baṭiiʾ:slow بس:bass:but حلو:ḥilw:nice .', 'The tram is slow, but it’s nice.'),
-   Ln('أنا:ana:I رايح:raayiḥ:am_going بحري:Baḥari:Bahari .', 'I’m going to Bahari.'),
-   Ln('فيه:fi:there’s قلعة:ʾalʿa:a_fort قديمة:ʾadiima:old هناك:hinaak:there .', 'There’s an old fort there.'),
-   Ln('اسمها:ismaha:its_name_is قلعة:ʾalʿit:the_citadel_of قايتباي:Qaytbaay:Qaitbay .', 'It’s called Qaitbay Citadel.'),
- ], qs:[['Where does he catch the tram?',['Raml Station','Sidi Gaber','The airport']],['What is the tram like?',['Slow but nice','Fast and crowded','Closed today']],['What is in Bahari?',['An old citadel','A football stadium','A shopping mall']]]},
- {id:'s-fish', ar:'سوق السمك', en:'The fish market', note:'Ṣayyadiyya is Alexandria’s own dish: fish on rice cooked brown with onions.', lines:[
-   Ln('النهارده:innaharda:today الجمعة:il-gumʿa:Friday .', 'Today is Friday.'),
-   Ln('أنا:ana:I وماما:wi-mama:and_Mum في:fi:at سوق:suuʾ:the_market_of السمك:is-samak:fish .', 'Mum and I are at the fish market.'),
-   Ln('ماما:mama:Mum عايزة:ʿayza:wants سمك:samak:fish للصيادية:liṣ-ṣayyadiyya:for_sayadiya .', 'Mum wants fish for ṣayyadiyya.'),
-   Ln('السمك:is-samak:the_fish ده:da:this بكام:bikaam:how_much ؟', 'How much is this fish?', 'ماما:mama:Mum'),
-   Ln('بمية:bi-miyya:for_a_hundred جني:gini:pounds الكيلو:il-kiilu:the_kilo .', 'A hundred pounds a kilo.', 'البياع:il-bayyaaʿ:the_seller'),
-   Ln('غالي:ghaali:expensive أوي:awi:very !', 'That’s too expensive!', 'ماما:mama:Mum'),
-   Ln('خلاص:khalaaṣ:fine ، بتسعين:bi-tisʿiin:for_ninety .', 'Fine, ninety.', 'البياع:il-bayyaaʿ:the_seller'),
- ], qs:[['What is Mum cooking?',['Ṣayyadiyya','Falafel','Liver sandwiches']],['What was the first price?',['100 pounds a kilo','90 pounds a kilo','50 pounds a kilo']],['What price did they agree on?',['90 pounds','100 pounds','80 pounds']]]},
- {id:'s-match', ar:'الماتش', en:'The match', note:'Al Ittihad is Alexandria’s best-known football club.', lines:[
-   Ln('النهارده:innaharda:today فيه:fi:there’s ماتش:matsh:a_match .', 'There’s a match today.'),
-   Ln('الاتحاد:il-Ittiḥaad:Al_Ittihad والأهلي:wil-Ahli:and_Al_Ahly .', 'Al Ittihad against Al Ahly.'),
-   Ln('كل:kull:all الناس:in-naas:the_people في:fi:in القهوة:il-ʾahwa:the_café .', 'Everyone is at the café.'),
-   Ln('جون:goon:goal !', 'Goal!'),
-   Ln('صاحبي:ṣaḥbi:my_friend زعلان:zaʿlaan:upset ، هو:huwwa:he’s أهلاوي:ahlaawi:an_Ahly_fan .', 'My friend is upset. He supports Al Ahly.'),
-   Ln('وأنا:w-ana:and_me ؟ أنا:ana:I’m اتحادي:ittiḥaadi:an_Ittihad_fan !', 'And me? I support Al Ittihad!'),
- ], qs:[['Who is playing?',['Al Ittihad and Al Ahly','Egypt and Morocco','Zamalek and Al Ahly']],['Why is the friend upset?',['He supports Al Ahly','He missed the match','The café is closed']],['Who does the narrator support?',['Al Ittihad','Al Ahly','Nobody']]]},
- {id:'s-storm', ar:'النوة', en:'The winter storm', note:'Alexandria’s winter storms are called نوة (nawwa), and the big ones each have their own name.', lines:[
-   Ln('النهارده:innaharda:today فيه:fi:there’s نوة:nawwa:a_storm .', 'There’s a storm today.'),
-   Ln('البحر:il-baḥr:the_sea عالي:ʿaali:high والمطر:wil-maṭar:and_the_rain كتير:kitiir:heavy .', 'The sea is high and the rain is heavy.'),
-   Ln('إحنا:iḥna:we قاعدين:ʾaʿdiin:are_staying في:fi:at البيت:il-beit:home .', 'We’re staying at home.'),
-   Ln('ماما:mama:Mum بتعمل:bitiʿmil:is_making شاي:shaai:tea بلبن:bi-laban:with_milk .', 'Mum is making tea with milk.'),
-   Ln('إحنا:iḥna:we نشربوا:nishrabu:drink الشاي:ish-shaai:the_tea ونتفرجوا:wi-nitfarragu:and_watch على:ʿala:— التلفزيون:it-tilivizyoon:TV .', 'We drink our tea and watch TV.'),
-   Ln('بكرة:bukra:tomorrow الجو:ig-gaww:the_weather هيبقى:hayibʾa:will_be حلو:ḥilw:nice ، إن:in:if شاء:shaaʾ:wills الله:allaah:God .', 'Tomorrow the weather will be nice, God willing.'),
- ], qs:[['What is the weather like?',['A storm with heavy rain','Hot and sunny','Foggy but dry']],['Where are they?',['At home','On the Corniche','At the market']],['What are they drinking?',['Tea with milk','Coffee','Juice']]]},
+ {id:'ep1', ar:'الوصول', en:'Arrival', teaser:'Yousef lands in Alexandria. Grandma has one concern: he looks thin.',
+  ex:{ar:'وحشتني', tr:'waḥashtini', en:'I missed you', note:'Literally “you made me lonely”. Egyptians say it to anyone they’ve missed: waḥashtini to a man, waḥashtiini to a woman.'},
+  lines:[
+   Ln('يوسف:Yuusif:Yousef جاي:gaay:is_coming من:min:from لندن:London:London .', 'Yousef is coming from London.'),
+   Ln('القطر:il-ʾaṭr:the_train وصل:wiṣil:has_arrived محطة:maḥaṭṭit:the_station_of سيدي:Sidi:Sidi جابر:Gaabir:Gaber .', 'The train pulls into Sidi Gaber station.'),
+   Ln('على:ʿala:on الرصيف:ir-raṣiif:the_platform ست:sitt:a_lady صغيرة:ṣughayyara:small بشنطة:bi-shanṭa:with_a_bag كبيرة:kibiira:big .', 'On the platform there’s a small lady with a big bag.'),
+   Ln('دي:di:that’s تيتة:teita:Grandma !', 'That’s Grandma!'),
+   Ln('يوسف:Yuusif:Yousef ! حبيبي:ḥabiibi:my_darling ! وحشتني:waḥashtini:I_missed_you أوي:awi:so_much !', 'Yousef! My darling! I missed you so much!', 'تيتة:teita:Grandma'),
+   Ln('وانتي:w-inti:and_you كمان:kamaan:too وحشتيني:waḥashtiini:I_missed_you يا:ya:(calling) تيتة:teita:Grandma .', 'I missed you too, Grandma.', 'يوسف:Yuusif:Yousef'),
+   Ln('تيتة:teita:Grandma بتبص:bitbuṣṣ:looks له:luh:at_him كويس:kwayyis:carefully .', 'Grandma takes a good look at him.'),
+   Ln('إيه:eih:what’s ده:da:this ؟ انت:inta:you خسيت:khassiit:have_lost_weight !', 'What’s this? You’ve got thin!', 'تيتة:teita:Grandma'),
+   Ln('لأ:laʾ:no يا:ya:(calling) تيتة:teita:Grandma ، أنا:ana:I’m كويس:kwayyis:fine .', 'No, Grandma, I’m fine.', 'يوسف:Yuusif:Yousef'),
+   Ln('مفيش:mafiish:no كلام:kalaam:arguments . الأكل:il-akl:the_food مستنيك:mistanniik:is_waiting_for_you في:fi:at البيت:il-beit:home .', 'No arguments. The food is waiting for you at home.', 'تيتة:teita:Grandma'),
+   Ln('في:fi:in الشنطة:ish-shanṭa:the_bag سندوتشات:sandawitshaat:sandwiches وبسبوسة:wi-basbuusa:and_basbousa وبرتقان:wi-burtuʾaan:and_oranges .', 'In the bag there are sandwiches, basbousa and oranges.'),
+   Ln('دول:dool:these لحد:liḥadd:until ما:ma:(until) نوصلوا:nuwṣalu:we_get البيت:il-beit:home بس:bass:only .', 'These are just until we get home.', 'تيتة:teita:Grandma'),
+   Ln('يوسف:Yuusif:Yousef بيضحك:biyiḍḥak:laughs .', 'Yousef laughs.'),
+   Ln('الإجازة:il-agaaza:holiday دي:di:this هتبقى:hatibʾa:is_going_to_be حلوة:ḥilwa:lovely ، وتقيلة:wi-tiʾiila:and_heavy !', 'This holiday is going to be lovely, and heavy!'),
+  ],
+  qs:[['Where is Yousef coming from?',['London','Cairo','Paris'],6],['What does Grandma think when she sees him?',['He’s got thin','He’s got tall','He looks tired'],10],['What is in Grandma’s bag?',['Sandwiches, basbousa and oranges','Clothes and books','Fish and bread']],['Where is the real food waiting?',['At home','At the station','At the café']]]},
+
+ {id:'ep2', ar:'الفطار', en:'Breakfast', teaser:'Fuul with all the trimmings, a grandmother who won’t take no, and a cat with a plan.',
+  ex:{ar:'بالتحابيش', tr:'bit-taḥabiish', en:'with all the trimmings', note:'Taḥabiish are the extras that make a dish: oil, lemon, cumin, onion, chilli. Egyptians also use it for a story told with all the colourful details.'},
+  lines:[
+   Ln('الساعة:is-saaʿa:it’s تمانية:tamanya:eight الصبح:iṣ-ṣubḥ:in_the_morning ، ويوسف:wi-Yuusif:and_Yousef نايم:naayim:is_asleep .', 'It’s eight in the morning, and Yousef is asleep.'),
+   Ln('يوسف:Yuusif:Yousef ! قوم:ʾuum:get_up ! الفطار:il-fiṭaar:breakfast جاهز:gaahiz:is_ready !', 'Yousef! Get up! Breakfast is ready!', 'تيتة:teita:Grandma'),
+   Ln('على:ʿala:on الترابيزة:it-tarabeiza:the_table فول:fuul:fuul بالتحابيش:bit-taḥabiish:with_all_the_trimmings .', 'On the table: fuul with all the trimmings.'),
+   Ln('فيه:fi:there’s زيت:zeit:oil وليمون:wi-lamuun:and_lemon وكمون:wi-kammuun:and_cumin وبصل:wi-baṣal:and_onion .', 'There’s oil, lemon, cumin and onion.'),
+   Ln('وفيه:wi-fi:and_there’s فلافل:falaafil:falafel سخنة:sukhna:hot وعيش:wi-ʿeish:and_bread بلدي:baladi:baladi .', 'And hot falafel and baladi bread.'),
+   Ln('كل:kul:eat يا:ya:(calling) حبيبي:ḥabiibi:darling ، كل:kul:eat !', 'Eat, darling, eat!', 'تيتة:teita:Grandma'),
+   Ln('يوسف:Yuusif:Yousef بياكل:biyaakul:eats رغيف:righiif:one_loaf ، واتنين:w-itnein:and_two ، وتلاتة:wi-talaata:and_three .', 'Yousef eats one loaf, then two, then three.'),
+   Ln('بس:bass:enough يا:ya:(calling) تيتة:teita:Grandma ! أنا:ana:I’m شبعت:shibiʿt:full !', 'Enough, Grandma! I’m full!', 'يوسف:Yuusif:Yousef'),
+   Ln('شبعت:shibiʿt:full ؟ انت:inta:you لسه:lissa:still ماكلتش:makaltish:haven’t_eaten حاجة:ḥaaga:anything !', 'Full? You haven’t eaten a thing yet!', 'تيتة:teita:Grandma'),
+   Ln('فجأة:fagʾa:suddenly ، القطة:il-ʾuṭṭa:the_cat مشمش:Mishmish:Mishmish تنط:tinuṭṭ:jumps على:ʿala:onto الترابيزة:it-tarabeiza:the_table .', 'Suddenly the cat, Mishmish, jumps onto the table.'),
+   Ln('مشمش:Mishmish:Mishmish تاخد:taakhud:grabs حتة:ḥittit:a_piece_of فلافل:falaafil:falafel وتجري:wi-tigri:and_runs !', 'Mishmish grabs a piece of falafel and runs off!'),
+   Ln('شفت:shuft:you_see ؟ حتى:ḥatta:even القطة:il-ʾuṭṭa:the_cat بتاكل:bitaakul:eats أكتر:aktar:more منك:minnak:than_you !', 'See? Even the cat eats more than you!', 'تيتة:teita:Grandma'),
+   Ln('يوسف:Yuusif:Yousef بيضحك:biyiḍḥak:laughs ، وياكل:wi-yaakul:and_eats رغيف:righiif:a_loaf رابع:raabiʿ:fourth .', 'Yousef laughs, and eats a fourth loaf.'),
+   Ln('ومشمش:wi-Mishmish:and_Mishmish ؟ نايمة:nayma:asleep تحت:taḥt:under الكنبة:il-kanaba:the_sofa ، ومبسوطة:wi-mabsuuṭa:and_very_happy .', 'And Mishmish? Asleep under the sofa, very pleased with herself.'),
+  ],
+  qs:[['What is on the table?',['Fuul with all the trimmings','Eggs and cheese','Fish and rice'],5],['Why does Yousef say “bass”?',['He’s full','The food is cold','He’s late'],9],['What does Mishmish steal?',['A piece of falafel','A loaf of bread','An onion']],['How many loaves does Yousef eat in the end?',['Four','Two','One']]]},
+
+ {id:'ep3', ar:'ع البحر', en:'By the sea', note:'Alexandrians add -u to “we” verbs: نروحوا (nirūḥu, “let’s go”) and نشتروا (nishtiru, “let’s buy”). In Cairo it’s nirūḥ and nishtiri.', teaser:'A windy walk on the Corniche, a brand-new cap, and an old fisherman with good aim.',
+  ex:{ar:'خلي بالك', tr:'khalli baalak', en:'watch out / be careful', note:'Literally “keep your mind on it”. To a woman: khalli baalik. You’ll hear it constantly, on every street and in every kitchen.'},
+  lines:[
+   Ln('بعد:baʿd:after العصر:il-ʿaṣr:mid-afternoon ، نور:Nuur:Nour بتيجي:bitiigi:comes_round .', 'Late in the afternoon, Nour comes round.'),
+   Ln('نور:Nuur:Nour بنت:bint:the_daughter_of خالته:khaltu:his_aunt ، وعندها:wi-ʿandaha:and_she’s عشرين:ʿishriin:twenty سنة:sana:years_old .', 'Nour is his cousin, his aunt’s daughter, and she’s twenty.'),
+   Ln('يلا:yalla:come_on يا:ya:(calling) يوسف:Yuusif:Yousef ، نروحوا:nirūḥu:let’s_go ع:ʿa:to البحر:il-baḥr:the_sea !', 'Come on, Yousef, let’s go down to the sea!', 'نور:Nuur:Nour'),
+   Ln('هما:humma:they بيتمشوا:biyitmashshu:walk على:ʿala:along الكورنيش:il-kurniish:the_Corniche لحد:liḥadd:as_far_as كوبري:kubri:the_bridge ستانلي:Stanli:Stanley .', 'They walk along the Corniche as far as Stanley Bridge.'),
+   Ln('الهوا:il-hawa:the_wind جامد:gaamid:is_strong النهارده:innaharda:today .', 'The wind is strong today.'),
+   Ln('يوسف:Yuusif:Yousef لابس:laabis:is_wearing كاب:kaab:a_cap جديد:gidiid:new من:min:from لندن:London:London .', 'Yousef is wearing a new cap from London.'),
+   Ln('خلي:khalli:keep بالك:baalak:your_mind من:min:on الكاب:il-kaab:the_cap !', 'Watch your cap!', 'نور:Nuur:Nour'),
+   Ln('متخافيش:matkhafiish:don’t_worry ، الكاب:il-kaab:cap ده:da:this ...', 'Don’t worry, this cap…', 'يوسف:Yuusif:Yousef'),
+   Ln('وفجأة:wi-fagʾa:and_suddenly ، الهوا:il-hawa:the_wind ياخد:yaakhud:takes الكاب:il-kaab:the_cap ويرميه:wi-yirmiih:and_throws_it في:fi:into البحر:il-baḥr:the_sea !', '…and suddenly the wind snatches the cap and throws it into the sea!'),
+   Ln('لأ:laʾ:no ! الكاب:il-kaab:the_cap !', 'No! My cap!', 'يوسف:Yuusif:Yousef'),
+   Ln('تحت:taḥt:below ، على:ʿala:on الصخر:iṣ-ṣakhr:the_rocks ، فيه:fi:there’s صياد:ṣayyaad:a_fisherman عجوز:ʿaguuz:old .', 'Below, on the rocks, there’s an old fisherman.'),
+   Ln('الصياد:iṣ-ṣayyaad:the_fisherman يرمي:yirmi:casts السنارة:is-sinnaara:his_rod ... ويطلع:wi-yiṭallaʿ:and_pulls_out الكاب:il-kaab:the_cap !', 'The fisherman casts his rod… and pulls out the cap!'),
+   Ln('ده:da:this بتاعك:bitaaʿak:yours يا:ya:(calling) ابني:ibni:son ؟', 'Is this yours, son?', 'الصياد:iṣ-ṣayyaad:the_fisherman'),
+   Ln('أيوه:aywa:yes ! شكرا:shukran:thank_you يا:ya:(calling) عمو:ʿammu:sir !', 'Yes! Thank you, sir!', 'يوسف:Yuusif:Yousef'),
+   Ln('العفو:il-ʿafw:you’re_welcome . أنا:ana:I’m عم:ʿamm:Uncle سعد:Saʿd:Saad . البحر:il-baḥr:the_sea بياخد:biyaakhud:takes وبيدي:wi-biyiddi:and_gives .', 'You’re welcome. I’m Amm Saad. The sea takes, and the sea gives.', 'الصياد:iṣ-ṣayyaad:the_fisherman'),
+   Ln('يلا:yalla:come_on ، نشتروا:nishtiru:let’s_buy درة:dura:corn مشوية:mashwiyya:grilled وفريسكا:wi-friska:and_fresca .', 'Come on, let’s get some grilled corn and fresca.', 'نور:Nuur:Nour'),
+   Ln('والكاب:wil-kaab:and_the_cap ؟ في:fi:in الشنطة:ish-shanṭa:the_bag ، لحد:liḥadd:until ما:ma:(until) الهوا:il-hawa:the_wind يهدى:yihda:dies_down .', 'And the cap? In the bag, until the wind dies down.'),
+  ],
+  qs:[['Where do they walk?',['Along the Corniche to Stanley Bridge','Through the fish market','To the train station'],4],['What happens to the cap?',['The wind blows it into the sea','Nour takes it','A cat steals it'],10],['Who gets the cap back?',['An old fisherman','Nour','A policeman']],['What do they buy at the end?',['Grilled corn and fresca','Ice cream','Liver sandwiches']]]},
+
+ {id:'ep4', ar:'المشروع', en:'The microbus', note:'In Alexandria a microbus is a مشروع (mashruuʿ), literally “a project”. Fares get passed forward from hand to hand, and the change comes back the same way.', teaser:'Yousef takes his first microbus alone. The fare system is genius. His sense of direction is not.',
+  ex:{ar:'ولا يهمك', tr:'wala yihimmak', en:'no worries / don’t mention it', note:'Literally “and it doesn’t concern you”. A warm, very Egyptian way to say “don’t worry about it”.'},
+  lines:[
+   Ln('النهارده:innaharda:today يوسف:Yuusif:Yousef رايح:raayiḥ:is_going المنتزه:il-Montaza:to_Montaza لوحده:lewaḥdu:on_his_own .', 'Today Yousef is going to Montaza on his own.'),
+   Ln('اركب:irkab:take مشروع:mashruuʿ:a_microbus ، أسرع:asraʿ:it’s_faster من:min:than التاكسي:it-taksi:a_taxi .', 'Take a microbus, it’s faster than a taxi.', 'تيتة:teita:Grandma'),
+   Ln('المشروع:il-mashruuʿ:the_microbus بيجري:biyigri:races على:ʿala:along الكورنيش:il-kurniish:the_Corniche ، والسواق:wis-sawwaaʾ:and_the_driver بيزعق:biyzaʿʾ:shouts .', 'The microbus races along the Corniche, and the driver shouts…'),
+   Ln('منتزه:Montaza:Montaza ! منتزه:Montaza:Montaza ! طياري:ṭayyaari:quick_quick !', 'Montaza! Montaza! Quick, quick!', 'السواق:is-sawwaaʾ:the_driver'),
+   Ln('يوسف:Yuusif:Yousef بيركب:biyirkab:gets_in ويقعد:wi-yuʾʿud:and_sits ورا:wara:at_the_back .', 'Yousef jumps in and sits at the back.'),
+   Ln('الأجرة:il-ugra:the_fare عشرة:ʿashara:ten جني:gini:pounds . بس:bass:but السواق:is-sawwaaʾ:the_driver بعيد:biʿiid:is_far_away !', 'The fare is ten pounds. But the driver is right at the front!'),
+   Ln('هات:haat:pass_me الأجرة:il-ugra:the_fare يا:ya:(calling) ابني:ibni:son .', 'Pass me the fare, son.', 'الست:is-sitt:the_woman'),
+   Ln('يوسف:Yuusif:Yousef بيديها:biyiddiiha:gives_her عشرين:ʿishriin:twenty جني:gini:pounds ، والفلوس:wil-filuus:and_the_money بتمشي:bitimshi:travels من:min:from إيد:iid:hand لإيد:li-iid:to_hand .', 'Yousef hands her twenty pounds, and the money travels forward, hand to hand.'),
+   Ln('وبعد:wi-baʿd:and_after شوية:shwayya:a_bit ، الباقي:il-baaʾi:the_change بيرجع:biyirgaʿ:comes_back ، من:min:from إيد:iid:hand لإيد:li-iid:to_hand .', 'A little later the change comes back, hand to hand.'),
+   Ln('السيستم:is-sistim:system ده:da:this عبقري:ʿabʾari:is_genius !', 'This system is genius!', 'يوسف:Yuusif:Yousef'),
+   Ln('بس:bass:but يوسف:Yuusif:Yousef بيبص:biybuṣṣ:looks من:min:out_of الشباك:ish-shibbaak:the_window ... فين:fein:where’s المنتزه:il-Montaza:Montaza ؟', 'But Yousef looks out of the window… where’s Montaza?'),
+   Ln('لو:law:if سمحت:samaḥt:you_please ، المنتزه:il-Montaza:Montaza فين:fein:where ؟', 'Excuse me, where’s Montaza?', 'يوسف:Yuusif:Yousef'),
+   Ln('المنتزه:il-Montaza:Montaza ؟ إحنا:iḥna:we عدينا:ʿaddeina:passed_it من:min:(since) زمان:zamaan:ages_ago ! دي:di:this_is المعمورة:il-Maʿmuura:Maamoura !', 'Montaza? We passed it ages ago! This is Maamoura!', 'السواق:is-sawwaaʾ:the_driver'),
+   Ln('المشروع:il-mashruuʿ:microbus كله:kullu:the_whole بيضحك:biyiḍḥak:laughs .', 'The whole microbus bursts out laughing.'),
+   Ln('ولا:wala:and_not يهمك:yihimmak:it_concerns_you ، أنا:ana:I’m راجع:raagiʿ:heading_back . خليك:khalliik:stay قاعد:ʾaaʿid:sitting .', 'No worries, I’m heading back. Stay where you are.', 'السواق:is-sawwaaʾ:the_driver'),
+   Ln('يوسف:Yuusif:Yousef وصل:wiṣil:got_to المنتزه:il-Montaza:Montaza ... بعد:baʿd:after ساعة:saaʿa:an_hour .', 'Yousef made it to Montaza… an hour later.'),
+  ],
+  qs:[['What does the driver shout?',['Montaza! Quick, quick!','Stop here!','Tickets, please!'],4],['How does the fare reach the driver?',['Passengers pass it hand to hand','Yousef walks to the front','The driver comes round'],9],['Where does Yousef end up?',['Maamoura, past Montaza','Montaza, on time','Raml Station']],['How long does it take him to get to Montaza?',['An hour','Ten minutes','All day']]]},
+
+ {id:'ep5', ar:'سوق السمك', en:'The fish market', note:'Ṣayyadiyya, “the fisherman’s dish”, is Alexandria’s own: fish on rice cooked brown with caramelised onions.', teaser:'Grandma wants fish for ṣayyadiyya. The seller wants a hundred pounds. Only one of them will win.',
+  ex:{ar:'يا حاجة', tr:'ya ḥagga', en:'madam (to an older woman)', note:'A ḥagga is a woman who has made the pilgrimage to Mecca, but Egyptians use it for any older woman as a mark of respect. For an older man: ya ḥagg.'},
+  lines:[
+   Ln('يوم:yoom:on الجمعة:il-gumʿa:Friday ، تيتة:teita:Grandma عايزة:ʿayza:wants تعمل:tiʿmil:to_make صيادية:ṣayyadiyya:sayadiya .', 'On Friday, Grandma wants to make ṣayyadiyya.'),
+   Ln('يلا:yalla:come_on يا:ya:(calling) يوسف:Yuusif:Yousef ، ننزلوا:ninzilu:let’s_go_down السوق:is-suuʾ:to_the_market .', 'Come on, Yousef, let’s go down to the market.', 'تيتة:teita:Grandma'),
+   Ln('السوق:is-suuʾ:the_market في:fi:is_in الأنفوشي:il-Anfuushi:Anfushi ، جنب:ganb:next_to البحر:il-baḥr:the_sea .', 'The market is in Anfushi, right by the sea.'),
+   Ln('ريحة:riiḥit:the_smell_of السمك:is-samak:fish في:fi:in كل:kull:every حتة:ḥitta:corner .', 'The smell of fish is everywhere.'),
+   Ln('وفجأة:wi-fagʾa:and_suddenly ، يوسف:Yuusif:Yousef بيشوف:biyshuuf:sees وش:wishsh:a_face يعرفه:yiʿrafu:he_knows .', 'Suddenly Yousef sees a face he knows.'),
+   Ln('ده:da:that’s عم:ʿamm:Uncle سعد:Saʿd:Saad ، الصياد:iṣ-ṣayyaad:the_fisherman !', 'That’s Amm Saad, the fisherman!', 'يوسف:Yuusif:Yousef'),
+   Ln('أهلا:ahlan:hello يا:ya:(calling) بتاع:bitaaʿ:the_guy_with الكاب:il-kaab:the_cap !', 'Well hello, cap boy!', 'عم:ʿamm:Amm سعد:Saʿd:Saad'),
+   Ln('السمك:is-samak:fish ده:da:this بكام:bikaam:how_much ؟', 'How much is this fish?', 'تيتة:teita:Grandma'),
+   Ln('الكيلو:il-kiilu:a_kilo بمية:bi-miyya:is_a_hundred جني:gini:pounds يا:ya:(calling) حاجة:ḥagga:madam .', 'A hundred pounds a kilo, madam.', 'عم:ʿamm:Amm سعد:Saʿd:Saad'),
+   Ln('مية:miyya:a_hundred ؟ ليه:leih:why ؟ هو:huwwa:does السمك:is-samak:fish ده:da:this بيتكلم:biyitkallim:talk ؟', 'A hundred? Why? Does this fish talk?', 'تيتة:teita:Grandma'),
+   Ln('ده:da:this سمك:samak:fish طازة:ṭaaza:fresh ، لسه:lissa:just طالع:ṭaaliʿ:out من:min:of البحر:il-baḥr:the_sea !', 'This fish is fresh, just out of the sea!', 'عم:ʿamm:Amm سعد:Saʿd:Saad'),
+   Ln('سبعين:sabʿiin:seventy .', 'Seventy.', 'تيتة:teita:Grandma'),
+   Ln('تسعين:tisʿiin:ninety .', 'Ninety.', 'عم:ʿamm:Amm سعد:Saʿd:Saad'),
+   Ln('تمانين:tamaniin:eighty . وده:wi-da:and_this_is حفيدي:ḥafiidi:my_grandson ، جاي:gaay:who’s_come من:min:from لندن:London:London !', 'Eighty. And this is my grandson, all the way from London!', 'تيتة:teita:Grandma'),
+   Ln('خلاص:khalaaṣ:fine ، تمانين:tamaniin:eighty ، علشان:ʿalashaan:for بتاع:bitaaʿ:the_guy_with الكاب:il-kaab:the_cap .', 'Fine, eighty, for cap boy.', 'عم:ʿamm:Amm سعد:Saʿd:Saad'),
+   Ln('بالليل:bil-leil:in_the_evening ، الصيادية:iṣ-ṣayyadiyya:the_sayadiya على:ʿala:is_on الترابيزة:it-tarabeiza:the_table ، والرز:wir-ruzz:and_the_rice بني:bunni:brown بالبصل:bil-baṣal:with_onions .', 'That evening the ṣayyadiyya is on the table, the rice brown with onions.'),
+   Ln('تيتة:teita:Grandma ، انتي:inti:you’re أشطر:ashṭar:the_smartest واحدة:waḥda:woman في:fi:in اسكندرية:Iskindiriyya:Alexandria .', 'Grandma, you’re the smartest woman in Alexandria.', 'يوسف:Yuusif:Yousef'),
+  ],
+  qs:[['Where is the fish market?',['In Anfushi, by the sea','In Montaza','Next to the station'],4],['Who do they bump into?',['Amm Saad, the fisherman','Nour','The microbus driver'],7],['What price do they agree on?',['80 pounds a kilo','100 pounds a kilo','70 pounds a kilo'],15],['What colour is the ṣayyadiyya rice?',['Brown','White','Yellow']]]},
+
+ {id:'ep6', ar:'الترام', en:'The tram', note:'Qaitbay Citadel stands where the Lighthouse of Alexandria once stood, one of the Seven Wonders of the Ancient World. Earthquakes brought it down centuries ago.', teaser:'The slowest tram in Africa, the view from the window, and a wonder of the world that isn’t there any more.',
+  ex:{ar:'مش طبيعي', tr:'mish ṭabiiʿi', en:'unbelievable / you’re something else', note:'Literally “not normal”. Said with a laugh to a friend being ridiculous, or about anything amazing: the food was mish ṭabiiʿi.'},
+  lines:[
+   Ln('يوسف:Yuusif:Yousef ونور:wi-Nuur:and_Nour في:fi:at محطة:maḥaṭṭit:the_station_of الرمل:ir-Raml:Raml .', 'Yousef and Nour are at Raml Station.'),
+   Ln('الترام:it-traam:the_tram أصفر:aṣfar:is_yellow وقديم:wi-ʾadiim:and_old ، وبيعمل:wi-biyiʿmil:and_goes تن:tinn:ding تن:tinn:ding .', 'The tram is yellow and old, and it goes ding-ding.'),
+   Ln('نركبوا:nirkabu:let’s_ride الترام:it-traam:the_tram لحد:liḥadd:as_far_as بحري:Baḥari:Bahari .', 'Let’s take the tram to Bahari.', 'نور:Nuur:Nour'),
+   Ln('الترام:it-traam:tram ده:da:this بطيء:baṭiiʾ:slow أوي:awi:very . اللي:illi:someone ماشي:maashi:walking أسرع:asraʿ:is_faster منه:minnu:than_it !', 'This tram is so slow. Someone walking is faster!', 'يوسف:Yuusif:Yousef'),
+   Ln('الترام:it-traam:the_tram مش:mish:isn’t للسرعة:lis-surʿa:for_speed . الترام:it-traam:the_tram للفرجة:lil-furga:is_for_the_view .', 'The tram isn’t for speed. The tram is for the view.', 'نور:Nuur:Nour'),
+   Ln('من:min:from الشباك:ish-shibbaak:the_window ، يوسف:Yuusif:Yousef بيشوف:biyshuuf:sees عماير:ʿamaayir:buildings قديمة:ʾadiima:old وبلكونات:wi-balakoonaat:and_balconies وغسيل:wi-ghasiil:and_washing .', 'From the window Yousef sees old buildings, balconies and washing hung out to dry.'),
+   Ln('وراجل:wi-raagil:and_a_man بيبيع:biybiiʿ:selling ترمس:tirmis:lupin_beans ، وعيال:wi-ʿiyaal:and_kids بيلعبوا:biyilʿabu:playing كورة:kora:football .', 'A man selling lupin beans, and kids playing football.'),
+   Ln('في:fi:in بحري:Baḥari:Bahari ، هما:humma:they بيمشوا:biyimshu:walk لحد:liḥadd:up_to القلعة:il-ʾalʿa:the_citadel .', 'In Bahari they walk up to the citadel.'),
+   Ln('دي:di:this_is قلعة:ʾalʿit:the_citadel_of قايتباي:Qaytbaay:Qaitbay .', 'This is Qaitbay Citadel.', 'نور:Nuur:Nour'),
+   Ln('زمان:zamaan:long_ago ، هنا:hina:right_here ، كان:kaan:there_was فيه:fi:(there_was) فنار:fanaar:a_lighthouse كبير:kibiir:huge .', 'Long ago, right here, there was a huge lighthouse.', 'نور:Nuur:Nour'),
+   Ln('فنار:fanaar:the_Lighthouse_of اسكندرية:Iskindiriyya:Alexandria ، واحد:waaḥid:one من:min:of عجايب:ʿagaayib:the_wonders_of الدنيا:id-dunya:the_world .', 'The Lighthouse of Alexandria, one of the wonders of the world.', 'نور:Nuur:Nour'),
+   Ln('وفين:wi-fein:and_where’s هو:huwwa:it دلوقتي:dilwaʾti:now ؟', 'So where is it now?', 'يوسف:Yuusif:Yousef'),
+   Ln('وقع:wiʾiʿ:it_fell من:min:(since) زمان:zamaan:ages_ago . حجارته:ḥigaartu:its_stones في:fi:are_in القلعة:il-ʾalʿa:the_citadel ، وجوه:wi-guwwa:and_under البحر:il-baḥr:the_sea .', 'It fell down ages ago. Its stones are in the citadel, and under the sea.', 'نور:Nuur:Nour'),
+   Ln('يوسف:Yuusif:Yousef بيبص:biybuṣṣ:looks للبحر:lil-baḥr:at_the_sea كتير:kitiir:for_a_long_time .', 'Yousef looks out at the sea for a long time.'),
+   Ln('يعني:yaʿni:so الكاب:il-kaab:my_cap بتاعي:bitaaʿi:my كان:kaan:was بيعوم:biyʿuum:swimming جنب:ganb:next_to عجيبة:ʿagiiba:a_wonder من:min:of عجايب:ʿagaayib:the_wonders_of الدنيا:id-dunya:the_world ؟', 'So my cap went swimming next to a wonder of the world?', 'يوسف:Yuusif:Yousef'),
+   Ln('نور:Nuur:Nour بتضحك:bitiḍḥak:laughs . انت:inta:you مش:mish:are_not طبيعي:ṭabiiʿi:normal !', 'Nour laughs. “You’re unbelievable!”'),
+  ],
+  qs:[['What does Nour say the tram is for?',['The view','Speed','Carrying fish'],5],['What do they visit in Bahari?',['Qaitbay Citadel','Stanley Bridge','The Library'],9],['What stood there long ago?',['The Lighthouse of Alexandria','A royal palace','A football stadium'],13],['Why does Nour laugh?',['Yousef says his cap swam next to a wonder of the world','The tram breaks down','Yousef falls over']]]},
+
+ {id:'ep7', ar:'الماتش', en:'The match', note:'Al Ittihad, founded in 1914, is Alexandria’s big club. In an Alexandrian café, choose your team carefully.', teaser:'Ittihad against Ahly in a packed café. Everyone asks who Yousef supports. Wrong answer.',
+  ex:{ar:'خلاص', tr:'khalaaṣ', en:'that’s it / done / fine', note:'One of the most useful words in Egyptian: it ends arguments, closes deals and settles who you support.'},
+  lines:[
+   Ln('النهارده:innaharda:today الاتحاد:il-Ittiḥaad:Al_Ittihad قصاد:ʾuṣaad:against الأهلي:il-Ahli:Al_Ahly .', 'Today it’s Al Ittihad against Al Ahly.'),
+   Ln('القهوة:il-ʾahwa:the_café مليانة:malyaana:is_full_of ناس:naas:people ، وكل:wi-kull:and_every الكراسي:il-karaasi:chair قدام:ʾuddaam:faces التلفزيون:it-tilivizyoon:the_TV .', 'The café is packed, and every chair faces the TV.'),
+   Ln('نور:Nuur:Nour اتحادية:ittiḥaadiyya:supports_Ittihad ، وعم:wi-ʿamm:and_Uncle سعد:Saʿd:Saad كمان:kamaan:too .', 'Nour supports Ittihad, and so does Amm Saad.'),
+   Ln('بس:bass:but صاحب:ṣaaḥib:the_owner_of القهوة:il-ʾahwa:the_café أهلاوي:ahlaawi:supports_Ahly .', 'But the café owner supports Ahly.'),
+   Ln('وانت:w-inta:and_you يا:ya:(calling) يوسف:Yuusif:Yousef ؟ اتحادي:ittiḥaadi:Ittihad ولا:walla:or أهلاوي:ahlaawi:Ahly ؟', 'And you, Yousef? Ittihad or Ahly?', 'عم:ʿamm:Amm سعد:Saʿd:Saad'),
+   Ln('أنا:ana:I ... بشجع:bashaggaʿ:support أرسنال:Arsinaal:Arsenal .', 'I… support Arsenal.', 'يوسف:Yuusif:Yousef'),
+   Ln('القهوة:il-ʾahwa:café كلها:kullaha:the_whole بتسكت:bitiskut:goes_quiet .', 'The whole café goes quiet.'),
+   Ln('النهارده:innaharda:today انت:inta:you’re اتحادي:ittiḥaadi:Ittihad . خلاص:khalaaṣ:that’s_settled .', 'Today you’re Ittihad. That’s settled.', 'نور:Nuur:Nour'),
+   Ln('الماتش:il-matsh:the_match بيبدأ:biyibdaʾ:starts ، والأهلي:wil-Ahli:and_Al_Ahly بيجيب:biygiib:score جون:goon:a_goal .', 'The match starts, and Al Ahly score.'),
+   Ln('صاحب:ṣaaḥib:the_owner_of القهوة:il-ʾahwa:the_café بيرقص:biyurʾuṣ:dances على:ʿala:on الترابيزة:it-tarabeiza:the_table .', 'The café owner dances on a table.'),
+   Ln('الدقايق:id-daʾaayiʾ:the_minutes بتعدي:bitʿaddi:go_by . تمانين:tamaniin:eighty . خمسة:khamsa:eighty-five وتمانين:wi-tamaniin:(and_eighty) .', 'The minutes tick by. Eighty. Eighty-five.'),
+   Ln('وفي:wi-fi:and_in الدقيقة:id-diʾiiʾa:minute تسعين:tisʿiin:ninety ، الاتحاد:il-Ittiḥaad:Al_Ittihad بيجيب:biygiib:score جون:goon:a_goal !', 'And in the ninetieth minute, Al Ittihad score!'),
+   Ln('جووووون:goooon:GOAL !', 'GOOOAL!'),
+   Ln('يوسف:Yuusif:Yousef بينط:biynuṭṭ:jumps_up ويحضن:wi-yiḥḍun:and_hugs عم:ʿamm:Uncle سعد:Saʿd:Saad .', 'Yousef leaps up and hugs Amm Saad.'),
+   Ln('الماتش:il-matsh:the_match بيخلص:biyikhlaṣ:ends تعادل:taʿaadul:in_a_draw .', 'The match ends in a draw.'),
+   Ln('تعادل:taʿaadul:a_draw . كله:kullu:everyone مبسوط:mabsuuṭ:is_happy ... ومحدش:wi-maḥaddish:and_nobody مبسوط:mabsuuṭ:is_happy .', 'A draw. Everyone’s happy… and nobody’s happy.', 'صاحب:ṣaaḥib:the_owner_of القهوة:il-ʾahwa:the_café'),
+   Ln('انت:inta:you’re اتحادي:ittiḥaadi:Ittihad دلوقتي:dilwaʾti:now ، يا:ya:(calling) بتاع:bitaaʿ:the_guy_with الكاب:il-kaab:the_cap .', 'You’re Ittihad now, cap boy.', 'عم:ʿamm:Amm سعد:Saʿd:Saad'),
+  ],
+  qs:[['Who does the café owner support?',['Al Ahly','Al Ittihad','Arsenal'],4],['What happens when Yousef says “Arsenal”?',['The whole café goes quiet','Everyone cheers','The TV switches off'],8],['When does Al Ittihad score?',['In the 90th minute','In the first minute','At half time'],13],['How does the match end?',['A draw','An Ahly win','An Ittihad win']]]},
+
+ {id:'ep8', ar:'النوة', en:'The storm', note:'Alexandria’s winter storms are called نوات (nawwaat). Alexandrians know the big ones by name and roughly when each will come.', teaser:'A winter storm, a power cut, one candle, and a story Grandma has never told before.',
+  ex:{ar:'الله يرحمه', tr:'allaah yirḥamu', en:'God rest his soul', note:'Said every time you mention someone who has died. For a woman: allaah yirḥamha.'},
+  lines:[
+   Ln('في:fi:in الشتا:ish-shita:winter ، اسكندرية:Iskindiriyya:Alexandria فيها:fiiha:has نوات:nawwaat:storms .', 'In winter, Alexandria has its storms.'),
+   Ln('النهارده:innaharda:today النوة:in-nawwa:the_storm جامدة:gamda:is_fierce ، مطر:maṭar:rain وبرق:wi-barʾ:and_lightning ورعد:wi-raʿd:and_thunder .', 'Today’s storm is fierce: rain, lightning and thunder.'),
+   Ln('والموج:wil-moog:and_the_waves بيعدي:biyʿaddi:crash_over سور:suur:the_wall_of الكورنيش:il-kurniish:the_Corniche .', 'Waves are crashing over the Corniche wall.'),
+   Ln('وفجأة:wi-fagʾa:and_suddenly ... النور:in-nuur:the_power قطع:ʾaṭaʿ:cuts_out !', 'And suddenly… the power cuts out!'),
+   Ln('تيتة:teita:Grandma ! مش:mish:I_can’t شايف:shaayif:see حاجة:ḥaaga:anything !', 'Grandma! I can’t see a thing!', 'يوسف:Yuusif:Yousef'),
+   Ln('متخافش:matkhafsh:don’t_be_scared . استنى:istanna:wait .', 'Don’t be scared. Wait.', 'تيتة:teita:Grandma'),
+   Ln('تيتة:teita:Grandma بتولع:bitwallaʿ:lights شمعة:shamʿa:a_candle ، ومشمش:wi-Mishmish:and_Mishmish بتيجي:bitiigi:comes تقعد:tuʾʿud:to_sit جنبهم:ganbuhum:beside_them .', 'Grandma lights a candle, and Mishmish comes to sit beside them.'),
+   Ln('كل:kull:every نوة:nawwa:storm ليها:liiha:has اسم:ism:a_name ، زي:zayy:like الناس:in-naas:people .', 'Every storm has a name, just like people.', 'تيتة:teita:Grandma'),
+   Ln('لما:lamma:when كنت:kunt:I_was صغيرة:ṣughayyara:young ، جت:gat:there_came نوة:nawwa:a_storm كبيرة:kibiira:huge ، والبحر:wil-baḥr:and_the_sea دخل:dakhal:came_into الشارع:ish-shaariʿ:the_street .', 'When I was young, a huge storm came, and the sea came into the street.', 'تيتة:teita:Grandma'),
+   Ln('وأنا:w-ana:and_I كنت:kunt:was واقفة:waʾfa:standing ، مش:mish:not عارفة:ʿarfa:knowing أعدي:aʿaddi:how_to_cross .', 'And there I was, standing there, not knowing how to get across.', 'تيتة:teita:Grandma'),
+   Ln('وجه:wi-geh:and_along_came شاب:shaab:a_young_man طويل:ṭawiil:tall ، شالني:shaalni:picked_me_up ، وعداني:wi-ʿaddaani:and_carried_me_across .', 'Along came a tall young man, picked me up and carried me across.', 'تيتة:teita:Grandma'),
+   Ln('الشاب:ish-shaab:that_young_man ده:da:(that) كان:kaan:was جدك:giddak:your_grandfather ، الله:allaah:God يرحمه:yirḥamu:rest_his_soul .', 'That young man was your grandfather, God rest his soul.', 'تيتة:teita:Grandma'),
+   Ln('بجد:bi-gadd:seriously ؟', 'Seriously?', 'يوسف:Yuusif:Yousef'),
+   Ln('تيتة:teita:Grandma بتضحك:bitiḍḥak:laughs . مين:miin:who يعرف:yiʿraf:knows ؟', 'Grandma laughs. “Who knows?”'),
+   Ln('نعملوا:niʿmilu:let’s_make شاي:shaai:tea بلبن:bi-laban:with_milk ، ونستنوا:wi-nistannu:and_wait_for النور:in-nuur:the_power .', 'Let’s make tea with milk and wait for the power to come back.', 'تيتة:teita:Grandma'),
+   Ln('بعد:baʿd:after ساعة:saaʿa:an_hour ، النور:in-nuur:the_power بيرجع:biyirgaʿ:comes_back .', 'An hour later, the power comes back.'),
+   Ln('بس:bass:but يوسف:Yuusif:Yousef مكانش:makaansh:didn’t عايز:ʿaayiz:want الحكاية:il-ḥikaaya:the_story تخلص:tikhlaṣ:to_end .', 'But Yousef didn’t want the story to end.'),
+  ],
+  qs:[['What happens suddenly?',['The power cuts out','A window breaks','Nour arrives'],4],['What does Grandma light?',['A candle','The stove','A torch'],7],['Who carried Grandma across the flooded street?',['Yousef’s grandfather','Amm Saad','A policeman'],12],['What do they drink while they wait?',['Tea with milk','Mint tea','Coffee']]]},
+
+ {id:'ep9', ar:'الكبدة', en:'Liver at midnight', note:'كبدة اسكندراني, Alexandrian-style liver, is chopped and fried with garlic and green chilli, and it’s famous across Egypt.', teaser:'Midnight, a street cart, and one question: spicy or normal? Yousef chooses badly.',
+  ex:{ar:'اسكندراني أصلي', tr:'iskandaraani aṣli', en:'a true Alexandrian', note:'Aṣli means original or genuine. A woman is iskandaraniyya aṣliyya. Being called this by an Alexandrian is high praise.'},
+  lines:[
+   Ln('الساعة:is-saaʿa:it’s اتناشر:itnaashar:twelve بالليل:bil-leil:at_night ، ونور:wi-Nuur:and_Nour بتتصل:bititṣil:calls .', 'It’s midnight, and Nour calls.'),
+   Ln('انت:inta:are_you جعان:gaʿaan:hungry ؟ تعالى:taʿaala:come ، ناكلوا:naaklu:let’s_eat كبدة:kibda:liver اسكندراني:iskandaraani:Alexandrian-style .', 'Hungry? Come on, let’s get Alexandrian liver.', 'نور:Nuur:Nour'),
+   Ln('عربية:ʿarabiyyit:the_cart الكبدة:il-kibda:of_liver في:fi:is_on الشارع:ish-shaariʿ:the_street ، والناس:win-naas:and_people واقفين:waʾfiin:are_standing طابور:ṭabuur:in_a_queue .', 'The liver cart is out on the street, with a queue in front of it.'),
+   Ln('البياع:il-bayyaaʿ:the_seller بيقطع:biyʾaṭṭaʿ:chops الكبدة:il-kibda:the_liver ، ويحط:wi-yḥuṭṭ:and_adds فلفل:filfil:chilli وتوم:wi-toom:and_garlic .', 'The seller chops the liver and throws in chilli and garlic.'),
+   Ln('حراق:ḥarraaʾ:spicy ولا:walla:or عادي:ʿaadi:normal ؟', 'Spicy or normal?', 'البياع:il-bayyaaʿ:the_seller'),
+   Ln('حراق:ḥarraaʾ:spicy ! أنا:ana:I’m مش:mish:not خايف:khaayif:scared .', 'Spicy! I’m not scared.', 'يوسف:Yuusif:Yousef'),
+   Ln('متأكد:mitʾakkid:are_you_sure ؟', 'Are you sure?', 'نور:Nuur:Nour'),
+   Ln('يوسف:Yuusif:Yousef بياكل:biyaakul:takes أول:awwil:the_first قطمة:ʾaṭma:bite .', 'Yousef takes the first bite.'),
+   Ln('وشه:wishshu:his_face بيحمر:biyiḥmarr:goes_red ، وعينيه:wi-ʿiineih:and_his_eyes بتدمع:bitidmaʿ:water .', 'His face goes red, and his eyes start watering.'),
+   Ln('مية:mayya:water ! مية:mayya:water !', 'Water! Water!', 'يوسف:Yuusif:Yousef'),
+   Ln('البياع:il-bayyaaʿ:the_seller بيضحك:biyiḍḥak:laughs . المية:il-mayya:water مش:mish:won’t هتنفع:hatinfaʿ:help . كل:kul:eat عيش:ʿeish:bread !', 'The seller laughs. “Water won’t help. Eat bread!”'),
+   Ln('شفت:shuft:see ؟ الحراق:il-ḥarraaʾ:spicy في:fi:in اسكندرية:Iskindiriyya:Alexandria حاجة:ḥaaga:is_something تانية:tanya:else .', 'See? Spicy in Alexandria is something else.', 'نور:Nuur:Nour'),
+   Ln('يوسف:Yuusif:Yousef بيعيط:biyʿayyaṭ:is_crying ... بس:bass:but بيضحك:biyiḍḥak:laughing كمان:kamaan:too .', 'Yousef is crying… but laughing too.'),
+   Ln('بس:bass:but حلوة:ḥilwa:it’s_good ... هات:haat:give_me واحد:waaḥid:one كمان:kamaan:more !', 'But it’s good… give me another one!', 'يوسف:Yuusif:Yousef'),
+   Ln('ده:da:this_one اسكندراني:iskandaraani:Alexandrian أصلي:aṣli:through_and_through !', 'This one’s a true Alexandrian!', 'البياع:il-bayyaaʿ:the_seller'),
+  ],
+  qs:[['What does Nour want to eat?',['Alexandrian liver','Falafel','Fish'],2],['Spicy or normal: what does Yousef choose?',['Spicy','Normal','He can’t decide'],7],['What does the seller say will help?',['Bread','Water','Lemon'],12],['What does the seller call Yousef at the end?',['A true Alexandrian','A tourist','A Cairene']]]},
+
+ {id:'ep10', ar:'المكتبة', en:'The library', note:'The Bibliotheca Alexandrina opened in 2002, near where the ancient Library of Alexandria stood. Its granite wall is carved with letters from scripts all over the world.', teaser:'A wall covered in the world’s alphabets, and Yousef reads his first real Arabic words.',
+  ex:{ar:'برافو عليك', tr:'braavu ʿaleik', en:'well done you', note:'Egyptians borrowed bravo from Italian. Say braavu ʿaleiki to a woman.'},
+  lines:[
+   Ln('نور:Nuur:Nour بتاخد:bitaakhud:takes يوسف:Yuusif:Yousef مكتبة:maktabit:to_the_Library_of اسكندرية:Iskindiriyya:Alexandria .', 'Nour takes Yousef to the Library of Alexandria.'),
+   Ln('المكتبة:il-maktaba:the_library زي:zayy:is_like شمس:shams:a_sun كبيرة:kibiira:huge طالعة:ṭalʿa:rising من:min:out_of الأرض:il-arḍ:the_ground .', 'The library looks like a huge sun rising out of the ground.'),
+   Ln('زمان:zamaan:long_ago ، هنا:hina:here ، كان:kaan:there_was فيه:fi:(there_was) مكتبة:maktaba:a_library قديمة:ʾadiima:ancient ، فيها:fiiha:with كتب:kutub:books من:min:from كل:kull:all_over الدنيا:id-dunya:the_world .', 'Long ago, there was an ancient library here, with books from all over the world.', 'نور:Nuur:Nour'),
+   Ln('على:ʿala:on الحيطة:il-ḥiiṭa:the_wall حروف:ḥuruuf:letters من:min:from لغات:lughaat:languages كتير:kitiir:many .', 'On the wall there are letters from many languages.'),
+   Ln('بص:buṣṣ:look ! دي:di:these حروف:ḥuruuf:letters عربي:ʿarabi:Arabic . تقدر:tiʾdar:can_you تقراها:tiʾraaha:read_them ؟', 'Look! These are Arabic letters. Can you read them?', 'نور:Nuur:Nour'),
+   Ln('يوسف:Yuusif:Yousef بيبص:biybuṣṣ:looks كويس:kwayyis:carefully . ب:b:b ... ي:ee:ee ... ت:t:t ...', 'Yousef looks carefully. B… ee… t…'),
+   Ln('بيت:beit:house ! دي:di:it_says بيت:beit:house !', 'Beit! It says “house”!', 'يوسف:Yuusif:Yousef'),
+   Ln('برافو:braavu:bravo عليك:ʿaleik:to_you ! وده:wi-da:and_this ؟', 'Well done you! And this one?', 'نور:Nuur:Nour'),
+   Ln('ق:ʾ:ʾ ... ل:l:l ... ب:b:b ... قلب:ʾalb:heart !', 'ʾ… l… b… ʾalb, “heart”!', 'يوسف:Yuusif:Yousef'),
+   Ln('انت:inta:you بتقرا:bitiʾra:can_read عربي:ʿarabi:Arabic ؟ من:min:since إمتى:imta:when ؟', 'You can read Arabic? Since when?', 'نور:Nuur:Nour'),
+   Ln('من:min:for شهر:shahr:a_month . بتعلم:batʿallim:I’ve_been_learning على:ʿala:on الآيباد:il-aipad:the_iPad .', 'For a month. I’ve been learning on my iPad.', 'يوسف:Yuusif:Yousef'),
+   Ln('وبتكتب:wi-bitiktib:and_can_you_write كمان:kamaan:too ؟', 'And can you write too?', 'نور:Nuur:Nour'),
+   Ln('هاتي:haati:give_me ورقة:waraʾa:a_piece_of_paper .', 'Give me some paper.', 'يوسف:Yuusif:Yousef'),
+   Ln('يوسف:Yuusif:Yousef بيكتب:biyiktib:writes اسمها:ismaha:her_name ، حرف:ḥarf:letter بحرف:bi-ḥarf:by_letter .', 'Yousef writes her name, letter by letter.'),
+   Ln('ن:n:n ... و:uu:oo ... ر:r:r ... نور:Nuur:Nour .', 'N… oo… r… Nour.'),
+   Ln('نور:Nuur:Nour مبسوطة:mabsuuṭa:is_delighted ، وبتصور:wi-bitṣawwar:and_photographs الورقة:il-waraʾa:the_paper .', 'Nour is delighted, and takes a photo of the paper.'),
+   Ln('هبعتها:habʿatha:I’ll_send_it لتيتة:li-teita:to_Grandma حالا:ḥaalan:right_now !', 'I’m sending this to Grandma right now!', 'نور:Nuur:Nour'),
+  ],
+  qs:[['What does the library look like?',['A huge sun rising out of the ground','A ship','A pyramid'],2],['What is the first word Yousef reads?',['beit, “house”','ʾalb, “heart”','baḥr, “sea”'],7],['How has Yousef been learning?',['On his iPad','At school','From Grandma'],11],['What does Yousef write?',['Nour’s name','His own name','“Alexandria”']]]},
+
+ {id:'ep11', ar:'الفرح', en:'The wedding', note:'An Egyptian wedding starts with the zaffa: drums, pipes and ululations as the couple make their entrance.', teaser:'Khaled is getting married. Grandma has opinions about T-shirts. Yousef cannot dance.',
+  ex:{ar:'ألف مبروك', tr:'alf mabruuk', en:'congratulations', note:'Literally “a thousand congratulations”. The reply is allaah yibaarik fiik, “God bless you”.'},
+  lines:[
+   Ln('خالد:Khaalid:Khaled ، أخو:akhu:the_brother_of نور:Nuur:Nour ، هيتجوز:hayitgawwiz:is_getting_married بكرة:bukra:tomorrow .', 'Khaled, Nour’s brother, is getting married tomorrow.'),
+   Ln('البيت:il-beit:house كله:kullu:the_whole مقلوب:maʾluub:is_upside_down .', 'The whole house is upside down.'),
+   Ln('تيتة:teita:Grandma بتعمل:bitiʿmil:is_making بسبوسة:basbuusa:basbousa وغريبة:wi-ghurayyiba:and_ghorayeba ، ونور:wi-Nuur:and_Nour بتكوي:bitikwi:is_ironing الفساتين:il-fasatiin:the_dresses .', 'Grandma is making basbousa and ghorayeba, and Nour is ironing dresses.'),
+   Ln('يوسف:Yuusif:Yousef ! انت:inta:you هتلبس:hatilbis:will_wear إيه:eih:what ؟', 'Yousef! What are you going to wear?', 'تيتة:teita:Grandma'),
+   Ln('تيشيرت:tiishirt:a_T-shirt وجينز:wi-jiinz:and_jeans ؟', 'A T-shirt and jeans?', 'يوسف:Yuusif:Yousef'),
+   Ln('تيشيرت:tiishirt:a_T-shirt ؟ في:fi:to فرح:faraḥ:a_wedding ؟ لأ:laʾ:no ، لأ:laʾ:no ، لأ:laʾ:no !', 'A T-shirt? To a wedding? No, no, no!', 'تيتة:teita:Grandma'),
+   Ln('تاني:taani:the_next يوم:yoom:day ، يوسف:Yuusif:Yousef لابس:laabis:is_wearing بدلة:badlit:the_suit_of جده:giddu:his_grandfather .', 'The next day, Yousef is wearing his grandfather’s suit.'),
+   Ln('البدلة:il-badla:the_suit واسعة:wasʿa:is_big شوية:shwayya:a_bit ، بس:bass:but تيتة:teita:Grandma بتعيط:bitʿayyaṭ:cries من:min:with الفرحة:il-farḥa:joy .', 'The suit is a bit big, but Grandma cries with joy.'),
+   Ln('الزفة:iz-zaffa:the_zaffa بتبدأ:bitibdaʾ:begins ، طبل:ṭabl:drums ومزمار:wi-mizmaar:and_pipes وزغاريط:wi-zaghariiṭ:and_ululations .', 'The zaffa begins: drums, pipes and ululations.'),
+   Ln('العروسة:il-ʿaruusa:the_bride والعريس:wil-ʿariis:and_the_groom بيدخلوا:biyidkhulu:come_in ، والناس:win-naas:and_everyone بترقص:bitturʾuṣ:dances .', 'The bride and groom make their entrance, and everyone dances.'),
+   Ln('يلا:yalla:come_on يا:ya:(calling) يوسف:Yuusif:Yousef ، ارقص:urʾuṣ:dance !', 'Come on, Yousef, dance!', 'نور:Nuur:Nour'),
+   Ln('أنا:ana:I مبعرفش:mabaʿrafsh:can’t أرقص:arʾuṣ:dance !', 'I can’t dance!', 'يوسف:Yuusif:Yousef'),
+   Ln('وفجأة:wi-fagʾa:and_suddenly ، تيتة:teita:Grandma بتقوم:bitʾuum:gets_up وترقص:wi-turʾuṣ:and_dances !', 'Then suddenly Grandma gets up and dances!'),
+   Ln('لو:law:if أنا:ana:I برقص:barʾuṣ:can_dance ، انت:inta:you تقدر:tiʾdar:can ترقص:turʾuṣ:dance !', 'If I can dance, you can dance!', 'تيتة:teita:Grandma'),
+   Ln('يوسف:Yuusif:Yousef بيرقص:biyurʾuṣ:dances ... وحش:wiḥish:badly أوي:awi:really . بس:bass:but محدش:maḥaddish:nobody واخد:waakhid:is_taking باله:baalu:any_notice .', 'Yousef dances… really badly. But nobody notices.'),
+   Ln('ألف:alf:a_thousand مبروك:mabruuk:congratulations !', 'Congratulations!', 'الكل:il-kull:everyone'),
+  ],
+  qs:[['Who is getting married?',['Khaled, Nour’s brother','Nour','Amm Saad'],3],['What does Grandma think of the T-shirt?',['No, no, no!','It’s perfect','It needs ironing'],6],['What does Yousef wear in the end?',['His grandfather’s suit','A T-shirt and jeans','Khaled’s suit'],10],['Who gets up to dance first?',['Grandma','Nour','The groom']]]},
+
+ {id:'ep12', ar:'الوداع', en:'Goodbye', teaser:'The last evening by the sea, a bag of food too heavy to lift, and a note from Grandma.',
+  ex:{ar:'متنساناش', tr:'matinsanaash', en:'don’t forget us', note:'The classic Egyptian goodbye. The answer: ʿumri ma hansaakum, “I’ll never forget you”.'},
+  lines:[
+   Ln('الإجازة:il-agaaza:the_holiday خلصت:khilṣit:is_over . بكرة:bukra:tomorrow يوسف:Yuusif:Yousef راجع:raagiʿ:goes_back لندن:London:to_London .', 'The holiday is over. Tomorrow Yousef goes back to London.'),
+   Ln('يوسف:Yuusif:Yousef ونور:wi-Nuur:and_Nour قاعدين:ʾaʿdiin:are_sitting ع:ʿa:by البحر:il-baḥr:the_sea آخر:aakhir:one_last مرة:marra:time .', 'Yousef and Nour sit by the sea one last time.'),
+   Ln('هتوحشنا:hatiwḥashna:we’ll_miss_you يا:ya:(calling) بتاع:bitaaʿ:the_guy_with الكاب:il-kaab:the_cap .', 'We’ll miss you, cap boy.', 'نور:Nuur:Nour'),
+   Ln('وانتو:w-intu:and_you كمان:kamaan:too هتوحشوني:hatiwḥashuuni:I’ll_miss_you .', 'I’ll miss you all too.', 'يوسف:Yuusif:Yousef'),
+   Ln('بالليل:bil-leil:that_night ، تيتة:teita:Grandma بتجهز:bitgahhiz:packs كيسة:kiisa:a_bag كبيرة:kibiira:big .', 'That night Grandma packs a big bag.'),
+   Ln('في:fi:in الكيسة:il-kiisa:the_bag بسبوسة:basbuusa:basbousa ، وجبنة:wi-gibna:and_cheese ، وبلح:wi-balaḥ:and_dates ، وعلبة:wi-ʿilbit:and_a_tin_of فول:fuul:fuul .', 'In the bag: basbousa, cheese, dates and a tin of fuul.'),
+   Ln('تيتة:teita:Grandma ، دي:di:is_this كيسة:kiisa:a_bag ولا:walla:or سوبر:subar:a_super ماركت:markit:market ؟', 'Grandma, is this a bag or a supermarket?', 'يوسف:Yuusif:Yousef'),
+   Ln('الأكل:il-akl:the_food في:fi:in لندن:London:London مش:mish:isn’t زي:zayy:like أكلنا:aklina:our_food .', 'The food in London isn’t like ours.', 'تيتة:teita:Grandma'),
+   Ln('الصبح:iṣ-ṣubḥ:in_the_morning ، في:fi:at محطة:maḥaṭṭit:the_station_of سيدي:Sidi:Sidi جابر:Gaabir:Gaber ، تيتة:teita:Grandma بتحضنه:bitiḥḍunu:hugs_him جامد:gaamid:tight .', 'In the morning, at Sidi Gaber station, Grandma hugs him tight.'),
+   Ln('متنساناش:matinsanaash:don’t_forget_us يا:ya:(calling) حبيبي:ḥabiibi:my_darling .', 'Don’t forget us, my darling.', 'تيتة:teita:Grandma'),
+   Ln('عمري:ʿumri:never_in_my_life ما:ma:(never) هنساكم:hansaakum:will_I_forget_you . وهكتبلك:wi-haktiblik:and_I’ll_write_to_you كل:kull:every أسبوع:usbuuʿ:week ، بالعربي:bil-ʿarabi:in_Arabic !', 'I’ll never forget you. And I’ll write to you every week, in Arabic!', 'يوسف:Yuusif:Yousef'),
+   Ln('القطر:il-ʾaṭr:the_train بيمشي:biyimshi:pulls_away .', 'The train pulls away.'),
+   Ln('يوسف:Yuusif:Yousef بيفتح:biyiftaḥ:opens الكيسة:il-kiisa:the_bag ، وجوه:wi-guwwa:and_inside ورقة:waraʾa:there’s_a_note صغيرة:ṣughayyara:small .', 'Yousef opens the bag, and inside there’s a little note.'),
+   Ln('مكتوب:maktuub:written فيها:fiiha:on_it ، بخط:bi-khaṭṭ:in_handwriting كبير:kibiir:big ...', 'Written on it, in big handwriting…'),
+   Ln('اكتب:iktib:write يا:ya:(calling) يوسف:Yuusif:Yousef . اكتب:iktib:write كتير:kitiir:a_lot .', '“Write, Yousef. Write a lot.”'),
+   Ln('ومشمش:wi-Mishmish:and_Mishmish ؟ نايمة:nayma:asleep في:fi:in شنطته:shanṭitu:his_suitcase .', 'And Mishmish? Fast asleep in his suitcase.'),
+  ],
+  qs:[['Where do Yousef and Nour sit one last time?',['By the sea','At the café','On the tram'],4],['Why does Grandma pack so much food?',['London food isn’t like theirs','Yousef asked for it','It’s for Nour'],8],['What does Yousef promise?',['To write every week, in Arabic','To come back next month','To learn to dance'],11],['What does the note say?',['“Write, Yousef. Write a lot.”','“Eat, Yousef.”','“Call me every day.”']],['Where is Mishmish?',['Asleep in his suitcase','At home with Grandma','On the platform']]]},
+];
+const CAST = [
+ {ar:'يوسف', tr:'Yuusif', en:'Yousef', role:'Visiting from London. Learning Arabic. Loses things.'},
+ {ar:'تيتة', tr:'Teita', en:'Grandma', role:'Believes every problem is solved by food.'},
+ {ar:'نور', tr:'Nuur', en:'Nour', role:'His cousin. Ittihad fan. Laughs at him a lot.'},
+ {ar:'عم سعد', tr:'ʿAmm Saʿd', en:'Amm Saad', role:'Old fisherman. Calls Yousef “cap boy”.'},
+ {ar:'مشمش', tr:'Mishmish', en:'Mishmish', role:'Grandma’s cat. A thief.'},
 ];
 const lineText = ln => ln.toks.filter(t => t.ar).map(t => t.ar).join(' ');
 /* Letters a piece of text needs, with hamza seats counted as ء plus their seat */
@@ -611,11 +848,11 @@ function lettersIn(text){
   return out;
 }
 STORIES.forEach(st => {
-  const need = new Set(); st.lines.forEach(ln => { lettersIn(lineText(ln)).forEach(c => need.add(c)); if (ln.who) lettersIn(ln.who.ar).forEach(c => need.add(c)); });
+  const need = new Set(); st.lines.forEach(ln => { lettersIn(lineText(ln)).forEach(c => need.add(c)); (ln.who||[]).forEach(t => t.ar && lettersIn(t.ar).forEach(c => need.add(c))); });
   st.need = LESSONS.findIndex((l,i) => [...need].every(c => lettersUpTo(i).includes(c)));
-  st.lines.forEach(ln => [...ln.toks, ln.who].forEach(t => { if (t && t.ar && !WIDX[t.ar]) WIDX[t.ar] = {ar:t.ar, tr:t.tr, en:t.en}; }));
+  st.lines.forEach(ln => [...ln.toks, ...(ln.who||[])].forEach(t => { if (t && t.ar && t.ar.length > 1 && !WIDX[t.ar]) WIDX[t.ar] = {ar:t.ar, tr:t.tr, en:t.en}; }));
+  if (st.ex && !WIDX[plain(st.ex.ar)]) WIDX[plain(st.ex.ar)] = {ar:st.ex.ar, tr:st.ex.tr, en:st.ex.en};
 });
-STORIES.sort((a,b) => a.need - b.need);
 
 /* ================= State ================= */
 const KEY = 'ektib-progress-v1';
@@ -898,30 +1135,42 @@ function renderReview(){
 }
 
 /* ---------- Read view ---------- */
-function storyOpen(st){ return S.unlockAll || (st.need >= 0 && firstOpen() > st.need); }
+function storyState(st){
+  const i = STORIES.indexOf(st), read = S.stories || {};
+  const lettersOk = st.need >= 0 && firstOpen() > st.need, prevOk = i === 0 || !!read[STORIES[i-1].id];
+  return {i, lettersOk, prevOk, open: S.unlockAll || (lettersOk && prevOk), done: !!read[st.id]};
+}
 function renderRead(){
+  const read = S.stories || {}, n = STORIES.filter(st => read[st.id]).length;
   $('#view-read').innerHTML = `
-    <section class="panel intro-panel">
-      <p class="kicker">Stories</p>
-      <h2 class="panel-title">Read real Egyptian Arabic</h2>
-      <p class="muted">Short scenes from everyday life in Alexandria: the Corniche, the tram, the fish market, the match. Tap any word for its meaning, turn on transliteration when you’re stuck, then answer a few questions. Each story unlocks once you’ve learned all of its letters.</p>
+    <section class="panel series">
+      <div class="series-head">
+        <div><p class="kicker">A story in ${STORIES.length} episodes</p>
+        <h2 class="panel-title">Yousef in Alex</h2>
+        <p class="muted">Yousef flies in from London to stay with his grandmother in Alexandria for the summer. Every episode is a scene from the city, told in everyday Egyptian Arabic with all the taḥabiish. Tap any word for its meaning, switch on transliteration when you’re stuck, and answer questions as you go.</p></div>
+        <span class="series-ar ar">يوسف في<br>اسكندرية</span>
+      </div>
+      <div class="rec-top"><div class="meter"><span style="width:${n/STORIES.length*100}%"></span></div><b>${n} / ${STORIES.length}</b></div>
+      <div class="cast">${CAST.map(c => `<div class="cast-m"><b class="ar">${c.ar}</b><span><strong>${esc(c.en)}</strong> ${esc(c.role)}</span></div>`).join('')}</div>
     </section>
-    <div class="stories">${STORIES.map(st => {
-      const open = storyOpen(st), done = !!(S.stories||{})[st.id];
-      const L = LESSONS[st.need];
-      return `<button class="story-card ${open?'':'locked'} ${done?'done':''}" data-s="${st.id}">
-        <span class="sc-ar ar">${st.ar}</span>
-        <span class="sc-en">${esc(st.en)}</span>
-        <span class="sc-meta">${done ? `${ICON.check} Read` : open ? `${st.lines.length} lines` : `${ICON.lock} After unit ${L ? L.unit+1 : '?'}`}</span>
+    <div class="episodes">${STORIES.map(st => {
+      const z = storyState(st), L = LESSONS[st.need];
+      const meta = z.done ? `${ICON.check} Read` : z.open ? `${st.lines.length} lines · ${st.qs.length} questions` : !z.lettersOk ? `${ICON.lock} After unit ${L ? L.unit+1 : '?'}` : `${ICON.lock} Read episode ${z.i} first`;
+      return `<button class="ep-card ${z.open?'':'locked'} ${z.done?'done':''}" data-s="${st.id}">
+        <span class="ep-num">${z.i+1}</span>
+        <span class="ep-body"><span class="ep-title"><b>${esc(st.en)}</b><span class="ar">${st.ar}</span></span>
+        <span class="ep-teaser">${esc(st.teaser || '')}</span>
+        <span class="sc-meta">${meta}</span></span>
       </button>`;
     }).join('')}</div>`;
 }
 $('#view-read').addEventListener('click', e => {
-  const b = e.target.closest('.story-card'); if (!b) return;
-  const st = STORIES.find(s => s.id === b.dataset.s);
-  if (storyOpen(st)) return startStory(st);
+  const b = e.target.closest('.ep-card'); if (!b) return;
+  const st = STORIES.find(s => s.id === b.dataset.s), z = storyState(st);
+  if (z.open) return startStory(st);
   const L = LESSONS[st.need];
-  openSheet(`<h3>Not unlocked yet</h3><p>This story uses letters from unit ${L.unit+1} (${esc(UNITS[L.unit].en)}). Finish up to there to unlock it, or read it now anyway.</p>
+  const why = !z.lettersOk ? `This episode uses letters up to unit ${L.unit+1} (${esc(UNITS[L.unit].en)}). Finish up to there to unlock it` : `Episodes unlock in order, so read episode ${z.i} first`;
+  openSheet(`<h3>Not unlocked yet</h3><p>${why}, or read it now anyway.</p>
     <div class="row"><button class="ghost" data-close>Cancel</button><button class="btn small" id="readAnyway">Read anyway</button></div>`);
   $('#readAnyway').onclick = () => { closeSheet(); startStory(st); };
 });
@@ -1201,8 +1450,13 @@ function buildPractice(){
 }
 function buildDue(){ return cardsToItems(dueIds().slice(0, 15)); }
 function buildStory(st){
-  const items = [{t:'story', st}];
-  st.qs.forEach(([q, opts]) => { const o = shuffle(opts); items.push({t:'mc', kicker:'Check your understanding', prompt:q, opts:o.map(x => ({label:x})), ans:o.indexOf(opts[0]), explain:`The answer is: ${opts[0]}.`}); });
+  const items = [], qs = st.qs.map(([q, opts, at]) => ({q, opts, at: Math.min(at || st.lines.length, st.lines.length)}));
+  const stops = [...new Set([...qs.map(x => x.at), st.lines.length])].sort((a,b) => a - b);
+  stops.forEach(stop => {
+    items.push({t:'story', st, until:stop});
+    qs.filter(x => x.at === stop).forEach(x => { const o = shuffle(x.opts); items.push({t:'mc', kicker:'Check your understanding', prompt:x.q, opts:o.map(l => ({label:l})), ans:o.indexOf(x.opts[0]), explain:`The answer is: ${x.opts[0]}.`}); });
+  });
+  if (st.ex) items.push({t:'storyEnd', st});
   return items;
 }
 
@@ -1544,6 +1798,16 @@ async function renderItem(){
     footer('continue', {label:'Got it'}); return;
   }
   if (it.t === 'story') return renderStory(ex, it);
+  if (it.t === 'storyEnd'){
+    const x = it.st.ex, id = 'W:' + plain(x.ar), inDeck = !!S.srs[id];
+    ex.innerHTML = exHead('Expression of the episode', esc(x.en)) + `
+      <div class="word-hero"><div class="w naskh">${esc(x.ar)}</div><div class="tr">${esc(x.tr)} ${spk(x.ar)}</div></div>
+      <p class="note" style="text-align:center;margin:0 auto">${arWrap(x.note)}</p>
+      <div style="display:flex;justify-content:center"><button class="ghost" id="exAdd" ${inDeck?'disabled':''}>${inDeck ? 'In your review' : 'Add to review'}</button></div>`;
+    const b = $('#exAdd'); if (b && !inDeck) b.onclick = () => { srsAdd(id); S.srs[id].d = Date.now(); b.textContent = 'Added to review'; b.disabled = true; };
+    playAudio(x.ar);
+    footer('continue', {label:'Finish episode'}); return;
+  }
   if (it.t === 'mc'){
     let stage;
     if (it.listen) stage = `<button class="listen-btn" data-say="${esc(it.listen)}" aria-label="Play again">${ICON.speaker}</button><div class="tag">Tap to hear it again</div>`;
@@ -1625,7 +1889,7 @@ function breakdownV(word){
 /* ---------- Story reader ---------- */
 function renderStory(ex, it){
   const st = it.st;
-  R.shown = R.shown || 1;
+  if (R.storyItem !== it){ R.storyItem = it; R.shown = Math.min((R.shown || 0) + 1, it.until); }
   const prefs = S.readPrefs || (S.readPrefs = {tr:false, en:false});
   const tokHtml = t => t.p ? `<span class="punct">${esc(t.p)}</span>` : `<button class="tok" data-w="${esc(t.ar)}"><span class="tok-ar ar">${esc(t.ar)}</span><span class="tok-tr">${esc(t.tr)}</span></button>`;
   ex.innerHTML = `<div class="story ${prefs.tr?'show-tr':''} ${prefs.en?'show-en':''}">
@@ -1640,7 +1904,7 @@ function renderStory(ex, it){
     <div class="lines">${st.lines.slice(0, R.shown).map((ln, i) => `
       <div class="line ${i === R.shown-1 ? 'fresh' : ''}">
         <div class="line-row">
-          <div class="line-ar">${ln.who ? `<span class="who">${tokHtml(ln.who)}<span class="punct">:</span></span>` : ''}${ln.toks.map(tokHtml).join('')}</div>
+          <div class="line-ar">${ln.who ? `<span class="who">${ln.who.map(t => t.ar ? `<button class="tok" data-w="${esc(t.ar)}"><span class="who-ar ar">${esc(t.ar)}</span><span class="tok-tr">${esc(t.tr)}</span></button>` : '').join('')}</span>` : ''}${ln.toks.map(tokHtml).join('')}</div>
           ${spk(lineText(ln))}
         </div>
         <p class="line-en">${esc(ln.en)}</p>
@@ -1654,10 +1918,10 @@ function renderStory(ex, it){
   ex.querySelector('.lines').addEventListener('click', e => { const t = e.target.closest('.tok'); if (t) wordSheet(t.dataset.w); });
   const last = ex.querySelector('.line.fresh'); if (last && R.shown > 1) last.scrollIntoView({block:'nearest', behavior:'smooth'});
   playAudio(lineText(st.lines[R.shown-1]));
-  footer('continue', {label: R.shown < st.lines.length ? 'Next line' : 'Answer questions'});
+  footer('continue', {label: R.shown < it.until ? 'Next line' : 'Continue'});
 }
 function wordSheet(ar){
-  const w = WIDX[ar] || {ar, tr:'', en:''}, id = 'W:' + ar, inDeck = !!S.srs[id];
+  const w = WIDX[ar] || (LMAP[ar] ? {ar, tr:LMAP[ar].s, en:`the letter ${LMAP[ar].n}`} : {ar, tr:'', en:''}), id = (WIDX[ar] || !LMAP[ar] ? 'W:' : 'L:') + ar, inDeck = !!S.srs[id];
   openSheet(`<div class="wsheet"><b class="ar">${esc(w.ar)}</b>${spk(w.ar, true)}</div>
     <h3 style="text-align:center">${esc(w.tr)}</h3><p style="text-align:center">${esc(w.en)}</p>
     <div class="breakdown">${breakdown(w.ar).map(b => b.gap ? '<div class="bd gap"></div>' : `<div class="bd"><b>${b.c}</b><span>${esc(b.s)}</span></div>`).join('')}</div>
@@ -1711,9 +1975,10 @@ mainBtn.addEventListener('click', () => {
   if (R.state === 'complete') return endLesson();
   const it = R.queue[R.pos];
   if (it.t === 'story'){
-    if (R.shown < it.st.lines.length){ R.shown++; return renderItem(); }
+    if (R.shown < it.until){ R.shown++; return renderItem(); }
     R.pos++; return renderItem();
   }
+  if (it.t === 'storyEnd'){ R.pos++; return renderItem(); }
   if (R.state === 'answer' && /^intro/.test(it.t)){ R.pos++; return renderItem(); }
   if (R.state === 'answer'){ if (!mainBtn.disabled) check(); return; }
   if (R.state === 'checked'){ R.pos++; renderItem(); }
