@@ -21,7 +21,7 @@
 :root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 body{margin:0}
 img{max-width:100%}
-/* Layout: one winding path of lesson stops under Cairo street-sign unit plaques; each lesson is a full-screen card whose centrepiece is a writing slate for the Pencil. */
+/* Layout: one winding path of lesson stops under blue enamel street-sign unit plaques like Alexandria’s; each lesson is a full-screen card whose centrepiece is a writing slate for the Pencil. */
 :root{
   --bg:#edf2fa; --surface:#ffffff; --surface-2:#f5f8fd; --ink:#14213d; --muted:#586987; --line:#d2dbea;
   --enamel:#1d4aa0; --enamel-deep:#123672; --on-enamel:#ffffff;
@@ -445,7 +445,7 @@ const LETTERS = [
  {c:'ع',n:'ʿein',s:'ʿ',f:'3',note:'A squeeze in the throat with no English match. Franco-Arabic writes it 3.'},
  {c:'غ',n:'ghein',s:'gh',f:"3'",note:'A gargled gh, close to a French r. Franco-Arabic writes it gh.',dots:{n:1,p:'a'}},
  {c:'ف',n:'faa',s:'f',f:'f',note:'Like English f. A small loop with one dot.',dots:{n:1,p:'a'}},
- {c:'ق',n:'ʾaaf',s:'ʾ / q',f:'2',note:'In Cairo this is a glottal stop, the catch in “uh-oh”. You only hear a real q in formal words like Qurʾaan.',dots:{n:2,p:'a'}},
+ {c:'ق',n:'ʾaaf',s:'ʾ / q',f:'2',note:'In Alexandria and Cairo this is a glottal stop, the catch in “uh-oh”. You only hear a real q in formal words like Qurʾaan.',dots:{n:2,p:'a'}},
  {c:'ك',n:'kaaf',s:'k',f:'k',note:'Like English k. The small mark inside is part of the letter, not a dot.',dots:{n:0,extra:true}},
  {c:'ل',n:'laam',s:'l',f:'l',note:'Like English l. ل followed by ا makes a special joined shape: لا (la).'},
  {c:'م',n:'miim',s:'m',f:'m',note:'Like English m. A small round loop with a tail.'},
@@ -488,26 +488,26 @@ const UNITS = [
  {ar:'د ذ ر ز و', en:'Letters that never join forward', desc:'These, plus ا, never connect to the letter after them.', lessons:[
    {t:'L', letters:['د','ذ','ر']},
    {t:'L', letters:['ز','و']},
-   {t:'W', words:[W('ورد','ward','roses'),W('زيت','zeit','oil'),W('بدري','badri','early'),W('نور','nuur','light'),W('دور','door','floor (of a building)')]},
+   {t:'W', words:[W('ورد','ward','roses'),W('زيت','zeit','oil'),W('بدري','badri','early'),W('نور','nuur','light'),W('دور','door','floor (of a building)'),W('بحر','baḥr','sea','In Alexandria, “ʿal-baḥr” (by the sea) means hanging out on the Corniche.')]},
    {t:'R'} ]},
  {ar:'س ش ص ض', en:'Teeth and heavy letters', desc:'Light s and sh, then their heavy cousins.', lessons:[
    {t:'L', letters:['س','ش']},
    {t:'L', letters:['ص','ض']},
-   {t:'W', words:[W('شاي','shaai','tea'),W('بس','bass','just / that’s enough','Said constantly in Cairo: “bass!” means enough, stop.'),W('صح','ṣaḥḥ','right, correct'),W('شجر','shagar','trees'),W('بيض','beiḍ','eggs'),W('سبت','sabt','Saturday')]},
+   {t:'W', words:[W('شاي','shaai','tea'),W('بس','bass','just / that’s enough','Said constantly in Egypt: “bass!” means enough, stop.'),W('صح','ṣaḥḥ','right, correct'),W('شجر','shagar','trees'),W('بيض','beiḍ','eggs'),W('سبت','sabt','Saturday')]},
    {t:'R'} ]},
  {ar:'ط ظ ع غ', en:'Heavy letters and the throat', desc:'Tall loops and the famous ʿein.', lessons:[
    {t:'L', letters:['ط','ظ']},
    {t:'L', letters:['ع','غ']},
-   {t:'W', words:[W('عيش','ʿeish','bread','Literally “life”. Egyptians call bread life.'),W('طيب','ṭayyib','okay, fine'),W('عربي','ʿarabi','Arabic'),W('عصير','ʿaṣiir','juice'),W('غدا','ghada','lunch')]},
+   {t:'W', words:[W('عيش','ʿeish','bread','Literally “life”. Egyptians call bread life.'),W('طيب','ṭayyib','okay, fine'),W('عربي','ʿarabi','Arabic'),W('عصير','ʿaṣiir','juice'),W('غدا','ghada','lunch'),W('شط','shaṭṭ','beach','Alexandrians say shaṭṭ for the beach.')]},
    {t:'R'} ]},
- {ar:'ف ق ك ل', en:'Loops and hooks', desc:'Including ق, which Cairo says as a glottal stop.', lessons:[
+ {ar:'ف ق ك ل', en:'Loops and hooks', desc:'Including ق, which Alexandrians say as a glottal stop.', lessons:[
    {t:'L', letters:['ف','ق']},
    {t:'L', letters:['ك','ل']},
-   {t:'W', words:[W('قلب','ʾalb','heart','Cairo turns ق into a catch in the throat: ʾalb, not qalb.'),W('فول','fuul','fava beans'),W('كبير','kibiir','big'),W('كويس','kwayyis','good, fine'),W('فين','fein','where?'),W('كتير','kitiir','a lot')]},
+   {t:'W', words:[W('قلب','ʾalb','heart','Alexandria turns ق into a catch in the throat: ʾalb, not qalb.'),W('فول','fuul','fava beans'),W('كبير','kibiir','big'),W('كويس','kwayyis','good, fine'),W('فين','fein','where?'),W('كتير','kitiir','a lot'),W('فلافل','falaafil','falafel','Alexandria calls it falaafil. In Cairo it’s ṭaʿmiyya.')]},
    {t:'R'} ]},
  {ar:'م ه ة', en:'Last letters', desc:'The final three, including the word-ending ة.', lessons:[
    {t:'L', letters:['م','ه','ة']},
-   {t:'W', words:[W('مصر','Maṣr','Egypt','Egyptians also say Maṣr when they mean Cairo.'),W('ده','da','this (masculine)'),W('مية','mayya','water'),W('قهوة','ʾahwa','coffee / café','Both letters you learned are here: ق as a catch, ة as -a.'),W('جبنة','gibna','cheese'),W('هنا','hina','here')]},
+   {t:'W', words:[W('مصر','Maṣr','Egypt','Egyptians also say Maṣr when they mean Cairo.'),W('ده','da','this (masculine)'),W('مية','mayya','water'),W('قهوة','ʾahwa','coffee / café','Both letters you learned are here: ق as a catch, ة as -a.'),W('جبنة','gibna','cheese'),W('هنا','hina','here'),W('اسكندرية','Iskindiriyya','Alexandria','Someone from Alexandria is iskindiraani.'),W('كورنيش','kurniish','the Corniche','Alexandria’s seafront road, running for kilometres along the bay.')]},
    {t:'R'} ]},
  {ar:'بَ بِ بُ', en:'Vowel marks', desc:'The small marks that show short vowels, plus the hamza.', lessons:[
    {t:'V', id:'v-1', intro:['ء'], marks:['َ','ِ','ُ'], words:[W('كَتَب','katab','wrote'),W('وَلَد','walad','boy'),W('جَمَل','gamal','camel','ج is g in Egypt, so gamal.'),W('قَلَم','ʾalam','pen'),W('سَمَك','samak','fish'),W('كُتُب','kutub','books'),W('عِنَب','ʿinab','grapes')]},
@@ -518,9 +518,11 @@ const UNITS = [
    {t:'J', id:'j-1', words:[W('بيت','beit','house'),W('بنت','bint','girl'),W('شمس','shams','sun'),W('قلب','ʾalb','heart'),W('حلو','ḥilw','sweet, nice'),W('لبن','laban','milk'),W('سمك','samak','fish'),W('فين','fein','where?')]},
    {t:'J', id:'j-2', breaks:true, words:[W('باب','baab','door'),W('ورد','ward','roses'),W('بدري','badri','early'),W('كتاب','kitaab','book'),W('شارع','shaariʿ','street'),W('عربية','ʿarabiyya','car','Egyptians call a car ʿarabiyya.'),W('تمام','tamaam','great, all good','The all-purpose Egyptian “OK”.'),W('دور','door','floor (of a building)')]},
    {t:'R', id:'j-r'} ]},
- {ar:'يلا نتكلم', en:'Talk like Cairo', desc:'Everyday phrases you’ll hear all day in Egypt.', lessons:[
-   {t:'W', id:'u8-1', words:[W('إزيك','izzayyak','how are you?'),W('شكرا','shukran','thank you'),W('أيوه','aywa','yes'),W('لأ','laʾ','no'),W('يلا','yalla','let’s go')]},
-   {t:'W', id:'u8-2', words:[W('معلش','maʿlesh','never mind / sorry'),W('الحمد لله','il-ḥamdu lillah','thank God (I’m fine)'),W('مش عارف','mish ʿaarif','I don’t know'),W('إن شاء الله','in shaaʾ allah','God willing'),W('القاهرة','il-ʾaahira','Cairo','Locals say il-ʾaahira, with ق as a catch.')]},
+ {ar:'اسكندرية', en:'Talk like an Alexandrian', desc:'Everyday Egyptian phrases, then the words and verb endings that mark you out as from Alex.', lessons:[
+   {t:'W', id:'u8-1', label:'Phrases', words:[W('إزيك','izzayyak','how are you?'),W('شكرا','shukran','thank you'),W('أيوه','aywa','yes'),W('لأ','laʾ','no'),W('يلا','yalla','let’s go')]},
+   {t:'W', id:'u8-2', label:'More phrases', words:[W('معلش','maʿlesh','never mind / sorry'),W('الحمد لله','il-ḥamdu lillah','thank God (I’m fine)'),W('مش عارف','mish ʿaarif','I don’t know'),W('إن شاء الله','in shaaʾ allah','God willing'),W('الإسكندرية','il-Iskindiriyya','Alexandria','Written with the hamza in formal Arabic; in everyday writing you’ll often see اسكندرية.')]},
+   {t:'W', id:'alex-1', label:'Alexandrian words', words:[W('فلافل','falaafil','falafel','Cairo says ṭaʿmiyya. Ask for falaafil and you sound like an Alexandrian.'),W('مشروع','mashruuʿ','microbus','Literally “project”. In Alexandria it’s the shared minibus.'),W('شط','shaṭṭ','beach'),W('صحن','ṣaḥn','plate'),W('كيسة','kiisa','shopping bag'),W('مستيكة','mistiika','chewing gum'),W('جني','gini','pound (money)','Alexandrians say gini where Cairo says gineih.')]},
+   {t:'W', id:'alex-2', label:'“We”, Alex style', words:[W('نروحوا','nirūḥu','we go','Alexandrians add -u to “we” verbs. Cairo says nirūḥ.'),W('ناكلوا','naaklu','we eat','Cairo: naakul.'),W('نشربوا','nishrabu','we drink','Cairo: nishrab.'),W('نعملوا','niʿmilu','we do / we make','Cairo: niʿmil.'),W('نتمشوا','nitmashshu','we walk','Cairo: nitmashsha.'),W('بنحبوه','binḥibbuuh','we love it / him','Cairo: binḥibbu.')]},
    {t:'R', id:'u8-3'} ]},
 ];
 const LESSONS = [];
@@ -539,53 +541,61 @@ const Ln = (str, en, who) => ({toks: str.split(' ').map(tok), en, who: who ? tok
 const STORIES = [
  {id:'s-home', ar:'في البيت', en:'At home', lines:[
    Ln('ده:da:this بيت:beit:house كبير:kibiir:big .', 'This is a big house.'),
-   Ln('البيت:il-beit:the_house ده:da:this في:fi:in مصر:Maṣr:Egypt .', 'This house is in Egypt.'),
+   Ln('البيت:il-beit:the_house ده:da:this في:fi:in اسكندرية:Iskindiriyya:Alexandria .', 'This house is in Alexandria.'),
    Ln('في:fi:in البيت:il-beit:the_house بنت:bint:a_girl .', 'There’s a girl in the house.'),
    Ln('البنت:il-bint:the_girl عايزة:ʿayza:wants شاي:shaai:tea .', 'The girl wants tea.'),
    Ln('الشاي:ish-shaai:the_tea حلو:ḥilw:nice .', 'The tea is nice.'),
    Ln('البنت:il-bint:the_girl مبسوطة:mabsuuṭa:happy .', 'The girl is happy.'),
- ], qs:[['Where is the house?',['In Egypt','In London','In Lebanon']],['What does the girl want?',['Tea','Coffee','Juice']],['How does the girl feel?',['Happy','Tired','Hungry']]]},
- {id:'s-breakfast', ar:'الفطار', en:'Breakfast', lines:[
+ ], qs:[['Where is the house?',['In Alexandria','In Cairo','In London']],['What does the girl want?',['Tea','Coffee','Juice']],['How does the girl feel?',['Happy','Tired','Hungry']]]},
+ {id:'s-breakfast', ar:'الفطار', en:'Breakfast', note:'Two Alexandrian giveaways here: فلافل instead of Cairo’s ṭaʿmiyya, and ناكلوا (naaklu, “we eat”) with the Alexandrian -u ending.', lines:[
    Ln('أنا:ana:I جعان:gaʿaan:hungry .', 'I’m hungry.'),
-   Ln('عايز:ʿaayiz:I_want فول:fuul:fava_beans وعيش:wi-ʿeish:and_bread .', 'I want fava beans and bread.'),
+   Ln('إحنا:iḥna:we ناكلوا:naaklu:eat فول:fuul:fava_beans وفلافل:wi-falaafil:and_falafel .', 'We’re having fuul and falafel.'),
    Ln('ماما:mama:Mum بتعمل:bitiʿmil:is_making بيض:beiḍ:eggs كمان:kamaan:too .', 'Mum is making eggs too.'),
    Ln('الفطار:il-fiṭaar:breakfast جاهز:gaahiz:ready !', 'Breakfast is ready!'),
    Ln('الأكل:il-akl:the_food حلو:ḥilw:good أوي:awi:really .', 'The food is really good.'),
    Ln('الحمد:il-ḥamdu:praise لله:lillah:be_to_God .', 'Thank God.'),
- ], qs:[['What does he want to eat?',['Fava beans and bread','Cheese and tomatoes','Just tea']],['Who is making eggs?',['Mum','Dad','His friend']],['How is the food?',['Really good','Cold','Too salty']]]},
- {id:'s-cafe', ar:'في القهوة', en:'At the café', note:'In Egypt قهوة means both coffee and a café.', lines:[
-   Ln('أنا:ana:I في:fi:at القهوة:il-ʾahwa:the_café مع:maʿa:with صاحبي:ṣaḥbi:my_friend .', 'I’m at the café with my friend.'),
-   Ln('صاحبي:ṣaḥbi:my_friend اسمه:ismu:his_name_is كريم:Kariim:Karim .', 'My friend’s name is Karim.'),
-   Ln('كريم:Kariim:Karim بيشرب:biyishrab:is_drinking قهوة:ʾahwa:coffee .', 'Karim is drinking coffee.'),
-   Ln('وأنا:w-ana:and_I بشرب:bashrab:am_drinking شاي:shaai:tea بالنعناع:bin-niʿnaaʿ:with_mint .', 'And I’m drinking mint tea.'),
-   Ln('القهوة:il-ʾahwa:the_café زحمة:zaḥma:crowded النهارده:innaharda:today .', 'The café is crowded today.'),
-   Ln('بس:bass:but إحنا:iḥna:we مبسوطين:mabsuuṭiin:happy .', 'But we’re happy.'),
- ], qs:[['What is Karim drinking?',['Coffee','Mint tea','Water']],['What is the narrator drinking?',['Mint tea','Coffee','Juice']],['What is the café like today?',['Crowded','Empty','Closed']]]},
- {id:'s-taxi', ar:'التاكسي', en:'The taxi', lines:[
-   Ln('أنا:ana:I في:fi:on شارع:shaariʿ:a_street كبير:kibiir:big في:fi:in القاهرة:il-ʾaahira:Cairo .', 'I’m on a big street in Cairo.'),
-   Ln('فين:fein:where التاكسي:it-taksi:the_taxi ؟', 'Where’s the taxi?'),
-   Ln('أهو:ahu:there_it_is !', 'There it is!'),
-   Ln('على:ʿala:to فين:fein:where ؟', 'Where to?', 'السواق:is-sawwaaʾ:the_driver'),
-   Ln('الزمالك:iz-Zamaalik:Zamalek ، لو:law:if سمحت:samaḥt:you_allow .', 'Zamalek, please.', 'أنا:ana:me'),
-   Ln('ماشي:maashi:OK ، يلا:yalla:let’s_go بينا:biina:with_us .', 'OK, let’s go.', 'السواق:is-sawwaaʾ:the_driver'),
- ], qs:[['Which city is this?',['Cairo','Alexandria','Aswan']],['Where does the passenger want to go?',['Zamalek','The airport','Home']],['“Law samaḥt” means…',['Please','Thank you','Sorry']]]},
- {id:'s-market', ar:'في السوق', en:'At the market', lines:[
+ ], qs:[['What are they eating?',['Fuul and falafel','Cheese and tomatoes','Fish and rice']],['Who is making eggs?',['Mum','Dad','A friend']],['How is the food?',['Really good','Cold','Too salty']]]},
+ {id:'s-sea', ar:'ع البحر', en:'By the sea', note:'Alexandrians add -u to “we” verbs: نروحوا (nirūḥu, “we go”) and نتمشوا (nitmashshu, “we walk”). In Cairo it’s nirūḥ and nitmashsha.', lines:[
+   Ln('النهارده:innaharda:today الجو:ig-gaww:the_weather حلو:ḥilw:lovely .', 'The weather is lovely today.'),
+   Ln('إحنا:iḥna:we نروحوا:nirūḥu:go ع:ʿa:to البحر:il-baḥr:the_sea .', 'We’re going down to the sea.'),
+   Ln('نتمشوا:nitmashshu:we_walk على:ʿala:along الكورنيش:il-kurniish:the_Corniche .', 'We walk along the Corniche.'),
+   Ln('البحر:il-baḥr:the_sea أزرق:azraʾ:blue والهوا:wil-hawa:and_the_breeze حلو:ḥilw:nice .', 'The sea is blue and the breeze is nice.'),
+   Ln('صاحبي:ṣaḥbi:my_friend عايز:ʿaayiz:wants درة:dura:corn مشوية:mashwiyya:grilled .', 'My friend wants grilled corn.'),
+   Ln('وأنا:w-ana:and_I عايز:ʿaayiz:want فريسكا:friska:fresca !', 'And I want fresca!'),
+ ], qs:[['How is the weather?',['Lovely','Stormy','Very cold']],['Where do they walk?',['Along the Corniche','Through the market','Around the station']],['What does the friend want?',['Grilled corn','Fresca','Fish']]]},
+ {id:'s-tram', ar:'الترام', en:'The tram', note:'Alexandria’s tram network dates back to the 1860s, one of the oldest in Africa.', lines:[
+   Ln('أنا:ana:I في:fi:at محطة:maḥaṭṭit:the_station_of الرمل:ir-Raml:Raml .', 'I’m at Raml Station.'),
+   Ln('الترام:it-traam:the_tram جه:geh:has_come !', 'The tram’s here!'),
+   Ln('الترام:it-traam:the_tram بطيء:baṭiiʾ:slow بس:bass:but حلو:ḥilw:nice .', 'The tram is slow, but it’s nice.'),
+   Ln('أنا:ana:I رايح:raayiḥ:am_going بحري:Baḥari:Bahari .', 'I’m going to Bahari.'),
+   Ln('فيه:fi:there’s قلعة:ʾalʿa:a_fort قديمة:ʾadiima:old هناك:hinaak:there .', 'There’s an old fort there.'),
+   Ln('اسمها:ismaha:its_name_is قلعة:ʾalʿit:the_citadel_of قايتباي:Qaytbaay:Qaitbay .', 'It’s called Qaitbay Citadel.'),
+ ], qs:[['Where does he catch the tram?',['Raml Station','Sidi Gaber','The airport']],['What is the tram like?',['Slow but nice','Fast and crowded','Closed today']],['What is in Bahari?',['An old citadel','A football stadium','A shopping mall']]]},
+ {id:'s-fish', ar:'سوق السمك', en:'The fish market', note:'Ṣayyadiyya is Alexandria’s own dish: fish on rice cooked brown with onions.', lines:[
    Ln('النهارده:innaharda:today الجمعة:il-gumʿa:Friday .', 'Today is Friday.'),
-   Ln('أنا:ana:I وماما:wi-mama:and_Mum في:fi:at السوق:is-suuʾ:the_market .', 'Mum and I are at the market.'),
-   Ln('ماما:mama:Mum عايزة:ʿayza:wants طماطم:ṭamaaṭim:tomatoes وبطاطس:wi-baṭaaṭis:and_potatoes .', 'Mum wants tomatoes and potatoes.'),
-   Ln('الطماطم:iṭ-ṭamaaṭim:the_tomatoes بكام:bikaam:how_much ؟', 'How much are the tomatoes?', 'ماما:mama:Mum'),
-   Ln('بعشرة:bi-ʿashara:for_ten جنيه:gineih:pounds الكيلو:il-kiilu:the_kilo .', 'Ten pounds a kilo.', 'البياع:il-bayyaaʿ:the_seller'),
+   Ln('أنا:ana:I وماما:wi-mama:and_Mum في:fi:at سوق:suuʾ:the_market_of السمك:is-samak:fish .', 'Mum and I are at the fish market.'),
+   Ln('ماما:mama:Mum عايزة:ʿayza:wants سمك:samak:fish للصيادية:liṣ-ṣayyadiyya:for_sayadiya .', 'Mum wants fish for ṣayyadiyya.'),
+   Ln('السمك:is-samak:the_fish ده:da:this بكام:bikaam:how_much ؟', 'How much is this fish?', 'ماما:mama:Mum'),
+   Ln('بمية:bi-miyya:for_a_hundred جني:gini:pounds الكيلو:il-kiilu:the_kilo .', 'A hundred pounds a kilo.', 'البياع:il-bayyaaʿ:the_seller'),
    Ln('غالي:ghaali:expensive أوي:awi:very !', 'That’s too expensive!', 'ماما:mama:Mum'),
-   Ln('خلاص:khalaaṣ:fine ، بتمانية:bi-tamanya:for_eight .', 'Fine, eight.', 'البياع:il-bayyaaʿ:the_seller'),
- ], qs:[['What day is it?',['Friday','Saturday','Sunday']],['What was the first price?',['10 pounds a kilo','8 pounds a kilo','5 pounds a kilo']],['What price did they agree on?',['8 pounds','10 pounds','12 pounds']]]},
- {id:'s-match', ar:'الماتش', en:'The match', lines:[
+   Ln('خلاص:khalaaṣ:fine ، بتسعين:bi-tisʿiin:for_ninety .', 'Fine, ninety.', 'البياع:il-bayyaaʿ:the_seller'),
+ ], qs:[['What is Mum cooking?',['Ṣayyadiyya','Falafel','Liver sandwiches']],['What was the first price?',['100 pounds a kilo','90 pounds a kilo','50 pounds a kilo']],['What price did they agree on?',['90 pounds','100 pounds','80 pounds']]]},
+ {id:'s-match', ar:'الماتش', en:'The match', note:'Al Ittihad is Alexandria’s best-known football club.', lines:[
    Ln('النهارده:innaharda:today فيه:fi:there’s ماتش:matsh:a_match .', 'There’s a match today.'),
-   Ln('الأهلي:il-Ahli:Al_Ahly والزمالك:wiz-Zamaalik:and_Zamalek .', 'Al Ahly against Zamalek.'),
+   Ln('الاتحاد:il-Ittiḥaad:Al_Ittihad والأهلي:wil-Ahli:and_Al_Ahly .', 'Al Ittihad against Al Ahly.'),
    Ln('كل:kull:all الناس:in-naas:the_people في:fi:in القهوة:il-ʾahwa:the_café .', 'Everyone is at the café.'),
    Ln('جون:goon:goal !', 'Goal!'),
-   Ln('صاحبي:ṣaḥbi:my_friend زعلان:zaʿlaan:upset ، هو:huwwa:he’s زملكاوي:zamalkaawi:a_Zamalek_fan .', 'My friend is upset. He supports Zamalek.'),
-   Ln('وأنا:w-ana:and_me ؟ أنا:ana:I’m أهلاوي:ahlaawi:an_Ahly_fan !', 'And me? I support Al Ahly!'),
- ], qs:[['Who is playing?',['Al Ahly and Zamalek','Egypt and Morocco','Two local teams']],['Why is the friend upset?',['He supports Zamalek','He missed the match','The café is closed']],['Where is everyone watching?',['At the café','At home','At the stadium']]]},
+   Ln('صاحبي:ṣaḥbi:my_friend زعلان:zaʿlaan:upset ، هو:huwwa:he’s أهلاوي:ahlaawi:an_Ahly_fan .', 'My friend is upset. He supports Al Ahly.'),
+   Ln('وأنا:w-ana:and_me ؟ أنا:ana:I’m اتحادي:ittiḥaadi:an_Ittihad_fan !', 'And me? I support Al Ittihad!'),
+ ], qs:[['Who is playing?',['Al Ittihad and Al Ahly','Egypt and Morocco','Zamalek and Al Ahly']],['Why is the friend upset?',['He supports Al Ahly','He missed the match','The café is closed']],['Who does the narrator support?',['Al Ittihad','Al Ahly','Nobody']]]},
+ {id:'s-storm', ar:'النوة', en:'The winter storm', note:'Alexandria’s winter storms are called نوة (nawwa), and the big ones each have their own name.', lines:[
+   Ln('النهارده:innaharda:today فيه:fi:there’s نوة:nawwa:a_storm .', 'There’s a storm today.'),
+   Ln('البحر:il-baḥr:the_sea عالي:ʿaali:high والمطر:wil-maṭar:and_the_rain كتير:kitiir:heavy .', 'The sea is high and the rain is heavy.'),
+   Ln('إحنا:iḥna:we قاعدين:ʾaʿdiin:are_staying في:fi:at البيت:il-beit:home .', 'We’re staying at home.'),
+   Ln('ماما:mama:Mum بتعمل:bitiʿmil:is_making شاي:shaai:tea بلبن:bi-laban:with_milk .', 'Mum is making tea with milk.'),
+   Ln('إحنا:iḥna:we نشربوا:nishrabu:drink الشاي:ish-shaai:the_tea ونتفرجوا:wi-nitfarragu:and_watch على:ʿala:— التلفزيون:it-tilivizyoon:TV .', 'We drink our tea and watch TV.'),
+   Ln('بكرة:bukra:tomorrow الجو:ig-gaww:the_weather هيبقى:hayibʾa:will_be حلو:ḥilw:nice ، إن:in:if شاء:shaaʾ:wills الله:allaah:God .', 'Tomorrow the weather will be nice, God willing.'),
+ ], qs:[['What is the weather like?',['A storm with heavy rain','Hot and sunny','Foggy but dry']],['Where are they?',['At home','On the Corniche','At the market']],['What are they drinking?',['Tea with milk','Coffee','Juice']]]},
 ];
 const lineText = ln => ln.toks.filter(t => t.ar).map(t => t.ar).join(' ');
 /* Letters a piece of text needs, with hamza seats counted as ء plus their seat */
@@ -811,7 +821,7 @@ function nodeLabel(l){
   if (l.t === 'L') return 'New letters';
   if (l.t === 'V') return l.intro ? 'Hamza + a, i, u' : l.marks ? 'Sukuun + shadda' : 'Sound it out';
   if (l.t === 'J') return l.breaks ? 'Where words break' : 'Joining letters';
-  if (l.t === 'W') return UNITS[l.unit].lessons[0] === l && l.unit === UNITS.length-1 ? 'Phrases' : (l.unit === UNITS.length-1 ? 'More phrases' : 'Words');
+  if (l.t === 'W') return l.label || 'Words';
   return 'Unit review';
 }
 const OFFS = [0, 1, 1.4, 1, 0, -1, -1.4, -1];
@@ -894,7 +904,7 @@ function renderRead(){
     <section class="panel intro-panel">
       <p class="kicker">Stories</p>
       <h2 class="panel-title">Read real Egyptian Arabic</h2>
-      <p class="muted">Short scenes from everyday Cairo life. Tap any word for its meaning, turn on transliteration when you’re stuck, then answer a few questions. Each story unlocks once you’ve learned all of its letters.</p>
+      <p class="muted">Short scenes from everyday life in Alexandria: the Corniche, the tram, the fish market, the match. Tap any word for its meaning, turn on transliteration when you’re stuck, then answer a few questions. Each story unlocks once you’ve learned all of its letters.</p>
     </section>
     <div class="stories">${STORIES.map(st => {
       const open = storyOpen(st), done = !!(S.stories||{})[st.id];
@@ -922,7 +932,7 @@ const REC = {mr:null, chunks:[], text:null, stream:null, timer:null, busy:null};
 function recItems(){
   return [
     {title:'Letters', hint:'Say the letter’s name, as an Egyptian would.', rows: LETTERS.map(l => ({t:l.c, ar:l.c, sub:`${l.n} · ${l.s}`}))},
-    {title:'Words', hint:'Say the word naturally, the way you’d say it in Cairo.', rows: Object.values(WIDX).filter((w,i,a) => a.findIndex(x => plain(x.ar) === plain(w.ar)) === i).map(w => ({t:w.ar, ar:w.ar, sub:`${w.tr} · ${w.en}`}))},
+    {title:'Words', hint:'Say the word naturally, the way you’d say it in Alexandria.', rows: Object.values(WIDX).filter((w,i,a) => a.findIndex(x => plain(x.ar) === plain(w.ar)) === i).map(w => ({t:w.ar, ar:w.ar, sub:`${w.tr} · ${w.en}`}))},
     ...STORIES.map(st => ({title:`Story: ${st.en}`, hint:'Read each line at a normal speed.', rows: st.lines.map(ln => ({t:lineText(ln), ar:lineText(ln), sub:ln.en}))})),
   ];
 }
@@ -939,7 +949,7 @@ function renderRecord(){
   const total = groups.reduce((a,g) => a + g.rows.length, 0), have = groups.reduce((a,g) => a + g.rows.filter(r => hasAudio(r.t)).length, 0);
   el.innerHTML = `<section class="panel intro-panel">
       <p class="kicker">Recordings</p><h2 class="panel-title">Real Egyptian voices</h2>
-      <p class="muted">Hand the iPad to an Egyptian speaker. They tap the microphone, say the word, and tap stop. Their recordings play in your lessons, stories and listening questions.</p>
+      <p class="muted">Hand the iPad to someone from Alexandria. They tap the microphone, say the word, and tap stop. Their recordings play in your lessons, stories and listening questions.</p>
       <div class="rec-top"><div class="meter"><span style="width:${total ? have/total*100 : 0}%"></span></div><b>${have} / ${total}</b></div>
       <div class="seg" role="group" aria-label="Show"><button data-f="missing" aria-pressed="${recFilter==='missing'}">Not recorded</button><button data-f="all" aria-pressed="${recFilter==='all'}">All</button></div>
     </section>

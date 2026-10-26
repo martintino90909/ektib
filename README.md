@@ -1,6 +1,6 @@
 # Ektib · اكتب
 
-A Duolingo-style app for learning to read and write Egyptian Arabic on an iPad with an Apple Pencil: trace letters, write them from memory, read real Egyptian words and phrases.
+A Duolingo-style app for learning to read and write Egyptian Arabic, with an Alexandrian flavour, on an iPad with an Apple Pencil: trace letters, write them from memory, read real Egyptian words and phrases.
 
 It runs as a Cloudflare Worker. The app is one page in `public/`, the API is in `src/`, and progress lives in one Durable Object behind a passcode, so it syncs between devices.
 
@@ -24,11 +24,11 @@ Once the app sees your Apple Pencil, it ignores finger and palm touches on the w
 
 Four tabs:
 
-- **Learn**: 10 units on a path. Units 1–7 teach the letters grouped by shape, each followed by Egyptian words and a unit review. Unit 8 teaches the hamza and the vowel marks (fatḥa, kasra, ḍamma, sukuun, shadda) with "sound it out" drills. Unit 9 is joined writing: joining letters into words, splitting words into letters, and where words break. Unit 10 is everyday Cairo phrases.
+- **Learn**: 10 units on a path. Units 1–7 teach the letters grouped by shape, each followed by Egyptian words and a unit review. Unit 8 teaches the hamza and the vowel marks (fatḥa, kasra, ḍamma, sukuun, shadda) with "sound it out" drills. Unit 9 is joined writing: joining letters into words, splitting words into letters, and where words break. Unit 10 is everyday phrases plus Alexandrian words (falaafil, mashruuʿ, gini) and the Alexandrian “we” verbs (nirūḥu, naaklu).
 - **Review**: spaced repetition. Every letter and word you learn becomes a card; getting it right pushes it 1, 2, 4, 8… days away, getting it wrong brings it back in 10 minutes. Shows how strong each letter is.
-- **Read**: short stories in Egyptian Arabic, like the stories in HelloChinese. Lines appear one at a time; tap any word for its meaning (and add it to your review deck), toggle transliteration and translation, then answer comprehension questions. Each story unlocks once you've learned all its letters.
+- **Read**: short stories set in Alexandria (the Corniche, the Raml tram, the fish market, an Ittihad match, a winter nawwa), like the stories in HelloChinese. Lines appear one at a time; tap any word for its meaning (and add it to your review deck), toggle transliteration and translation, then answer comprehension questions. Each story unlocks once you've learned all its letters.
 - **Record**: a native speaker records letters, words and story lines on the iPad. Recordings play in lessons, stories and the word pop-up, and unlock "Which word did you hear?" listening questions.
-- Egyptian pronunciation throughout: ج is a hard g, ق is a glottal stop, and each letter shows its Franco-Arabic spelling (3, 7, 5, 2).
+- Egyptian (Alexandrian) pronunciation throughout: ج is a hard g, ق is a glottal stop, and each letter shows its Franco-Arabic spelling (3, 7, 5, 2).
 - Exercise types: trace, write from memory, letter → sound, sound → letter, letter shapes (start/middle/end), read a word, pick the word for a meaning, match pairs.
 - Handwriting checks look at dots (count and position) and overall shape. They can't reliably tell look-alike letters apart, so after each check the correct letter shows behind your writing, and "I wrote it right, count it" overrides a wrong mark.
 
