@@ -185,3 +185,44 @@ export function makeStore(kv) {
     },
   };
 }
+
+// UK date as YYYY-MM-DD.
+export function londonDay(now = new Date()) {
+  const p = Object.fromEntries(new Intl.DateTimeFormat('en-GB', {timeZone: 'Europe/London', year: 'numeric', month: '2-digit', day: '2-digit'})
+    .formatToParts(now).map((x) => [x.type, x.value]));
+  return `${p.year}-${p.month}-${p.day}`;
+}
+
+// A small read-only summary of progress for the Life dashboard (no lesson content, no recordings).
+export function summarize(p, now = new Date()) {
+  if (!p) return {started: false};
+  const today = londonDay(now);
+  const yesterday = londonDay(new Date(now.getTime() - 864e5));
+  const srs = p.srs && typeof p.srs === 'object' ? Object.values(p.srs) : [];
+  const t = now.getTime();
+  const hist = p.hist && typeof p.hist === 'object' ? {...p.hist} : {};
+  if (p.today && p.today.day && !hist[p.today.day] && p.today.xp) hist[p.today.day] = p.today.xp;
+  const days = [];
+  for (let i = 29; i >= 0; i--) {
+    const d = londonDay(new Date(t - i * 864e5));
+    days.push({day: d, xp: Number(hist[d]) || 0});
+  }
+  const meta = p.meta || {};
+  return {
+    started: true,
+    xp: Number(p.xp) || 0,
+    todayXp: p.today && p.today.day === today ? Number(p.today.xp) || 0 : 0,
+    streak: p.lastDay === today || p.lastDay === yesterday ? Number(p.streak) || 0 : 0,
+    practisedToday: p.lastDay === today,
+    lessonsDone: Object.values(p.done || {}).filter(Boolean).length,
+    lessonsTotal: Number(meta.lessons) || null,
+    storiesRead: Object.values(p.stories || {}).filter(Boolean).length,
+    storiesTotal: Number(meta.stories) || null,
+    cards: srs.length,
+    dueNow: srs.filter((c) => c && c.d <= t).length,
+    strong: srs.filter((c) => c && c.b >= 4).length,
+    next: meta.next || null,
+    days,
+    updated: Number(p.updated) || null,
+  };
+}

@@ -856,7 +856,7 @@ STORIES.forEach(st => {
 
 /* ================= State ================= */
 const KEY = 'ektib-progress-v1';
-const blank = () => ({v:2, done:{}, xp:0, streak:0, lastDay:'', today:{day:'',xp:0}, unlockAll:false, srs:{}, stories:{}, updated:0});
+const blank = () => ({v:2, done:{}, xp:0, streak:0, lastDay:'', today:{day:'',xp:0}, hist:{}, unlockAll:false, srs:{}, stories:{}, updated:0});
 let S = blank();
 try { const raw = localStorage.getItem(KEY); if (raw) S = Object.assign(blank(), JSON.parse(raw)); } catch(e) {}
 let syncState = 'local', saving = false, saveAgain = false, saveTimer = null, authed = false;
@@ -867,7 +867,15 @@ async function api(method, path, body){
   return {status:r.status, data};
 }
 function cacheLocal(){ try { localStorage.setItem(KEY, JSON.stringify(S)); } catch(e) {} }
+// Totals and the next unit, so the Life dashboard can show progress without the lesson list.
+function stampMeta(){
+  try {
+    const i = firstOpen(), L = LESSONS[i];
+    S.meta = {lessons: LESSONS.length, stories: STORIES.length, next: L ? {unit: L.unit + 1, name: UNITS[L.unit].en} : null};
+  } catch(e) {}
+}
 function save(){
+  stampMeta();
   S.updated = Date.now();
   cacheLocal();
   clearTimeout(saveTimer); saveTimer = setTimeout(pushRemote, 600);
@@ -2002,6 +2010,10 @@ function complete(){
   if (S.lastDay !== t){ S.streak = S.lastDay === y ? S.streak + 1 : 1; S.lastDay = t; }
   if (S.today.day !== t) S.today = {day:t, xp:0};
   S.today.xp += gained;
+  S.hist = S.hist || {};
+  S.hist[t] = (S.hist[t] || 0) + gained;
+  const keep = Object.keys(S.hist).sort().slice(-400); // about a year is plenty
+  S.hist = Object.fromEntries(keep.map(k => [k, S.hist[k]]));
   save();
   const seal = L && L.t === 'L' ? L.letters.join(' ') : R.kind === 'story' ? R.st.ar : 'برافو';
   const title = R.kind === 'story' ? 'Story finished' : R.kind === 'review' ? 'Review done' : R.kind === 'practice' ? 'Practice done' : L.t === 'R' ? 'Unit review done' : 'Lesson complete';
@@ -2017,6 +2029,9 @@ function complete(){
 
 /* ================= Start ================= */
 LESSONS.forEach(l => { if (S.done[l.id]) { lessonCards(l).forEach(srsAdd); (l.intro||[]).forEach(c => srsAdd('L:'+c)); } });
+// Start the daily XP history from what today already has.
+S.hist = S.hist || {};
+if (S.today && S.today.day && !S.hist[S.today.day] && S.today.xp) S.hist[S.today.day] = S.today.xp;
 showView(view);
 startSync();
 window.addEventListener('online', () => { if (authed) pullRemote(); });

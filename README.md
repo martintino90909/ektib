@@ -50,6 +50,10 @@ All routes except `/api/session` and `/api/login` need the session cookie.
 
 Ten wrong passcodes in an hour lock sign-in for the rest of that hour.
 
+## Life dashboard link
+
+The Worker also exports a `Summary` entrypoint with one method, `summary()`: XP, streak, lessons and stories done, review cards due, and XP for each of the last 30 days. It has no public URL; only Workers in the same Cloudflare account that bind to it (`services` → `ektib`, entrypoint `Summary`) can call it. The Life dashboard uses it for its Overview tab.
+
 ## Tests
 
 ```

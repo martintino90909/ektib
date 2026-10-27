@@ -1,5 +1,5 @@
-import {DurableObject} from 'cloudflare:workers';
-import {handleApi, makeStore} from './api.js';
+import {DurableObject, WorkerEntrypoint} from 'cloudflare:workers';
+import {handleApi, makeStore, summarize} from './api.js';
 
 // One Durable Object holds Martin's Ektib progress and recordings (strongly consistent, private to this Worker).
 export class Store extends DurableObject {
@@ -19,6 +19,12 @@ export class Store extends DurableObject {
 }
 
 const mainStore = (env) => env.STORE.get(env.STORE.idFromName('main'));
+
+// Read-only progress summary for the Life dashboard. A named entrypoint is only reachable
+// through a Cloudflare service binding from Martin's own Workers, never from the internet.
+export class Summary extends WorkerEntrypoint {
+  async summary() { return summarize(await mainStore(this.env).getProgress()); }
+}
 
 export default {
   async fetch(request, env) {

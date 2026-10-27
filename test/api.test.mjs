@@ -118,3 +118,26 @@ test('recordings need a session and real audio', async () => {
   r = await handleApi(audioReq('GET', 'not-a-key', undefined, c), env, store);
   assert.equal(r.status, 404);
 });
+
+test('summary for the Life dashboard', async () => {
+  const {summarize} = await import('../src/api.js');
+  assert.deepEqual(summarize(null), {started: false});
+  const now = new Date('2026-10-27T12:00:00Z');
+  const p = {xp: 120, streak: 4, lastDay: '2026-10-26', today: {day: '2026-10-26', xp: 18},
+    done: {'u1-1': true, 'u1-2': true}, stories: {ep1: true}, hist: {'2026-10-25': 30},
+    srs: {a: {b: 4, d: now.getTime() - 1000}, b: {b: 1, d: now.getTime() + 864e5}},
+    meta: {lessons: 40, stories: 12, next: {unit: 1, name: 'Tooth letters'}}, updated: 5};
+  const s = summarize(p, now);
+  assert.equal(s.streak, 4);
+  assert.equal(s.todayXp, 0);
+  assert.equal(s.practisedToday, false);
+  assert.equal(s.lessonsDone, 2);
+  assert.equal(s.lessonsTotal, 40);
+  assert.equal(s.storiesRead, 1);
+  assert.equal(s.cards, 2);
+  assert.equal(s.dueNow, 1);
+  assert.equal(s.strong, 1);
+  assert.equal(s.days.length, 30);
+  assert.deepEqual(s.days.slice(-3).map((d) => d.xp), [30, 18, 0]);
+  assert.equal(summarize({...p, lastDay: '2026-10-20'}, now).streak, 0);
+});
