@@ -397,6 +397,7 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .cred .code{font-size:24px;color:var(--enamel);font-variant-numeric:tabular-nums;letter-spacing:.02em;user-select:all;-webkit-user-select:all}
 .cred-msg{font:inherit;font-size:15px;color:var(--ink);background:var(--surface-2);border:1px solid var(--line);border-radius:12px;padding:10px 12px;resize:none;width:100%;box-sizing:border-box}
 @media (max-width:520px){.person{grid-template-columns:auto 1fr}.person-b{grid-column:1/-1;justify-content:flex-start}}
+.cv{font-style:normal;font-size:11.5px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--enamel);border:1.5px solid color-mix(in srgb,var(--enamel) 40%,var(--line));border-radius:6px;padding:0 5px;margin-inline-start:4px;white-space:nowrap}
 .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(92px + env(safe-area-inset-bottom,0px));z-index:60;background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:12px;font-weight:600;max-width:min(92vw,480px);box-shadow:0 8px 24px color-mix(in srgb,#000 25%,transparent)}
 @media (max-width:620px){
   .due-panel{grid-template-columns:1fr}
@@ -858,6 +859,11 @@ const CAST = [
  {ar:'مشمش', tr:'Mishmish', en:'Mishmish', role:'Grandma’s cat. A thief.'},
 ];
 const lineText = ln => ln.toks.filter(t => t.ar).map(t => t.ar).join(' ');
+// What the voice reads: the line with its punctuation, so questions sound like questions.
+const speakLine = ln => ln.toks.map(t => t.ar || t.p).join(' ');
+// Which voice each character gets.
+const VOICE_OF = {'تيتة':'teita', 'نور':'nour', 'يوسف':'yousef', 'عم سعد':'saad', 'الصياد':'saad', 'الست':'woman', 'ماما':'woman'};
+const voiceFor = ln => { if (!ln.who) return 'narrator'; const n = ln.who.filter(t => t.ar).map(t => t.ar).join(' '); return VOICE_OF[n] || 'man'; };
 /* Letters a piece of text needs, with hamza seats counted as ء plus their seat */
 function lettersIn(text){
   const out = new Set();
@@ -900,6 +906,7 @@ function setMe(u){
   applyRole();
 }
 function applyRole(){
+  ttsOn = authed && ttsServer;
   const friend = authed && me && !me.owner;
   const t = document.querySelector('.tab[data-v="record"]');
   if (t) t.hidden = !!friend;
@@ -1045,19 +1052,69 @@ function akey(text){
   for (let i=0;i<s.length;i++){ const c = s.charCodeAt(i); h1 = Math.imul(h1 ^ c, 16777619) >>> 0; h2 = Math.imul(h2 ^ c, 2246822519) >>> 0; h2 = ((h2 << 13) | (h2 >>> 19)) >>> 0; }
   return h1.toString(16).padStart(8,'0') + h2.toString(16).padStart(8,'0');
 }
-let AUD = {};
-const hasAudio = t => !!AUD[akey(t)];
-let curAudio = null;
-function playAudio(t){
-  const k = akey(t); if (!AUD[k]) return false;
-  try { if (curAudio) curAudio.pause(); curAudio = new Audio(`/api/audio/${k}?v=${AUD[k].ts||0}`); curAudio.play().catch(()=>{}); } catch(e) {}
-  return true;
+// AUD: recordings made by people. TTS: computer voices (Azure, Egyptian). A recording always wins.
+let AUD = {}, TTS = {}, ttsServer = false, ttsOn = false;
+const hasRec = t => !!AUD[akey(t)];
+const hasTtsFor = t => !!TTS[akey(t)];
+// Can this text be played? With computer voices on, everything can (it's made on first play).
+const hasAudio = t => hasRec(t) || hasTtsFor(t) || ttsOn;
+const srcFor = k => AUD[k] ? `/api/audio/${k}?v=${AUD[k].ts||0}` : TTS[k] ? `/api/audio/${k}?v=t${TTS[k].ts||0}` : null;
+
+// One audio element for the whole app. iPads only let a page play sound after a tap, so the
+// first tap anywhere "unlocks" it; after that, lines can play on their own.
+const player = new Audio(); player.preload = 'auto';
+let playSeq = 0, unlocked = false;
+function silentUrl(){
+  const n = 400, buf = new ArrayBuffer(44 + n), v = new DataView(buf), w = (o, x) => { for (let i = 0; i < x.length; i++) v.setUint8(o + i, x.charCodeAt(i)); };
+  w(0,'RIFF'); v.setUint32(4, 36 + n, true); w(8,'WAVE'); w(12,'fmt '); v.setUint32(16, 16, true); v.setUint16(20, 1, true); v.setUint16(22, 1, true);
+  v.setUint32(24, 8000, true); v.setUint32(28, 8000, true); v.setUint16(32, 1, true); v.setUint16(34, 8, true); w(36,'data'); v.setUint32(40, n, true);
+  for (let i = 0; i < n; i++) v.setUint8(44 + i, 128);
+  return URL.createObjectURL(new Blob([buf], {type:'audio/wav'}));
+}
+document.addEventListener('pointerdown', () => {
+  if (unlocked) return; unlocked = true;
+  try { player.src = silentUrl(); const p = player.play(); if (p) p.catch(() => {}); } catch(e) {}
+}, {capture:true});
+function stopAudio(){ playSeq++; try { player.pause(); } catch(e) {} }
+
+let busyAt = 0;
+const pendingTts = {};
+// Make sure a computer voice exists for this text. Resolves 'ok', 'busy', 'off' or 'error'.
+function ensureTts(text, voice){
+  const k = akey(text);
+  if (AUD[k] || TTS[k]) return Promise.resolve('ok');
+  if (!ttsOn) return Promise.resolve('off');
+  if (pendingTts[k]) return pendingTts[k];
+  return pendingTts[k] = (async () => {
+    try {
+      const r = await api('POST', '/api/tts', {text, voice: voice || 'word'});
+      if (r.status === 200){ TTS[k] = {ts: r.data.ts, p: voice || 'word'}; return 'ok'; }
+      if (r.status === 429){ if (Date.now() - busyAt > 60e3){ busyAt = Date.now(); toast('The computer voice is busy. It’ll be back in a minute.'); } return 'busy'; }
+      if (r.status === 503){ ttsServer = false; ttsOn = false; return 'off'; }
+      if (r.status === 401){ authed = false; ttsOn = false; return 'off'; }
+      if (Date.now() - busyAt > 60e3){ busyAt = Date.now(); toast(r.data.message || 'The computer voice didn’t work.'); }
+      return 'error';
+    } catch(e) { return 'error'; }
+    finally { delete pendingTts[k]; }
+  })();
+}
+// Play a letter, word or line: a person's recording if there is one, otherwise the computer voice.
+async function playAudio(t, voice){
+  const seq = ++playSeq, k = akey(t);
+  if (!srcFor(k) && ttsOn){ await ensureTts(t, voice); if (seq !== playSeq) return true; }
+  const src = srcFor(k);
+  if (!src) return false;
+  try { player.pause(); player.src = src; await player.play(); return true; }
+  catch(e) { return !!(e && e.name === 'AbortError'); }
 }
 async function loadAudioIndex(){
-  try { const r = await api('GET', '/api/audio'); if (r.status === 200){ AUD = r.data.index || {}; refreshViews(); } } catch(e) {}
+  try {
+    const r = await api('GET', '/api/audio');
+    if (r.status === 200){ AUD = r.data.index || {}; TTS = r.data.tts || {}; ttsServer = !!r.data.ttsReady; ttsOn = authed && ttsServer; refreshViews(); }
+  } catch(e) {}
 }
-const spk = (t, big) => hasAudio(t) ? `<button class="spk ${big?'big':''}" data-say="${esc(t)}" aria-label="Play recording">${ICON.speaker}</button>` : '';
-document.addEventListener('click', e => { const b = e.target.closest('[data-say]'); if (b){ e.preventDefault(); playAudio(b.dataset.say); } });
+const spk = (t, big, voice) => hasAudio(t) ? `<button class="spk ${big?'big':''}" data-say="${esc(t)}" ${voice?`data-voice="${voice}"`:''} aria-label="Play">${ICON.speaker}</button>` : '';
+document.addEventListener('click', e => { const b = e.target.closest('[data-say]'); if (b){ e.preventDefault(); playAudio(b.dataset.say, b.dataset.voice); } });
 
 let toastT = null;
 function toast(msg){ const t = $('#toast'); t.textContent = msg; t.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => t.hidden = true, 3200); }
@@ -1236,7 +1293,7 @@ function recItems(){
   return [
     {title:'Letters', hint:'Say the letter’s name, as an Egyptian would.', rows: LETTERS.map(l => ({t:l.c, ar:l.c, sub:`${l.n} · ${l.s}`}))},
     {title:'Words', hint:'Say the word naturally, the way you’d say it in Alexandria.', rows: Object.values(WIDX).filter((w,i,a) => a.findIndex(x => plain(x.ar) === plain(w.ar)) === i).map(w => ({t:w.ar, ar:w.ar, sub:`${w.tr} · ${w.en}`}))},
-    ...STORIES.map(st => ({title:`Story: ${st.en}`, hint:'Read each line at a normal speed.', rows: st.lines.map(ln => ({t:lineText(ln), ar:lineText(ln), sub:ln.en}))})),
+    ...STORIES.map(st => ({title:`Story: ${st.en}`, hint:'Read each line at a normal speed.', rows: st.lines.map(ln => ({t:lineText(ln), ar:lineText(ln), sub:ln.en, speak:speakLine(ln), voice:voiceFor(ln)}))})),
   ];
 }
 function renderRecord(){
@@ -1249,29 +1306,73 @@ function renderRecord(){
     return;
   }
   const groups = recItems();
-  const total = groups.reduce((a,g) => a + g.rows.length, 0), have = groups.reduce((a,g) => a + g.rows.filter(r => hasAudio(r.t)).length, 0);
-  el.innerHTML = `<section class="panel intro-panel">
+  const total = groups.reduce((a,g) => a + g.rows.length, 0), have = groups.reduce((a,g) => a + g.rows.filter(r => hasRec(r.t)).length, 0);
+  el.innerHTML = `<section class="panel" id="ttsPanel">${ttsPanelHtml()}</section>
+    <section class="panel intro-panel">
       <p class="kicker">Recordings</p><h2 class="panel-title">Real Egyptian voices</h2>
       <p class="muted">Hand the iPad to someone from Alexandria. They tap the microphone, say the word, and tap stop. Their recordings play in your lessons, stories and listening questions.</p>
       <div class="rec-top"><div class="meter"><span style="width:${total ? have/total*100 : 0}%"></span></div><b>${have} / ${total}</b></div>
       <div class="seg" role="group" aria-label="Show"><button data-f="missing" aria-pressed="${recFilter==='missing'}">Not recorded</button><button data-f="all" aria-pressed="${recFilter==='all'}">All</button></div>
     </section>
     ${groups.map(g => {
-      const rows = g.rows.filter(r => recFilter === 'all' || !hasAudio(r.t) || REC.text === r.t);
+      const rows = g.rows.filter(r => recFilter === 'all' || !hasRec(r.t) || REC.text === r.t);
       if (!rows.length) return '';
       return `<section class="panel"><h3 class="panel-h">${esc(g.title)}</h3><p class="muted small">${esc(g.hint)}</p>
         <div class="rec-list">${rows.map(r => {
-          const on = REC.text === r.t, has = hasAudio(r.t), busy = REC.busy === r.t;
+          const on = REC.text === r.t, has = hasRec(r.t), gen = !has && hasTtsFor(r.t), busy = REC.busy === r.t;
           return `<div class="rec-row ${on?'live':''}">
-            <div class="rec-text"><b class="ar">${esc(r.ar)}</b><span>${esc(r.sub)}</span></div>
+            <div class="rec-text"><b class="ar">${esc(r.ar)}</b><span>${esc(r.sub)}${gen ? ' <i class="cv">Computer voice</i>' : ''}</span></div>
             <div class="rec-btns">
-              ${has && !on ? `<button class="ghost icon" data-say="${esc(r.t)}" aria-label="Play">${ICON.speaker}</button>` : ''}
+              ${(has || gen) && !on ? `<button class="ghost icon" data-say="${esc(r.speak || r.t)}" ${r.voice?`data-voice="${r.voice}"`:''} aria-label="Play">${ICON.speaker}</button>` : ''}
               <button class="rec-btn ${on?'on':''}" data-rec="${esc(r.t)}" ${busy?'disabled':''} aria-label="${on?'Stop recording':has?'Record again':'Record'}">${on ? ICON.stop : ICON.mic}<span>${on ? 'Stop' : busy ? 'Saving…' : has ? 'Redo' : 'Record'}</span></button>
             </div></div>`;
         }).join('')}</div></section>`;
     }).join('')}`;
 }
+// Computer voices: status, and making every missing one in one go.
+const GEN = {running:false, stop:false, done:0, total:0, msg:'', run:0};
+const F0_GAP = 3200; // Azure's free tier allows 20 voices a minute
+function ttsCounts(){
+  const rows = recItems().flatMap(g => g.rows);
+  const people = rows.filter(r => hasRec(r.t)).length, comp = rows.filter(r => !hasRec(r.t) && hasTtsFor(r.t)).length;
+  return {rows, total: rows.length, people, comp, missing: rows.filter(r => !hasRec(r.t) && !hasTtsFor(r.t))};
+}
+function ttsPanelHtml(){
+  if (!ttsServer) return `<p class="kicker">Computer voices</p><h2 class="panel-title">Off</h2>
+    <p class="muted">Ektib can speak every letter, word and story line with Azure’s Egyptian voices, Salma and Shakir. To turn them on, add <b>AZURE_SPEECH_KEY</b> and <b>AZURE_SPEECH_REGION</b> to the Ektib Worker’s settings in Cloudflare.</p>`;
+  const c = ttsCounts(), mins = Math.ceil(c.missing.length * F0_GAP / 60000);
+  return `<p class="kicker">Computer voices</p><h2 class="panel-title">On</h2>
+    <p class="muted">${c.people + c.comp} of ${c.total} have a voice: ${c.people} recorded by people, ${c.comp} computer. Anything missing is made the first time it plays. A person’s recording always replaces the computer voice.</p>
+    ${GEN.running ? `<div class="rec-top"><div class="meter"><span style="width:${GEN.total ? GEN.done/GEN.total*100 : 0}%"></span></div><b>${GEN.done} / ${GEN.total}</b></div>
+      <p class="muted small">Making voices. Keep Ektib open. About ${Math.max(1, Math.ceil((GEN.total-GEN.done)*F0_GAP/60000))} min left.</p>
+      <div><button class="ghost" id="genStop">Stop</button></div>`
+    : c.missing.length ? `<div><button class="btn small" id="genAll">Make all ${c.missing.length} now</button></div><p class="muted small">Takes about ${mins} min on Azure’s free tier.</p>`
+    : `<p class="muted small">Every item has a voice.</p>`}
+    ${GEN.msg ? `<p class="form-msg">${esc(GEN.msg)}</p>` : ''}`;
+}
+function refreshTtsPanel(){ const p = $('#ttsPanel'); if (p) p.innerHTML = ttsPanelHtml(); }
+async function genAll(){
+  if (GEN.running) return;
+  const todo = ttsCounts().missing;
+  const run = ++GEN.run;
+  Object.assign(GEN, {running:true, stop:false, done:0, total:todo.length, msg:''});
+  refreshTtsPanel();
+  for (const r of todo){
+    if (GEN.stop || !ttsOn || run !== GEN.run) break;
+    let res = await ensureTts(r.speak || r.t, r.voice || 'word');
+    if (res === 'busy'){ await new Promise(z => setTimeout(z, 61000)); if (GEN.stop) break; res = await ensureTts(r.speak || r.t, r.voice || 'word'); }
+    if (res === 'error' || res === 'off'){ GEN.msg = 'Stopped: the voice service isn’t answering. Check the Azure key and region in Cloudflare, then try again.'; break; }
+    GEN.done++;
+    refreshTtsPanel();
+    await new Promise(z => setTimeout(z, F0_GAP));
+  }
+  if (run !== GEN.run) return;
+  GEN.running = false;
+  if (view === 'record') renderRecord(); else refreshTtsPanel();
+}
 $('#view-record').addEventListener('click', e => {
+  if (e.target.closest('#genAll')) return genAll();
+  if (e.target.closest('#genStop')){ GEN.stop = true; GEN.running = false; GEN.run++; return refreshTtsPanel(); }
   const f = e.target.closest('[data-f]'); if (f){ recFilter = f.dataset.f; return renderRecord(); }
   const b = e.target.closest('[data-rec]'); if (!b) return;
   if (REC.text === b.dataset.rec) recStop(); else recStart(b.dataset.rec);
@@ -1433,7 +1534,7 @@ const wordPool = (pool, w) => shuffle((pool && pool.length >= 4 ? pool : ALLWORD
 function fill4(w, pool){ const o = [w, ...wordPool(pool, w).slice(0,3)]; for (const x of shuffle(ALLWORDS)){ if (o.length >= 4) break; if (!o.some(y => plain(y.ar) === plain(x.ar) || y.en === x.en)) o.push(x); } return shuffle(o); }
 function mcRead(w, pool){ const s = fill4(w, pool); return {t:'mc', card:'W:'+plain(w.ar), kicker:'Read', prompt:'What does this say?', big:w.ar, word:true, say:w.ar, opts:s.map(x=>({label:`${x.tr} · ${x.en}`})), ans:s.indexOf(w), explain:`${w.ar} = ${w.tr}, “${w.en}”.`}; }
 function mcMean(w, pool){ const s = fill4(w, pool); return {t:'mc', card:'W:'+plain(w.ar), kicker:'Recognise', prompt:`Which one means “${w.en}”?`, lat:w.tr, small:true, opts:s.map(x=>({label:x.ar, ar:true})), ans:s.indexOf(w), explain:`“${w.en}” is ${w.ar} (${w.tr}).`}; }
-function mcListen(w, pool){ const s = fill4(w, pool); return {t:'mc', card:'W:'+plain(w.ar), kicker:'Listen', prompt:'Which word did you hear?', listen:w.ar, opts:s.map(x=>({label:x.ar, ar:true})), ans:s.indexOf(w), explain:`You heard ${w.ar} (${w.tr}), “${w.en}”.`}; }
+function mcListen(w, pool){ const s = fill4(w, pool); return {t:'mc', card:'W:'+plain(w.ar), kicker:'Listen', prompt:'Which word did you hear?', listen:w.ar, tr:w.tr, opts:s.map(x=>({label:x.ar, ar:true})), ans:s.indexOf(w), explain:`You heard ${w.ar} (${w.tr}), “${w.en}”.`}; }
 function matchLetters(cs){ return {t:'match', kicker:'Match', prompt:'Match each letter to its sound', pairs: shuffle(cs).slice(0,5).map(c => [c, LMAP[c].s])}; }
 function matchWords(ws){ return {t:'match', kicker:'Match', prompt:'Match each word to its meaning', pairs: shuffle(ws).filter((w,i,a)=>a.findIndex(x=>x.en===w.en)===i).slice(0,5).map(w => [w.ar, w.en])}; }
 function matchSounds(ws){ return {t:'match', kicker:'Match', prompt:'Match each word to how it sounds', pairs: shuffle(ws).slice(0,5).map(w => [w.ar, w.tr])}; }
@@ -1846,7 +1947,7 @@ function startLesson(i){
 function startStory(st){ run('story', buildStory(st), {st}); }
 function endLesson(){
   if (R && R.slate) R.slate.destroy();
-  if (curAudio) curAudio.pause();
+  stopAudio();
   R = null; lessonEl.hidden = true; $('#home').hidden = false; $('#tabs').hidden = false; document.querySelector('.top').hidden = false; refreshViews();
 }
 $('#quitBtn').onclick = () => {
@@ -1955,7 +2056,10 @@ async function renderItem(){
       ex.querySelectorAll('.opt').forEach(x => x.classList.remove('sel')); b.classList.add('sel');
       R.sel = +b.dataset.k; footer('check', {ready:true});
     });
-    if (it.listen) playAudio(it.listen);
+    if (it.listen) playAudio(it.listen).then(ok => {
+      if (ok || !R || R.queue[R.pos] !== it) return;
+      const tg = ex.querySelector('.tag'); if (tg) tg.textContent = `Couldn’t play the sound, so here it is in Latin letters: ${it.tr}`;
+    });
     footer('check', {ready:false}); return;
   }
   if (it.t === 'match'){
@@ -2039,7 +2143,7 @@ function renderStory(ex, it){
       <div class="line ${i === R.shown-1 ? 'fresh' : ''}">
         <div class="line-row">
           <div class="line-ar">${ln.who ? `<span class="who">${ln.who.map(t => t.ar ? `<button class="tok" data-w="${esc(t.ar)}"><span class="who-ar ar">${esc(t.ar)}</span><span class="tok-tr">${esc(t.tr)}</span></button>` : '').join('')}</span>` : ''}${ln.toks.map(tokHtml).join('')}</div>
-          ${spk(lineText(ln))}
+          ${spk(speakLine(ln), false, voiceFor(ln))}
         </div>
         <p class="line-en">${esc(ln.en)}</p>
       </div>`).join('')}</div>
@@ -2051,7 +2155,8 @@ function renderStory(ex, it){
   });
   ex.querySelector('.lines').addEventListener('click', e => { const t = e.target.closest('.tok'); if (t) wordSheet(t.dataset.w); });
   const last = ex.querySelector('.line.fresh'); if (last && R.shown > 1) last.scrollIntoView({block:'nearest', behavior:'smooth'});
-  playAudio(lineText(st.lines[R.shown-1]));
+  const cur = st.lines[R.shown-1], next = st.lines[R.shown];
+  playAudio(speakLine(cur), voiceFor(cur)).then(() => { if (next) ensureTts(speakLine(next), voiceFor(next)); });
   footer('continue', {label: R.shown < it.until ? 'Next line' : 'Continue'});
 }
 function wordSheet(ar){

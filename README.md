@@ -14,6 +14,18 @@ Every push to `main` redeploys automatically. Changing `PASSCODE` signs every de
 
 Without a passcode set, the app still works but keeps progress on the device only.
 
+## Computer voices (optional)
+
+Cloudflare's own AI has no Arabic voices, so Ektib uses Microsoft Azure's two Egyptian neural voices, Salma and Shakir. Every letter, word and story line can be spoken; each one is made the first time it plays, stored, and reused. In the stories each character gets their own voice (Teita lower and slower, Nour brighter, Amm Saad deep, and so on). A person's recording from the Record tab always replaces the computer voice. Letters are spoken by name (قاف, باء…).
+
+Setup, once:
+
+1. At [portal.azure.com](https://portal.azure.com), create a **Speech service** resource. Pricing tier **Free F0**, region e.g. **UK South**.
+2. Open it → **Keys and Endpoint**. Copy **KEY 1** and the **Location/Region** (e.g. `uksouth`).
+3. In Cloudflare, open the `ektib` Worker → **Settings** → **Variables and Secrets**. Add a **Secret** `AZURE_SPEECH_KEY` (the key) and a **Text** variable `AZURE_SPEECH_REGION` (the region). Deploy.
+
+The free tier gives 500,000 characters a month and 20 voices a minute. The Record tab shows how many items have a voice and can make all the missing ones in one go (about 45 minutes on the free tier; keep the app open). Without the key, everything works as before, with no computer voices.
+
 ## Friends' accounts
 
 Signed in with `PASSCODE`, you're the owner. Open **Settings → Friends’ accounts → Manage** to add a friend: type their name and the app makes them a passcode (like `mishmish-4821`) and a message to send them. Each friend has their own progress; they can play your recordings but can't add or delete them, and they can't manage accounts. **New passcode** signs a friend out everywhere and keeps their progress; **Remove** deletes the account and its progress. Up to 20 friends.
@@ -53,8 +65,9 @@ All routes except `/api/session` and `/api/login` need the session cookie.
 | `POST /api/users` `{name, passcode?}` | Owner only: creates an account; returns its passcode once |
 | `POST /api/users/:id/passcode` | Owner only: new passcode, signs them out everywhere |
 | `DELETE /api/users/:id` | Owner only: removes the account and its progress |
-| `GET /api/audio` | Which recordings exist, keyed by a hash of their text |
-| `GET /api/audio/:key` | Plays a recording |
+| `GET /api/audio` | Which recordings and computer voices exist, keyed by a hash of their text, and whether voices are set up |
+| `POST /api/tts` `{text, voice}` | Makes (or returns the stored) computer voice for some Arabic text; `voice` is a character preset |
+| `GET /api/audio/:key` | Plays the recording, or the computer voice if there's no recording |
 | `PUT /api/audio/:key` | Owner only: saves a recording (audio body up to 1 MB, `X-Text` header with the Arabic text) |
 | `DELETE /api/audio/:key` | Owner only: deletes a recording |
 

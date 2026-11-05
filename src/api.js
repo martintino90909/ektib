@@ -7,6 +7,10 @@
 // Accounts: the owner signs in with env.PASSCODE (and keeps the original session cookie format).
 // The owner can create accounts for friends; each friend has their own passcode and progress.
 // Recordings are shared: everyone can play them, only the owner can add or delete them.
+//
+// Generated voices: with AZURE_SPEECH_KEY and AZURE_SPEECH_REGION set, any signed-in person can ask
+// for a computer voice (Azure's Egyptian voices) for a letter, word or story line. It is made once,
+// stored, and served whenever there is no human recording for that text.
 
 export const COOKIE = 'ektib_session';
 const SESSION_MSG = 'ektib-session-v1';
@@ -16,6 +20,23 @@ const MAX_AUDIO = 1024 * 1024;
 const AUDIO_KEY = /^\/api\/audio\/([a-f0-9]{16})$/;
 const USER_PATH = /^\/api\/users\/([a-f0-9]{8})(\/passcode)?$/;
 const MAX_USERS = 20;
+const MAX_TTS_TEXT = 300;
+const SALMA = 'ar-EG-SalmaNeural', SHAKIR = 'ar-EG-ShakirNeural';
+// One preset per kind of speaker, so story characters sound different from each other.
+export const TTS_PRESETS = {
+  word:     {voice: SALMA,  rate: '-18%', pitch: '0%'},
+  narrator: {voice: SALMA,  rate: '-10%', pitch: '-2%'},
+  teita:    {voice: SALMA,  rate: '-14%', pitch: '-12%'},
+  nour:     {voice: SALMA,  rate: '-4%',  pitch: '+6%'},
+  woman:    {voice: SALMA,  rate: '-8%',  pitch: '-5%'},
+  yousef:   {voice: SHAKIR, rate: '-6%',  pitch: '+4%'},
+  saad:     {voice: SHAKIR, rate: '-14%', pitch: '-12%'},
+  man:      {voice: SHAKIR, rate: '-8%',  pitch: '-4%'},
+};
+// Letters are spoken by name.
+const LETTER_NAMES = {'ا':'ألف','ب':'باء','ت':'تاء','ث':'ثاء','ج':'جيم','ح':'حاء','خ':'خاء','د':'دال','ذ':'ذال','ر':'راء','ز':'زاي',
+  'س':'سين','ش':'شين','ص':'صاد','ض':'ضاد','ط':'طاء','ظ':'ظاء','ع':'عين','غ':'غين','ف':'فاء','ق':'قاف','ك':'كاف','ل':'لام',
+  'م':'ميم','ن':'نون','ه':'هاء','و':'واو','ي':'ياء','ة':'تاء مربوطة','ء':'همزة'};
 const WORDS = ['falafel','mishmish','corniche','tram','basbousa','fresca','qaitbay','anfushi','sayadiya','kibda','fuul','bahari','nawwa','mashroo3','shatt','yalla'];
 
 const enc = new TextEncoder();
@@ -48,6 +69,38 @@ export function makePasscode() {
   return `${WORDS[r[0] % WORDS.length]}-${String(1000 + (r[1] % 9000))}`;
 }
 const cookieFor = (token) => `${COOKIE}=${token}; Path=/; Max-Age=31536000; HttpOnly; Secure; SameSite=Strict`;
+// Same key the app computes for a piece of text (vowel marks, tatweel and punctuation ignored).
+const plainAr = (s) => s.replace(/[\u064B-\u0652\u0670]/g, '').replace(/\u0640/g, '');
+export function akey(text) {
+  const s = plainAr(text).replace(/[.!؟،?,:]/g, '').replace(/\s+/g, ' ').trim();
+  let h1 = 0x811c9dc5, h2 = 0x9747b28c;
+  for (let i = 0; i < s.length; i++) { const c = s.charCodeAt(i); h1 = Math.imul(h1 ^ c, 16777619) >>> 0; h2 = Math.imul(h2 ^ c, 2246822519) >>> 0; h2 = ((h2 << 13) | (h2 >>> 19)) >>> 0; }
+  return h1.toString(16).padStart(8, '0') + h2.toString(16).padStart(8, '0');
+}
+const escXml = (s) => s.replace(/[<>&'"]/g, (c) => ({'<': '&lt;', '>': '&gt;', '&': '&amp;', "'": '&apos;', '"': '&quot;'}[c]));
+export const ttsReady = (env) => !!(env.AZURE_SPEECH_KEY && env.AZURE_SPEECH_REGION);
+export function ssmlFor(text, preset) {
+  const p = TTS_PRESETS[preset] || TTS_PRESETS.word;
+  const letter = LETTER_NAMES[plainAr(text).trim()];
+  const speak = letter || text.replace(/\s+([.!؟،?,:])/g, '$1');
+  return `<speak version="1.0" xmlns="http://www.w3.org/2001/10/synthesis" xml:lang="ar-EG"><voice name="${p.voice}"><prosody rate="${p.rate}" pitch="${p.pitch}">${escXml(speak)}</prosody></voice></speak>`;
+}
+async function synthesize(env, text, preset) {
+  const doFetch = env.TTS_FETCH || fetch;
+  const region = String(env.AZURE_SPEECH_REGION).trim().toLowerCase().replace(/[^a-z0-9]/g, '');
+  const r = await doFetch(`https://${region}.tts.speech.microsoft.com/cognitiveservices/v1`, {
+    method: 'POST',
+    headers: {'Ocp-Apim-Subscription-Key': String(env.AZURE_SPEECH_KEY).trim(), 'Content-Type': 'application/ssml+xml',
+      'X-Microsoft-OutputFormat': 'audio-24khz-48kbitrate-mono-mp3', 'User-Agent': 'ektib'},
+    body: ssmlFor(text, preset),
+  });
+  if (r.status === 429) throw Object.assign(new Error('The voice service is busy. Try again in a minute.'), {status: 429, code: 'tts_busy'});
+  if (r.status === 401 || r.status === 403) throw Object.assign(new Error('The Azure speech key or region is wrong. Check them in Cloudflare.'), {status: 502, code: 'tts_key'});
+  if (!r.ok) throw Object.assign(new Error(`The voice service failed (${r.status}). Try again later.`), {status: 502, code: 'tts_failed'});
+  const buf = await r.arrayBuffer();
+  if (buf.byteLength < 200) throw Object.assign(new Error('The voice service sent back no audio.'), {status: 502, code: 'tts_failed'});
+  return buf;
+}
 const cleanName = (n) => (typeof n === 'string' ? n.replace(/\s+/g, ' ').trim() : '');
 
 export function readCookie(request, name) {
@@ -209,13 +262,33 @@ export async function handleApi(request, env, store) {
 
     // Recordings of words and story lines, keyed by a hash of their text.
     if (path === '/api/audio' && method === 'GET') {
-      return json({index: await store.audioIndex()});
+      return json({index: await store.audioIndex(), tts: await store.ttsIndex(), ttsReady: ttsReady(env)});
+    }
+
+    // Make (or return the stored) computer voice for a piece of Arabic text.
+    if (path === '/api/tts' && method === 'POST') {
+      if (!ttsReady(env)) return err(503, 'tts_off', 'Computer voices aren’t set up yet.');
+      const body = await readJson(request);
+      const text = typeof body.text === 'string' ? body.text.replace(/\s+/g, ' ').trim() : '';
+      const preset = typeof body.voice === 'string' && TTS_PRESETS[body.voice] ? body.voice : 'word';
+      if (!text || text.length > MAX_TTS_TEXT || !/[\u0621-\u064A]/.test(text)) return err(400, 'bad_text', 'Send some Arabic text, up to 300 characters.');
+      const key = akey(text);
+      const have = (await store.ttsIndex())[key];
+      if (have && have.p === preset) return json({key, ts: have.ts});
+      try {
+        const buf = await synthesize(env, text, preset);
+        const entry = await store.putTts(key, buf, preset, plainAr(text).slice(0, 300));
+        return json({key, ts: entry.ts});
+      } catch (e) {
+        if (e && e.code) return err(e.status, e.code, e.message);
+        return err(502, 'tts_failed', 'Couldn’t reach the voice service. Try again later.');
+      }
     }
     const am = path.match(AUDIO_KEY);
     if (am) {
       const key = am[1];
       if (method === 'GET') {
-        const a = await store.getAudio(key);
+        const a = (await store.getAudio(key)) || (await store.getTts(key));
         if (!a) return err(404, 'not_found', 'There is no recording for that yet.');
         return new Response(a.data, {headers: {'Content-Type': a.type, 'Cache-Control': 'private, max-age=31536000, immutable'}});
       }
@@ -265,6 +338,15 @@ export function makeStore(kv) {
     },
     async clearLoginFailures() { await kv.delete(FAIL); },
     async audioIndex() { return (await kv.get('audioidx')) || {}; },
+    async ttsIndex() { return (await kv.get('ttsidx')) || {}; },
+    async getTts(key) { return (await kv.get('tts:' + key)) || null; },
+    async putTts(key, buf, preset, text) {
+      await kv.put('tts:' + key, {type: 'audio/mpeg', data: buf});
+      const idx = (await kv.get('ttsidx')) || {};
+      idx[key] = {p: preset, ts: Date.now(), t: text};
+      await kv.put('ttsidx', idx);
+      return idx[key];
+    },
     async getAudio(key) { return (await kv.get('audio:' + key)) || null; },
     async putAudio(key, type, buf, text) {
       await kv.put('audio:' + key, {type, data: buf});

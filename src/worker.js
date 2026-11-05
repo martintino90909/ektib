@@ -16,6 +16,9 @@ export class Store extends DurableObject {
   noteLoginFailure() { return this.s.noteLoginFailure(); }
   clearLoginFailures() { return this.s.clearLoginFailures(); }
   audioIndex() { return this.s.audioIndex(); }
+  ttsIndex() { return this.s.ttsIndex(); }
+  getTts(k) { return this.s.getTts(k); }
+  putTts(k, buf, p, t) { return this.s.putTts(k, buf, p, t); }
   getAudio(k) { return this.s.getAudio(k); }
   putAudio(k, type, buf, text) { return this.s.putAudio(k, type, buf, text); }
   delAudio(k) { return this.s.delAudio(k); }

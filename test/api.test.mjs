@@ -1,6 +1,6 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {handleApi, makeStore, COOKIE} from '../src/api.js';
+import {handleApi, makeStore, COOKIE, akey, ssmlFor} from '../src/api.js';
 
 const memKv = () => {
   const m = new Map();
@@ -232,4 +232,73 @@ test('account names and chosen passcodes are checked', async () => {
   r = await handleApi(jreq('POST', '/api/users', {name: 'Sam', passcode: 'correct horse'}, owner), env, store);
   assert.equal(r.status, 409);
   assert.equal((await loginAs(store, 'SECRET-ALEX')).status, 200);
+});
+
+// ---------- Generated voices ----------
+const fakeAzure = () => {
+  const calls = [];
+  const f = async (url, init) => { calls.push({url, init}); return new Response(new Uint8Array(4000).fill(1), {status: 200, headers: {'Content-Type': 'audio/mpeg'}}); };
+  return {calls, f};
+};
+const ttsEnv = (f) => ({...env, AZURE_SPEECH_KEY: 'k', AZURE_SPEECH_REGION: 'UK South', TTS_FETCH: f});
+
+test('voices are made once, stored and served when there is no recording', async () => {
+  const store = makeStore(memKv());
+  const c = await login(store);
+  const {calls, f} = fakeAzure();
+  const e = ttsEnv(f);
+  let r = await handleApi(req('POST', '/api/tts', {text: 'يوسف ! حبيبي !', voice: 'teita'}, c), e, store);
+  assert.equal(r.status, 200);
+  const {key} = await r.json();
+  assert.equal(key, akey('يوسف حبيبي'));
+  assert.equal(calls.length, 1);
+  assert.match(calls[0].url, /^https:\/\/uksouth\.tts\.speech\.microsoft\.com\//);
+  assert.match(calls[0].init.body, /ar-EG-SalmaNeural/);
+  assert.match(calls[0].init.body, /يوسف! حبيبي!/);
+  r = await handleApi(req('POST', '/api/tts', {text: 'يوسف ! حبيبي !', voice: 'teita'}, c), e, store);
+  assert.equal(r.status, 200);
+  assert.equal(calls.length, 1); // reused, not made again
+  r = await handleApi(req('GET', '/api/audio', undefined, c), e, store);
+  const idx = await r.json();
+  assert.equal(idx.ttsReady, true);
+  assert.equal(idx.tts[key].p, 'teita');
+  r = await handleApi(audioReq('GET', key, undefined, c), e, store);
+  assert.equal(r.headers.get('Content-Type'), 'audio/mpeg');
+  // A human recording wins over the computer voice.
+  await handleApi(audioReq('PUT', key, new Uint8Array(2000), c), e, store);
+  r = await handleApi(audioReq('GET', key, undefined, c), e, store);
+  assert.equal(r.headers.get('Content-Type'), 'audio/mp4');
+});
+
+test('letters are spoken by name; friends can make voices; it is off without a key', async () => {
+  assert.match(ssmlFor('ق', 'word'), />قاف</);
+  assert.match(ssmlFor('كَتَب', 'word'), /كَتَب/);
+  assert.match(ssmlFor('a<b', 'saad'), /a&lt;b/);
+  assert.match(ssmlFor('a', 'saad'), /ar-EG-ShakirNeural/);
+  const store = makeStore(memKv());
+  const owner = await login(store);
+  let r = await handleApi(req('POST', '/api/tts', {text: 'بيت'}, owner), env, store);
+  assert.equal(r.status, 503);
+  r = await handleApi(req('GET', '/api/audio', undefined, owner), env, store);
+  assert.equal((await r.json()).ttsReady, false);
+  const {passcode} = await makeFriend(store, owner);
+  const fcookie = (await loginAs(store, passcode)).cookie;
+  const {f} = fakeAzure();
+  r = await handleApi(req('POST', '/api/tts', {text: 'بيت'}, fcookie), ttsEnv(f), store);
+  assert.equal(r.status, 200);
+  r = await handleApi(req('POST', '/api/tts', {text: 'hello'}, fcookie), ttsEnv(f), store);
+  assert.equal(r.status, 400);
+  r = await handleApi(req('POST', '/api/tts', {text: 'بيت'}), ttsEnv(f), store);
+  assert.equal(r.status, 401);
+});
+
+test('voice service errors come back clearly', async () => {
+  const store = makeStore(memKv());
+  const c = await login(store);
+  const busy = async () => new Response('', {status: 429});
+  let r = await handleApi(req('POST', '/api/tts', {text: 'بيت'}, c), ttsEnv(busy), store);
+  assert.equal(r.status, 429);
+  const bad = async () => new Response('', {status: 401});
+  r = await handleApi(req('POST', '/api/tts', {text: 'بيت'}, c), ttsEnv(bad), store);
+  assert.equal((await r.json()).error, 'tts_key');
 });
