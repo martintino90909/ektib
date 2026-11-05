@@ -1,7 +1,12 @@
 // API for Ektib. Kept free of Cloudflare-only imports so it can be tested in Node.
 // `store` is the Durable Object stub (or a test double) with:
-//   getProgress(), putProgress(p), loginFailures(), noteLoginFailure(), clearLoginFailures(),
+//   getProgress(uid?), putProgress(p, uid?), delProgress(uid), getUsers(), putUsers(users),
+//   loginFailures(), noteLoginFailure(), clearLoginFailures(),
 //   audioIndex(), getAudio(key), putAudio(key, type, buf, text), delAudio(key)
+//
+// Accounts: the owner signs in with env.PASSCODE (and keeps the original session cookie format).
+// The owner can create accounts for friends; each friend has their own passcode and progress.
+// Recordings are shared: everyone can play them, only the owner can add or delete them.
 
 export const COOKIE = 'ektib_session';
 const SESSION_MSG = 'ektib-session-v1';
@@ -9,6 +14,9 @@ const MAX_BODY = 64 * 1024;
 const MAX_FAILURES = 10;
 const MAX_AUDIO = 1024 * 1024;
 const AUDIO_KEY = /^\/api\/audio\/([a-f0-9]{16})$/;
+const USER_PATH = /^\/api\/users\/([a-f0-9]{8})(\/passcode)?$/;
+const MAX_USERS = 20;
+const WORDS = ['falafel','mishmish','corniche','tram','basbousa','fresca','qaitbay','anfushi','sayadiya','kibda','fuul','bahari','nawwa','mashroo3','shatt','yalla'];
 
 const enc = new TextEncoder();
 
@@ -32,6 +40,15 @@ export function safeEqual(a, b) {
 }
 
 export const sessionToken = (passcode) => hmac(passcode, SESSION_MSG);
+const userToken = async (env, id, ver) => `u.${id}.${await hmac(env.PASSCODE, `ektib-user-session:${id}:${ver}`)}`;
+const passHash = (env, code) => hmac(env.PASSCODE, `ektib-user-pass:${code}`);
+const randHex = (bytes) => [...crypto.getRandomValues(new Uint8Array(bytes))].map((b) => b.toString(16).padStart(2, '0')).join('');
+export function makePasscode() {
+  const r = crypto.getRandomValues(new Uint32Array(2));
+  return `${WORDS[r[0] % WORDS.length]}-${String(1000 + (r[1] % 9000))}`;
+}
+const cookieFor = (token) => `${COOKIE}=${token}; Path=/; Max-Age=31536000; HttpOnly; Secure; SameSite=Strict`;
+const cleanName = (n) => (typeof n === 'string' ? n.replace(/\s+/g, ' ').trim() : '');
 
 export function readCookie(request, name) {
   const header = request.headers.get('Cookie') || '';
@@ -57,10 +74,17 @@ async function readJson(request) {
 
 const isPlainObject = (v) => v !== null && typeof v === 'object' && !Array.isArray(v);
 
-export async function isAuthed(request, env) {
-  if (!env.PASSCODE) return false;
+// Who is signed in: {id:'owner', owner:true} for the owner, {id, name} for a friend, or null.
+export async function whoami(request, env, store) {
+  if (!env.PASSCODE) return null;
   const got = readCookie(request, COOKIE);
-  return !!got && safeEqual(got, await sessionToken(env.PASSCODE));
+  if (!got) return null;
+  if (safeEqual(got, await sessionToken(env.PASSCODE))) return {id: 'owner', name: null, owner: true};
+  const m = got.match(/^u\.([a-f0-9]{8})\./);
+  if (!m) return null;
+  const u = (await store.getUsers())[m[1]];
+  if (!u || !safeEqual(got, await userToken(env, m[1], u.ver))) return null;
+  return {id: m[1], name: u.name, owner: false};
 }
 
 export async function handleApi(request, env, store) {
@@ -71,23 +95,29 @@ export async function handleApi(request, env, store) {
 
   try {
     if (path === '/api/session' && method === 'GET') {
-      return json({configured, authed: await isAuthed(request, env)});
+      const me = await whoami(request, env, store);
+      return json({configured, authed: !!me, user: me});
     }
 
     if (path === '/api/login' && method === 'POST') {
       if (!configured) return err(503, 'not_configured', 'No passcode has been set for Ektib yet.');
       if ((await store.loginFailures()) >= MAX_FAILURES) return err(429, 'locked', 'Too many wrong passcodes. Try again in an hour.');
       const body = await readJson(request);
-      const tryCode = typeof body.passcode === 'string' ? body.passcode : '';
+      const tryCode = typeof body.passcode === 'string' ? body.passcode.trim() : '';
       // Compare HMACs so the comparison time doesn't depend on the passcode.
-      const ok = safeEqual(await hmac(env.PASSCODE, tryCode), await hmac(env.PASSCODE, env.PASSCODE));
-      if (!ok) {
+      if (safeEqual(await hmac(env.PASSCODE, tryCode), await hmac(env.PASSCODE, env.PASSCODE))) {
+        await store.clearLoginFailures();
+        return json({ok: true, user: {id: 'owner', name: null, owner: true}}, 200, {'Set-Cookie': cookieFor(await sessionToken(env.PASSCODE))});
+      }
+      const h = await passHash(env, tryCode.toLowerCase());
+      const users = await store.getUsers();
+      const id = Object.keys(users).find((k) => safeEqual(users[k].hash, h));
+      if (!id) {
         await store.noteLoginFailure();
         return err(401, 'wrong_passcode', 'That passcode is wrong.');
       }
       await store.clearLoginFailures();
-      const token = await sessionToken(env.PASSCODE);
-      return json({ok: true}, 200, {'Set-Cookie': `${COOKIE}=${token}; Path=/; Max-Age=31536000; HttpOnly; Secure; SameSite=Strict`});
+      return json({ok: true, user: {id, name: users[id].name, owner: false}}, 200, {'Set-Cookie': cookieFor(await userToken(env, id, users[id].ver))});
     }
 
     if (path === '/api/logout' && method === 'POST') {
@@ -96,22 +126,85 @@ export async function handleApi(request, env, store) {
 
     // Everything below needs a session.
     if (!configured) return err(503, 'not_configured', 'No passcode has been set for Ektib yet.');
-    if (!(await isAuthed(request, env))) return err(401, 'signed_out', 'Sign in to sync your progress.');
+    const me = await whoami(request, env, store);
+    if (!me) return err(401, 'signed_out', 'Sign in to sync your progress.');
+    const uid = me.owner ? undefined : me.id;
 
     if (path === '/api/progress' && method === 'GET') {
-      return json({progress: await store.getProgress()});
+      return json({progress: await store.getProgress(uid)});
     }
 
     if (path === '/api/progress' && method === 'PUT') {
       const body = await readJson(request);
       if (!isPlainObject(body) || typeof body.updated !== 'number') return err(400, 'bad_request', 'Send the progress object with an `updated` time.');
-      const cur = await store.getProgress();
+      const cur = await store.getProgress(uid);
       // A device with older progress must not overwrite newer progress from another device.
       if (cur && typeof cur.updated === 'number' && cur.updated > body.updated) {
         return err(409, 'stale', 'Another device saved newer progress.', {progress: cur});
       }
-      await store.putProgress(body);
+      await store.putProgress(body, uid);
       return json({ok: true});
+    }
+
+    // Accounts for friends. Owner only.
+    if (path === '/api/users' || USER_PATH.test(path)) {
+      if (!me.owner) return err(403, 'owner_only', 'Only the owner can manage accounts.');
+      const users = await store.getUsers();
+      let h0 = null; // hash of the passcode pickCode settled on
+      const taken = (code, h) => code === env.PASSCODE.trim().toLowerCase() || Object.values(users).some((u) => u.hash === h);
+      const pickCode = async (wanted) => {
+        let code = typeof wanted === 'string' ? wanted.trim().toLowerCase() : '';
+        if (code && (code.length < 6 || code.length > 64)) throw Object.assign(new Error('Passcodes need 6 to 64 characters.'), {status: 400});
+        for (let i = 0; i < 20; i++) {
+          if (!code) code = makePasscode();
+          h0 = await passHash(env, code);
+          if (!taken(code, h0)) return code;
+          if (wanted) throw Object.assign(new Error('That passcode is already in use. Pick another.'), {status: 409});
+          code = '';
+        }
+        throw new Error('no passcode');
+      };
+
+      if (path === '/api/users' && method === 'GET') {
+        const list = await Promise.all(Object.entries(users).map(async ([id, u]) => {
+          const p = await store.getProgress(id);
+          return {id, name: u.name, created: u.created, xp: p ? Number(p.xp) || 0 : 0,
+            lessonsDone: p ? Object.values(p.done || {}).filter(Boolean).length : 0, lastActive: p ? Number(p.updated) || null : null};
+        }));
+        list.sort((a, b) => a.created - b.created);
+        return json({users: list});
+      }
+      if (path === '/api/users' && method === 'POST') {
+        const body = await readJson(request);
+        const name = cleanName(body.name);
+        if (!name || name.length > 40) return err(400, 'bad_name', 'Give the account a name of up to 40 characters.');
+        if (Object.keys(users).length >= MAX_USERS) return err(400, 'too_many', `You can have up to ${MAX_USERS} friend accounts.`);
+        if (Object.values(users).some((u) => u.name.toLowerCase() === name.toLowerCase())) return err(409, 'name_taken', `There is already an account called ${name}.`);
+        const code = await pickCode(body.passcode);
+        const id = randHex(4);
+        users[id] = {name, hash: h0, ver: 1, created: Date.now()};
+        await store.putUsers(users);
+        return json({user: {id, name, created: users[id].created, xp: 0, lessonsDone: 0, lastActive: null}, passcode: code}, 201);
+      }
+      const um = path.match(USER_PATH);
+      if (um) {
+        const id = um[1], u = users[id];
+        if (!u) return err(404, 'not_found', 'That account doesn’t exist.');
+        if (um[2] && method === 'POST') {
+          const body = await readJson(request);
+          const code = await pickCode(body.passcode);
+          u.hash = h0; u.ver = (u.ver || 1) + 1;
+          await store.putUsers(users);
+          return json({ok: true, passcode: code});
+        }
+        if (!um[2] && method === 'DELETE') {
+          delete users[id];
+          await store.putUsers(users);
+          await store.delProgress(id);
+          return json({ok: true});
+        }
+      }
+      return err(405, 'bad_method', 'That doesn’t work on accounts.');
     }
 
     // Recordings of words and story lines, keyed by a hash of their text.
@@ -126,6 +219,7 @@ export async function handleApi(request, env, store) {
         if (!a) return err(404, 'not_found', 'There is no recording for that yet.');
         return new Response(a.data, {headers: {'Content-Type': a.type, 'Cache-Control': 'private, max-age=31536000, immutable'}});
       }
+      if ((method === 'PUT' || method === 'DELETE') && !me.owner) return err(403, 'owner_only', 'Only the owner can add or remove recordings.');
       if (method === 'PUT') {
         const type = (request.headers.get('Content-Type') || '').split(';')[0].trim();
         if (!/^audio\/[a-z0-9.+-]+$/.test(type)) return err(415, 'bad_type', 'Send an audio recording.');
@@ -154,8 +248,11 @@ export function makeStore(kv) {
   const FAIL = 'auth:failures';
   const HOUR = 3600 * 1000;
   return {
-    async getProgress() { return (await kv.get('progress')) || null; },
-    async putProgress(p) { await kv.put('progress', p); return true; },
+    async getProgress(uid) { return (await kv.get(uid ? 'progress:' + uid : 'progress')) || null; },
+    async putProgress(p, uid) { await kv.put(uid ? 'progress:' + uid : 'progress', p); return true; },
+    async delProgress(uid) { if (uid) await kv.delete('progress:' + uid); return true; },
+    async getUsers() { return (await kv.get('users')) || {}; },
+    async putUsers(u) { await kv.put('users', u); return true; },
     async loginFailures() {
       const f = await kv.get(FAIL);
       if (!f || Date.now() - f.since > HOUR) return 0;

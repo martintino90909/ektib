@@ -1,14 +1,17 @@
 import {DurableObject, WorkerEntrypoint} from 'cloudflare:workers';
 import {handleApi, makeStore, summarize} from './api.js';
 
-// One Durable Object holds Martin's Ektib progress and recordings (strongly consistent, private to this Worker).
+// One Durable Object holds Ektib progress (Martin's and his friends'), accounts and recordings (strongly consistent, private to this Worker).
 export class Store extends DurableObject {
   constructor(ctx, env) {
     super(ctx, env);
     this.s = makeStore(ctx.storage);
   }
-  getProgress() { return this.s.getProgress(); }
-  putProgress(p) { return this.s.putProgress(p); }
+  getProgress(uid) { return this.s.getProgress(uid); }
+  putProgress(p, uid) { return this.s.putProgress(p, uid); }
+  delProgress(uid) { return this.s.delProgress(uid); }
+  getUsers() { return this.s.getUsers(); }
+  putUsers(u) { return this.s.putUsers(u); }
   loginFailures() { return this.s.loginFailures(); }
   noteLoginFailure() { return this.s.noteLoginFailure(); }
   clearLoginFailures() { return this.s.clearLoginFailures(); }

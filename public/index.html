@@ -214,7 +214,7 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .tiles span{font-size:12.5px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
 
 /* ---------- Sheet ---------- */
-.scrim{position:fixed;inset:0;z-index:40;background:color-mix(in srgb,#060b16 45%,transparent);display:grid;align-items:end;justify-items:center}
+.scrim{position:fixed;inset:0;z-index:40;grid-template-columns:minmax(0,1fr);background:color-mix(in srgb,#060b16 45%,transparent);display:grid;align-items:end;justify-items:center}
 .sheet{width:min(560px,100%);box-sizing:border-box;background:var(--surface);border-radius:22px 22px 0 0;padding-block:20px calc(20px + env(safe-area-inset-bottom,0px));padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px));display:grid;gap:14px;border:2px solid var(--line);border-bottom:0}
 .sheet h3{margin:0;font-size:22px;font-weight:800}
 .sheet p{margin:0;color:var(--muted)}
@@ -374,6 +374,29 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .ep-title .ar{font-family:var(--naskh);font-size:26px;line-height:1.3;color:var(--enamel)}
 .ep-teaser{color:var(--muted);font-size:15.5px;line-height:1.4}
 .ep-card.done .sc-meta{color:var(--good-deep)}
+.sheet{max-height:min(88vh,88dvh);overflow:auto;grid-template-columns:minmax(0,1fr)}
+.people{display:grid;gap:8px}
+.person{display:grid;grid-template-columns:auto 1fr auto;gap:10px 12px;align-items:center;border:1px solid var(--line);border-radius:14px;padding:10px 12px;background:var(--surface-2)}
+.person-av{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:var(--mango);color:var(--on-mango);font-weight:800;font-size:18px}
+.person-t{display:grid;min-width:0}
+.person-t b{font-size:17px;overflow-wrap:anywhere}
+.person-t small{color:var(--muted);font-size:13.5px}
+.person-b{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.small-btn{min-height:38px;padding:4px 10px;font-size:14px}
+.ghost.danger{color:var(--bad-deep)}
+.empty-note{margin:0;padding:12px;border:1px dashed var(--line);border-radius:12px;text-align:center}
+.add-form{display:grid;grid-template-columns:minmax(0,1fr);gap:8px;border-top:1px solid var(--line);padding-top:12px}
+.add-form label{font-weight:800}
+.add-row{display:flex;gap:8px}
+.add-row .btn{flex:none;padding-inline:16px}
+.add-row input{flex:1;min-width:0;font:inherit;font-size:17px;padding:10px 12px;border-radius:12px;border:2px solid var(--line);background:var(--surface-2);color:var(--ink)}
+.form-msg{margin:0;color:var(--bad-deep)!important}
+.cred{display:flex;justify-content:space-between;align-items:center;gap:12px;border:2px solid var(--line);border-radius:14px;padding:10px 14px;background:var(--surface-2);flex-wrap:wrap}
+.cred span{font-size:12.5px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
+.cred b{font-size:18px;overflow-wrap:anywhere}
+.cred .code{font-size:24px;color:var(--enamel);font-variant-numeric:tabular-nums;letter-spacing:.02em;user-select:all;-webkit-user-select:all}
+.cred-msg{font:inherit;font-size:15px;color:var(--ink);background:var(--surface-2);border:1px solid var(--line);border-radius:12px;padding:10px 12px;resize:none;width:100%;box-sizing:border-box}
+@media (max-width:520px){.person{grid-template-columns:auto 1fr}.person-b{grid-column:1/-1;justify-content:flex-start}}
 .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(92px + env(safe-area-inset-bottom,0px));z-index:60;background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:12px;font-weight:600;max-width:min(92vw,480px);box-shadow:0 8px 24px color-mix(in srgb,#000 25%,transparent)}
 @media (max-width:620px){
   .due-panel{grid-template-columns:1fr}
@@ -857,16 +880,39 @@ STORIES.forEach(st => {
 /* ================= State ================= */
 const KEY = 'ektib-progress-v1';
 const blank = () => ({v:2, done:{}, xp:0, streak:0, lastDay:'', today:{day:'',xp:0}, hist:{}, unlockAll:false, srs:{}, stories:{}, updated:0});
-let S = blank();
-try { const raw = localStorage.getItem(KEY); if (raw) S = Object.assign(blank(), JSON.parse(raw)); } catch(e) {}
+// Each person's progress is cached on the device under their own key. The owner (and anyone
+// not signed in) uses the original key, so existing progress carries over.
+const LASTU = 'ektib-last-user';
+const ckey = id => id ? KEY + ':' + id : KEY;
+let S = blank(), loadedFor = null, me = null;
+function loadCache(id){
+  S = blank(); loadedFor = id || null;
+  try { const raw = localStorage.getItem(ckey(loadedFor)); if (raw) S = Object.assign(blank(), JSON.parse(raw)); } catch(e) {}
+}
+try { loadCache(localStorage.getItem(LASTU)); } catch(e) { loadCache(null); }
 let syncState = 'local', saving = false, saveAgain = false, saveTimer = null, authed = false;
+// Switch to whoever is signed in (null when signed out) and load their cached progress.
+function setMe(u){
+  me = u || null;
+  const id = me && !me.owner ? me.id : null;
+  try { id ? localStorage.setItem(LASTU, id) : localStorage.removeItem(LASTU); } catch(e) {}
+  if (id !== loadedFor){ clearTimeout(saveTimer); loadCache(id); }
+  applyRole();
+}
+function applyRole(){
+  const friend = authed && me && !me.owner;
+  const t = document.querySelector('.tab[data-v="record"]');
+  if (t) t.hidden = !!friend;
+  if (friend && typeof view !== 'undefined' && view === 'record') showView('learn');
+  else if (typeof refreshViews === 'function') refreshViews();
+}
 const dayStr = d => { const x = d || new Date(); return `${x.getFullYear()}-${String(x.getMonth()+1).padStart(2,'0')}-${String(x.getDate()).padStart(2,'0')}`; };
 async function api(method, path, body){
   const r = await fetch(path, {method, credentials:'same-origin', headers: body !== undefined ? {'Content-Type':'application/json'} : {}, body: body !== undefined ? JSON.stringify(body) : undefined});
   let data = {}; try { data = await r.json(); } catch(e) {}
   return {status:r.status, data};
 }
-function cacheLocal(){ try { localStorage.setItem(KEY, JSON.stringify(S)); } catch(e) {} }
+function cacheLocal(){ try { localStorage.setItem(ckey(loadedFor), JSON.stringify(S)); } catch(e) {} }
 // Totals and the next unit, so the Life dashboard can show progress without the lesson list.
 function stampMeta(){
   try {
@@ -901,7 +947,7 @@ async function pushRemote(){
 async function pullRemote(){
   try {
     const r = await api('GET', '/api/progress');
-    if (r.status === 401) { authed = false; return showLogin(); }
+    if (r.status === 401) { authed = false; applyRole(); return showLogin(); }
     if (r.status !== 200) { syncState = 'error'; return; }
     syncState = 'cloud';
     const remote = r.data.progress;
@@ -913,8 +959,8 @@ async function startSync(){
   try {
     const r = await api('GET', '/api/session');
     if (r.status !== 200 || !r.data.configured) { syncState = 'local'; return; }
-    if (!r.data.authed) return showLogin();
-    authed = true; await pullRemote(); loadAudioIndex();
+    if (!r.data.authed){ setMe(null); return showLogin(); }
+    authed = true; setMe(r.data.user); await pullRemote(); loadAudioIndex();
   } catch(e) { syncState = 'offline'; }
 }
 function showLogin(msg){
@@ -930,7 +976,7 @@ function showLogin(msg){
     const m = $('#loginMsg');
     try {
       const r = await api('POST', '/api/login', {passcode: inp.value});
-      if (r.status === 200){ authed = true; closeSheet(); await pullRemote(); loadAudioIndex(); refreshViews(); return; }
+      if (r.status === 200){ authed = true; closeSheet(); setMe(r.data.user); await pullRemote(); loadAudioIndex(); refreshViews(); if (!r.data.user.owner) toast(`Welcome, ${r.data.user.name}!`); return; }
       m.textContent = r.data.message || 'Sign-in failed. Try again.'; m.hidden = false;
     } catch(_) { m.textContent = 'You seem to be offline. Try again when you’re connected.'; m.hidden = false; }
   });
@@ -1269,15 +1315,17 @@ $('#scrim').addEventListener('click', e => { if (e.target.id === 'scrim' || e.ta
 $('#settingsBtn').onclick = () => {
   openSheet(`<h3>Settings</h3>
     <p>${authed ? (syncState === 'offline' ? 'You’re offline. Progress is kept on this device and syncs when you’re back.' : 'Your progress syncs between your devices.') : 'Your progress is saved on this device only.'}</p>
-    <div class="toggle"><span><b>${authed ? 'Signed in' : 'Not signed in'}</b><small>${authed ? 'Signing out keeps this device’s progress.' : 'Sign in with your passcode to sync.'}</small></span><button class="ghost" id="authBtn">${authed ? 'Sign out' : 'Sign in'}</button></div>
+    <div class="toggle"><span><b>${!authed ? 'Not signed in' : me && !me.owner ? `Signed in as ${esc(me.name)}` : 'Signed in as the owner'}</b><small>${authed ? 'Your progress stays saved to your account.' : 'Sign in with your passcode to sync.'}</small></span><button class="ghost" id="authBtn">${authed ? 'Sign out' : 'Sign in'}</button></div>
+    ${authed && me && me.owner ? `<div class="toggle"><span><b>Friends’ accounts</b><small>Give friends their own sign-in and progress.</small></span><button class="ghost" id="peopleBtn">Manage</button></div>` : ''}
     <label class="toggle"><span><b>Unlock every lesson</b><small>Jump around freely instead of following the path.</small></span><input type="checkbox" id="unlockT" ${S.unlockAll?'checked':''}></label>
     <div class="toggle"><span><b>Reset progress</b><small>Clears lessons, XP and streak.</small></span><button class="ghost" id="resetBtn">Reset</button></div>
     <div class="row"><button class="btn small" data-close>Done</button></div>`);
   $('#authBtn').onclick = async () => {
     if (!authed) return showLogin();
     try { await api('POST', '/api/logout'); } catch(e) {}
-    authed = false; syncState = 'local'; closeSheet();
+    authed = false; syncState = 'local'; closeSheet(); setMe(null);
   };
+  const pb = $('#peopleBtn'); if (pb) pb.onclick = () => openPeople();
   $('#unlockT').onchange = e => { S.unlockAll = e.target.checked; save(); renderHome(); };
   $('#resetBtn').onclick = () => {
     openSheet(`<h3>Reset all progress?</h3><p>This clears every finished lesson, your XP and your streak. It can’t be undone.</p>
@@ -1286,6 +1334,84 @@ $('#settingsBtn').onclick = () => {
   };
 };
 
+
+/* ---------- Friends' accounts (owner only) ---------- */
+function ago(t){
+  if (!t) return 'not started yet';
+  const d = Date.now() - t;
+  if (d < 3600e3) return 'active just now';
+  if (d < DAY) return `active ${Math.round(d/3600e3)}h ago`;
+  const n = Math.round(d/DAY); return `active ${n} ${n === 1 ? 'day' : 'days'} ago`;
+}
+async function openPeople(msg){
+  openSheet(`<h3>Friends’ accounts</h3><p>Loading…</p>`);
+  let r;
+  try { r = await api('GET', '/api/users'); } catch(e) { return openSheet(`<h3>Friends’ accounts</h3><p>You seem to be offline. Try again when you’re connected.</p><div class="row"><button class="btn small" data-close>Close</button></div>`); }
+  if (r.status !== 200) return openSheet(`<h3>Friends’ accounts</h3><p>${esc(r.data.message || 'Couldn’t load accounts.')}</p><div class="row"><button class="btn small" data-close>Close</button></div>`);
+  const users = r.data.users || [];
+  openSheet(`<h3>Friends’ accounts</h3>
+    <p>Each friend signs in with their own passcode and gets their own progress. They can play your recordings but can’t add or delete them.</p>
+    ${users.length ? `<div class="people">${users.map(u => `<div class="person" data-id="${u.id}">
+      <div class="person-av" aria-hidden="true">${esc(u.name.slice(0,1).toUpperCase())}</div>
+      <div class="person-t"><b>${esc(u.name)}</b><small>${u.xp} XP · ${u.lessonsDone} ${u.lessonsDone === 1 ? 'lesson' : 'lessons'} · ${ago(u.lastActive)}</small></div>
+      <div class="person-b"><button class="ghost small-btn" data-act="code">New passcode</button><button class="ghost small-btn danger" data-act="remove">Remove</button></div>
+    </div>`).join('')}</div>` : `<p class="empty-note">No friends added yet.</p>`}
+    <form id="addForm" class="add-form">
+      <label for="friendName">Add a friend</label>
+      <div class="add-row"><input id="friendName" maxlength="40" autocomplete="off" placeholder="Their name" required><button class="btn small" type="submit">Create</button></div>
+      <p id="addMsg" class="form-msg" ${msg?'':'hidden'}>${esc(msg||'')}</p>
+    </form>
+    <div class="row"><button class="ghost" data-close>Done</button></div>`);
+  $('#addForm').addEventListener('submit', async e => {
+    e.preventDefault();
+    const name = $('#friendName').value.trim(), m = $('#addMsg');
+    if (!name) return;
+    try {
+      const r = await api('POST', '/api/users', {name});
+      if (r.status === 201) return showPasscode(r.data.user.name, r.data.passcode, true);
+      m.textContent = r.data.message || 'Couldn’t create that account.'; m.hidden = false;
+    } catch(_) { m.textContent = 'You seem to be offline. Try again when you’re connected.'; m.hidden = false; }
+  });
+  $('#sheet').querySelectorAll('.person').forEach(row => {
+    const u = users.find(x => x.id === row.dataset.id);
+    row.querySelector('[data-act="code"]').onclick = () => { openSheet(`<h3>New passcode for ${esc(u.name)}?</h3>
+      <p>Their old passcode stops working and they’re signed out on every device. Their progress is kept.</p>
+      <div class="row"><button class="ghost" id="pBack">Cancel</button><button class="btn small" id="pYes">Make new passcode</button></div>`);
+      wireConfirm(async () => {
+        const r = await api('POST', `/api/users/${u.id}/passcode`, {});
+        if (r.status === 200) showPasscode(u.name, r.data.passcode, false); else openPeople(r.data.message || 'Couldn’t change the passcode.');
+      }); };
+    row.querySelector('[data-act="remove"]').onclick = () => { openSheet(`<h3>Remove ${esc(u.name)}?</h3>
+      <p>This deletes their account and all their progress (${u.xp} XP, ${u.lessonsDone} ${u.lessonsDone === 1 ? 'lesson' : 'lessons'}). It can’t be undone.</p>
+      <div class="row"><button class="ghost" id="pBack">Keep ${esc(u.name)}</button><button class="btn bad small" id="pYes">Remove</button></div>`);
+      wireConfirm(async () => {
+        const r = await api('DELETE', `/api/users/${u.id}`);
+        openPeople(r.status === 200 ? '' : (r.data.message || 'Couldn’t remove that account.'));
+        if (r.status === 200) toast(`Removed ${u.name}.`);
+      }); };
+  });
+}
+function wireConfirm(fn){
+  $('#pBack').onclick = () => openPeople();
+  $('#pYes').onclick = async () => { $('#pYes').disabled = true; try { await fn(); } catch(e) { openPeople('You seem to be offline. Try again when you’re connected.'); } };
+}
+function showPasscode(name, code, isNew){
+  const site = location.host;
+  const message = `I’ve made you an account on Ektib, my app for learning to read and write Egyptian Arabic. Open https://${site} in Safari and sign in with the passcode ${code}. Then tap Share → Add to Home Screen so it opens like an app.`;
+  openSheet(`<h3>${isNew ? `${esc(name)}’s account is ready` : `New passcode for ${esc(name)}`}</h3>
+    <p>Send ${esc(name)} the website and passcode. Their progress is separate from yours.</p>
+    <div class="cred"><span>Website</span><b>${esc(site)}</b></div>
+    <div class="cred"><span>Passcode</span><b class="code">${esc(code)}</b></div>
+    <textarea id="credMsg" class="cred-msg" readonly rows="5" aria-label="Message to send">${esc(message)}</textarea>
+    <p class="muted small">This is the only time the passcode is shown. If it gets lost, make a new one.</p>
+    <div class="row"><button class="ghost" id="copyMsg">Copy message</button><button class="btn small" id="toPeople">Done</button></div>`);
+  $('#toPeople').onclick = () => openPeople();
+  $('#copyMsg').onclick = async () => {
+    const b = $('#copyMsg');
+    try { await navigator.clipboard.writeText(message); b.textContent = 'Copied'; }
+    catch(e) { const t = $('#credMsg'); t.focus(); t.select(); b.textContent = 'Selected: copy it'; }
+  };
+}
 
 /* ================= Exercise builders ================= */
 const soundOpts = (c, pool) => {

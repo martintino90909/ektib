@@ -29,7 +29,7 @@ test('progress is hidden until signed in', async () => {
   const r = await handleApi(req('GET', '/api/progress'), env, store);
   assert.equal(r.status, 401);
   const s = await (await handleApi(req('GET', '/api/session'), env, store)).json();
-  assert.deepEqual(s, {configured: true, authed: false});
+  assert.deepEqual(s, {configured: true, authed: false, user: null});
 });
 
 test('wrong passcode is refused and locks after 10 tries', async () => {
@@ -140,4 +140,96 @@ test('summary for the Life dashboard', async () => {
   assert.equal(s.days.length, 30);
   assert.deepEqual(s.days.slice(-3).map((d) => d.xp), [30, 18, 0]);
   assert.equal(summarize({...p, lastDay: '2026-10-20'}, now).streak, 0);
+});
+
+// ---------- Friend accounts ----------
+const jreq = (method, path, body, cookie) => req(method, path, body, cookie);
+const makeFriend = async (store, owner, name = 'Liem', passcode) => {
+  const r = await handleApi(jreq('POST', '/api/users', {name, ...(passcode ? {passcode} : {})}, owner), env, store);
+  assert.equal(r.status, 201);
+  return r.json();
+};
+const loginAs = async (store, passcode) => {
+  const r = await handleApi(req('POST', '/api/login', {passcode}), env, store);
+  return {status: r.status, cookie: (r.headers.get('Set-Cookie') || '').split(';')[0], body: await r.json()};
+};
+
+test('owner creates a friend who signs in with their own passcode', async () => {
+  const store = makeStore(memKv());
+  const owner = await login(store);
+  const {user, passcode} = await makeFriend(store, owner);
+  assert.match(passcode, /^[a-z0-9]+-\d{4}$/);
+  const f = await loginAs(store, passcode);
+  assert.equal(f.status, 200);
+  assert.equal(f.body.user.name, 'Liem');
+  const s = await (await handleApi(req('GET', '/api/session', undefined, f.cookie), env, store)).json();
+  assert.deepEqual(s.user, {id: user.id, name: 'Liem', owner: false});
+});
+
+test('friend and owner keep separate progress', async () => {
+  const store = makeStore(memKv());
+  const owner = await login(store);
+  await handleApi(req('PUT', '/api/progress', {xp: 500, updated: 10}, owner), env, store);
+  const {passcode} = await makeFriend(store, owner);
+  const f = await loginAs(store, passcode);
+  let r = await handleApi(req('GET', '/api/progress', undefined, f.cookie), env, store);
+  assert.deepEqual(await r.json(), {progress: null});
+  await handleApi(req('PUT', '/api/progress', {xp: 7, updated: 20}, f.cookie), env, store);
+  r = await handleApi(req('GET', '/api/progress', undefined, owner), env, store);
+  assert.equal((await r.json()).progress.xp, 500);
+  assert.equal((await store.getProgress()).xp, 500); // the Life dashboard summary still reads the owner's
+  r = await handleApi(req('GET', '/api/users', undefined, owner), env, store);
+  assert.equal((await r.json()).users[0].xp, 7);
+});
+
+test('friends cannot manage accounts or record audio', async () => {
+  const store = makeStore(memKv());
+  const owner = await login(store);
+  const {passcode} = await makeFriend(store, owner);
+  const f = await loginAs(store, passcode);
+  let r = await handleApi(req('GET', '/api/users', undefined, f.cookie), env, store);
+  assert.equal(r.status, 403);
+  r = await handleApi(jreq('POST', '/api/users', {name: 'Sneaky'}, f.cookie), env, store);
+  assert.equal(r.status, 403);
+  r = await handleApi(audioReq('PUT', '0123456789abcdef', new Uint8Array(2000), f.cookie), env, store);
+  assert.equal(r.status, 403);
+  r = await handleApi(req('GET', '/api/audio', undefined, f.cookie), env, store);
+  assert.equal(r.status, 200);
+});
+
+test('a new passcode signs the friend out everywhere; removing them deletes their progress', async () => {
+  const store = makeStore(memKv());
+  const owner = await login(store);
+  const {user, passcode} = await makeFriend(store, owner);
+  const f = await loginAs(store, passcode);
+  await handleApi(req('PUT', '/api/progress', {xp: 3, updated: 5}, f.cookie), env, store);
+  let r = await handleApi(jreq('POST', `/api/users/${user.id}/passcode`, {}, owner), env, store);
+  const fresh = (await r.json()).passcode;
+  assert.notEqual(fresh, passcode);
+  r = await handleApi(req('GET', '/api/progress', undefined, f.cookie), env, store);
+  assert.equal(r.status, 401);
+  assert.equal((await loginAs(store, passcode)).status, 401);
+  const f2 = await loginAs(store, fresh);
+  r = await handleApi(req('GET', '/api/progress', undefined, f2.cookie), env, store);
+  assert.equal((await r.json()).progress.xp, 3);
+  r = await handleApi(req('DELETE', `/api/users/${user.id}`, undefined, owner), env, store);
+  assert.equal(r.status, 200);
+  r = await handleApi(req('GET', '/api/progress', undefined, f2.cookie), env, store);
+  assert.equal(r.status, 401);
+  assert.equal(await store.getProgress(user.id), null);
+});
+
+test('account names and chosen passcodes are checked', async () => {
+  const store = makeStore(memKv());
+  const owner = await login(store);
+  let r = await handleApi(jreq('POST', '/api/users', {name: '  '}, owner), env, store);
+  assert.equal(r.status, 400);
+  await makeFriend(store, owner, 'Alex', 'secret-alex');
+  r = await handleApi(jreq('POST', '/api/users', {name: 'alex'}, owner), env, store);
+  assert.equal(r.status, 409);
+  r = await handleApi(jreq('POST', '/api/users', {name: 'Sam', passcode: 'secret-alex'}, owner), env, store);
+  assert.equal(r.status, 409);
+  r = await handleApi(jreq('POST', '/api/users', {name: 'Sam', passcode: 'correct horse'}, owner), env, store);
+  assert.equal(r.status, 409);
+  assert.equal((await loginAs(store, 'SECRET-ALEX')).status, 200);
 });

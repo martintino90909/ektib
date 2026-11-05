@@ -14,6 +14,12 @@ Every push to `main` redeploys automatically. Changing `PASSCODE` signs every de
 
 Without a passcode set, the app still works but keeps progress on the device only.
 
+## Friends' accounts
+
+Signed in with `PASSCODE`, you're the owner. Open **Settings → Friends’ accounts → Manage** to add a friend: type their name and the app makes them a passcode (like `mishmish-4821`) and a message to send them. Each friend has their own progress; they can play your recordings but can't add or delete them, and they can't manage accounts. **New passcode** signs a friend out everywhere and keeps their progress; **Remove** deletes the account and its progress. Up to 20 friends.
+
+If someone signs in on a shared iPad, each person's progress is kept separately on the device too.
+
 ## On your iPad
 
 Open the site in Safari, tap **Share** → **Add to Home Screen**. It opens full screen as "Ektib".
@@ -43,10 +49,14 @@ All routes except `/api/session` and `/api/login` need the session cookie.
 | `POST /api/logout` | Signs this device out |
 | `GET /api/progress` | Your saved progress |
 | `PUT /api/progress` | Saves progress; refused with 409 (and the newer copy) if another device saved something newer |
+| `GET /api/users` | Owner only: friends' accounts with their XP and lessons done |
+| `POST /api/users` `{name, passcode?}` | Owner only: creates an account; returns its passcode once |
+| `POST /api/users/:id/passcode` | Owner only: new passcode, signs them out everywhere |
+| `DELETE /api/users/:id` | Owner only: removes the account and its progress |
 | `GET /api/audio` | Which recordings exist, keyed by a hash of their text |
 | `GET /api/audio/:key` | Plays a recording |
-| `PUT /api/audio/:key` | Saves a recording (audio body up to 1 MB, `X-Text` header with the Arabic text) |
-| `DELETE /api/audio/:key` | Deletes a recording |
+| `PUT /api/audio/:key` | Owner only: saves a recording (audio body up to 1 MB, `X-Text` header with the Arabic text) |
+| `DELETE /api/audio/:key` | Owner only: deletes a recording |
 
 Ten wrong passcodes in an hour lock sign-in for the rest of that hour.
 
